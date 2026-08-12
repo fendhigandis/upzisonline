@@ -24,7 +24,7 @@
             getFirestore, collection, addDoc, getDocs, doc, setDoc, deleteDoc, getDoc, updateDoc, query, orderBy, onSnapshot 
         } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
         import { 
-            getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged 
+            getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword, sendPasswordResetEmail
         } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
         const firebaseConfig = {
@@ -43,7 +43,7 @@
 
         window.db = db;
         window.auth = auth;
-        window.authServices = { signInWithEmailAndPassword, signOut, onAuthStateChanged };
+        window.authServices = { signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword, sendPasswordResetEmail };
         window.fs = { collection, addDoc, getDocs, doc, setDoc, deleteDoc, getDoc, updateDoc, query, orderBy, onSnapshot };
     </script>
 
@@ -668,8 +668,8 @@
                         <a href="#" onclick="toggleModeAuth(event)" id="link-toggle-auth" style="font-size: 13px; color: var(--nu-gold); text-decoration: underline; font-weight: 800; display: block; margin-bottom: 10px;">
                             Belum punya akun Ranting? Daftar di sini
                         </a>
-                        <a href="#" onclick="recoverPasswordWA()" style="font-size: 12px; color: rgba(255,255,255,0.75); text-decoration: none; font-weight: 600; transition: color 0.3s;">
-                            Lupa Sandi? <span style="color: var(--nu-gold); font-weight: 800;">Pulihkan via WA</span>
+                        <a href="#" onclick="recoverPasswordEmail()" style="font-size: 12px; color: rgba(255,255,255,0.75); text-decoration: none; font-weight: 600; transition: color 0.3s;">
+                            Lupa Sandi? <span style="color: var(--nu-gold); font-weight: 800;">Pulihkan via Email Bawaan</span>
                         </a>
                     </div>
                 </form>
@@ -696,7 +696,8 @@
                 <button class="tab-btn" onclick="switchTab(event, 'v-histori')"><i class="fa-solid fa-book"></i> Buku Besar</button>
                 <button class="tab-btn" onclick="switchTab(event, 'v-arsip')"><i class="fa-solid fa-box-archive"></i> Riwayat Arsip</button>
                 
-                <div class="menu-section-label">Publikasi & Cetak</div>
+                <div class="menu-section-label">Media & Kampanye</div>
+                <button class="tab-btn" onclick="switchTab(event, 'v-konten')"><i class="fa-solid fa-photo-film"></i> Konten Sosialisasi</button>
                 <button class="tab-btn" onclick="switchTab(event, 'v-poster')"><i class="fa-solid fa-file-image"></i> Poster Laporan</button>
                 <button class="tab-btn" onclick="switchTab(event, 'v-laporan')"><i class="fa-solid fa-file-invoice"></i> Export PDF</button>
 
@@ -874,6 +875,19 @@
                         <div style="background: var(--bg-main); padding: 25px; border-radius: 20px; border: 1px solid var(--border-color);">
                             <h4 style="margin-bottom: 20px; text-align: center; font-weight: 800; font-size: 14px;">Distribusi Penyaluran Dana Program</h4>
                             <canvas id="chartPenyaluran" style="max-height: 260px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KONTEN SOSIALISASI (BARU) -->
+                <div id="v-konten" class="panel hidden">
+                    <div class="panel-header"><i class="fa-solid fa-photo-film"></i> Konten Sosialisasi Otomatis</div>
+                    <div style="background: var(--bg-main); padding: 25px; border-radius: 20px; border: 1px solid var(--border-color); margin-bottom: 25px;">
+                        <h4 style="margin-bottom: 15px; font-weight: 800; font-size: 14px;"><i class="fa-solid fa-calendar-week" style="color:var(--nu-gold-dark);"></i> Konten Minggu Ini (Berubah Otomatis)</h4>
+                        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">Gunakan materi di bawah ini untuk kampanye ZIS di grup WhatsApp atau media sosial ranting Anda.</p>
+                        
+                        <div class="grid-2-col" id="konten-mingguan-container">
+                            <!-- Injected by JS -->
                         </div>
                     </div>
                 </div>
@@ -1495,6 +1509,25 @@
             }
         };
 
+        // FUNGSI LUPA SANDI VIA EMAIL FIREBASE
+        window.recoverPasswordEmail = async function() {
+            const email = document.getElementById('l-user').value.trim();
+            if(!email) return showToast("Silakan ketik Email Anda di kolom Username terlebih dahulu, lalu klik tombol ini lagi.", "error");
+            
+            try {
+                showToast("Mengirim link pemulihan ke email Anda...", "info");
+                await window.authServices.sendPasswordResetEmail(window.auth, email);
+                showToast("Link pemulihan berhasil dikirim! Silakan cek Inbox/Spam email Anda.", "success");
+            } catch(e) {
+                console.error(e);
+                if(e.code === 'auth/user-not-found') {
+                    showToast("Email tersebut belum terdaftar di sistem kami.", "error");
+                } else {
+                    showToast("Gagal mengirim email pemulihan. Pastikan format email benar.", "error");
+                }
+            }
+        };
+
         function playSuccessSound() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1567,7 +1600,6 @@
             }, 3500);
         }
 
-        const ADMIN_WA = "628995697583";
         const formatRp = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
 
         document.getElementById('t-amount').addEventListener('input', function(e) {
@@ -1592,11 +1624,6 @@
             document.getElementById('storage-bar-fill').style.width = `${Math.max(percentage, 0.5)}%`;
         }
 
-        function recoverPasswordWA() {
-            const msg = `Halo Admin, saya lupa kata sandi untuk Sistem Bendahara UPZIS. Mohon bantuan reset kata sandi.`;
-            window.open(`https://api.whatsapp.com/send?phone=${ADMIN_WA}&text=${encodeURIComponent(msg)}`, '_blank');
-        }
-
         function updateClock() {
             const now = new Date();
             const timeOpts = { hour: '2-digit', minute: '2-digit' };
@@ -1612,14 +1639,14 @@
             if (!asalRanting || asalRanting.toLowerCase() === "karangdowo") {
                 return window.fs.collection(window.db, colName);
             }
-            return window.fs.collection(window.db, "ranting", asalRanting, colName);
+            return window.fs.collection(window.db, "ranting", asalRanting.toLowerCase(), colName);
         }
         
         function getDoc(colName, docId) {
             if (!asalRanting || asalRanting.toLowerCase() === "karangdowo") {
                 return window.fs.doc(window.db, colName, docId);
             }
-            return window.fs.doc(window.db, "ranting", asalRanting, colName, docId);
+            return window.fs.doc(window.db, "ranting", asalRanting.toLowerCase(), colName, docId);
         }
 
         let profileSettings = {
@@ -2085,21 +2112,32 @@
             window.authServices.onAuthStateChanged(window.auth, async (user) => {
                 if (user) {
                     try {
-                        const userDoc = await window.fs.getDoc(window.fs.doc(window.db, "users", user.uid));
+                        let userDoc = await window.fs.getDoc(window.fs.doc(window.db, "users", user.uid));
+                        
+                        // Menunggu (Jeda) jika akun baru saja didaftarkan agar data tidak nyasar
+                        if(!userDoc.exists() && localStorage.getItem('temp_ranting')) {
+                            await new Promise(r => setTimeout(r, 1500)); 
+                            userDoc = await window.fs.getDoc(window.fs.doc(window.db, "users", user.uid));
+                        }
+
                         if(userDoc.exists()) {
                             asalRanting = userDoc.data().ranting || "Karangdowo";
                             currentUserRole = userDoc.data().role || "bendahara";
+                            localStorage.removeItem('temp_ranting'); 
                         } else {
-                            asalRanting = "Karangdowo";
+                            // Trik Penyelamat: Jika email utama Akang, otomatis masuk ke Karangdowo
                             if (user.email === 'fendhigandis@gmail.com') {
+                                asalRanting = "Karangdowo";
                                 currentUserRole = 'bendahara';
                             } else {
-                                currentUserRole = 'ketua';
+                                // Pilihan Terakhir agar Ranting Baru tidak lari ke Karangdowo
+                                asalRanting = localStorage.getItem('temp_ranting') || "Karangdowo";
+                                currentUserRole = 'bendahara';
                             }
                         }
                     } catch(e) {
                         console.error("Gagal load profil", e);
-                        asalRanting = "Karangdowo";
+                        asalRanting = localStorage.getItem('temp_ranting') || "Karangdowo";
                         currentUserRole = 'bendahara';
                     }
                     
@@ -2136,8 +2174,10 @@
                 showToast(isRegisterMode ? "Mendaftarkan ranting ke server..." : "Memverifikasi kredensial ke server...", "info");
                 
                 if (isRegisterMode) {
-                    const { createUserWithEmailAndPassword } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
-                    const userCredential = await createUserWithEmailAndPassword(window.auth, email, pass);
+                    // Menyimpan Nama Ranting di Memori HP Sementara agar tidak nyasar ke Karangdowo
+                    localStorage.setItem('temp_ranting', rantingName);
+                    
+                    const userCredential = await window.authServices.createUserWithEmailAndPassword(window.auth, email, pass);
                     await window.fs.setDoc(window.fs.doc(window.db, "users", userCredential.user.uid), {
                         email: email,
                         ranting: rantingName,
@@ -2188,6 +2228,77 @@
             }
         }
 
+        // --- RUMUS KONTEN SOSIALISASI MINGGUAN (OTOMATIS 7 HARI) ---
+        function renderKontenMingguan() {
+            // Daftar gambar dan video (Dapat Akang sesuaikan sendiri link gambarnya)
+            const kontenList = [
+                {
+                    tipe: 'image',
+                    url: 'https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg',
+                    judul: 'Pentingnya Zakat Fitrah',
+                    teks: 'Mari tunaikan Zakat Fitrah melalui UPZIS terdekat untuk mensucikan jiwa dan berbagi kebahagiaan bagi sesama yang membutuhkan.'
+                },
+                {
+                    tipe: 'video', 
+                    url: 'https://www.w3schools.com/html/mov_bbb.mp4', // Link Video Pendek Contoh
+                    judul: 'Gerakan Infaq Subuh Berkah',
+                    teks: 'Awali harimu dengan bersedekah di waktu subuh. Sedekah subuh mendatangkan keberkahan luar biasa dan didoakan langsung oleh Malaikat.'
+                },
+                {
+                    tipe: 'image',
+                    url: 'https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg',
+                    judul: 'Beasiswa Pendidikan Santri',
+                    teks: 'Alhamdulillah, infaq dan shadaqah Anda telah disalurkan untuk pendidikan para santri dhuafa penghafal Qur\'an. Mari lanjutkan kebaikan ini!'
+                },
+                {
+                    tipe: 'image',
+                    url: 'https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg',
+                    judul: 'Zakat Mal Pembersih Harta',
+                    teks: 'Telah mencapai nisab satu tahun? Bersihkan harta Anda dengan menunaikan Zakat Mal 2.5% agar harta yang tersisa menjadi berkah.'
+                }
+            ];
+            
+            // Rumus Menghitung Siklus Minggu dari Tahun 1970
+            const weekIndex = Math.floor(Date.now() / (1000 * 60 * 60 * 24 * 7));
+            const currentKontenIndex = weekIndex % kontenList.length; // Otomatis berputar setelah habis
+            const kontenAktif = kontenList[currentKontenIndex];
+            
+            const container = document.getElementById('konten-mingguan-container');
+            if(!container) return;
+            
+            let mediaHtml = '';
+            if(kontenAktif.tipe === 'image') {
+                mediaHtml = `<img src="${kontenAktif.url}" alt="Konten" style="width:100%; height:220px; object-fit:contain; background:white; border-radius:12px; margin-bottom:15px; border:1px solid var(--border-color); box-shadow:var(--shadow-sm);">`;
+            } else {
+                mediaHtml = `<video controls style="width:100%; height:220px; background:black; border-radius:12px; margin-bottom:15px; box-shadow:var(--shadow-sm);"><source src="${kontenAktif.url}" type="video/mp4"></video>`;
+            }
+            
+            const waText = encodeURIComponent(`*${kontenAktif.judul}*\n\n${kontenAktif.teks}\n\nMari salurkan ZIS Anda melalui UPZIS Ranting ${asalRanting.toUpperCase()}.\n_Sistem Bendahara Terpadu_`);
+            
+            container.innerHTML = `
+                <div style="background: white; padding: 20px; border-radius: 16px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);">
+                    ${mediaHtml}
+                    <h3 style="font-size: 15px; font-weight: 800; color: var(--nu-green-dark); margin-bottom: 8px;">${kontenAktif.judul}</h3>
+                    <p style="font-size: 12px; color: var(--text-dark); line-height: 1.6; margin-bottom: 15px; font-weight: 500;">${kontenAktif.teks}</p>
+                    <div style="display:flex; gap:10px;">
+                        <a href="${kontenAktif.url}" download target="_blank" class="btn btn-outline" style="flex:1; padding:10px; font-size:12px; text-decoration:none; text-align:center;"><i class="fa-solid fa-download"></i> Unduh File</a>
+                        <a href="https://api.whatsapp.com/send?text=${waText}" target="_blank" class="btn btn-primary" style="flex:1; padding:10px; font-size:12px; background:var(--wa-color); border:none; text-decoration:none; text-align:center;"><i class="fa-brands fa-whatsapp"></i> Bagikan WA</a>
+                    </div>
+                </div>
+                <div style="display:flex; flex-direction:column; justify-content:center;">
+                    <div style="background:var(--nu-green-light); padding:20px; border-radius:16px; border:1px solid var(--nu-green);">
+                        <h4 style="color:var(--nu-green-dark); margin-bottom:12px; font-size:14px; font-weight:800;"><i class="fa-solid fa-lightbulb"></i> Tips Kampanye Cerdas</h4>
+                        <ul style="font-size:12px; color:var(--text-dark); padding-left:15px; line-height:1.8; font-weight:500;">
+                            <li>Klik tombol <b>Unduh File</b> untuk menyimpan gambar/video ke Galeri HP Anda.</li>
+                            <li>Tekan tombol <b>Bagikan WA</b> untuk menyalin teks ajakan kampanye secara otomatis ke aplikasi WhatsApp.</li>
+                            <li>Sangat cocok untuk dijadikan sebagai <i>Status / Story WhatsApp</i> secara rutin.</li>
+                            <li>Konten beserta kalimat ajakan di samping akan <b>berubah secara otomatis setiap 7 hari sekali</b> agar warga dan donatur tidak merasa bosan dengan gambar yang itu-itu saja!</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+        }
+
         function showApp() { 
             document.getElementById('auth-screen').classList.add('hidden'); 
             document.getElementById('app-screen').classList.remove('hidden'); 
@@ -2197,6 +2308,7 @@
             renderLogs();
             buildReport(); 
             buildPoster();
+            renderKontenMingguan(); // Memanggil fitur baru
             updateStorageIndicator();
             checkYearEnd();
         }
@@ -2214,6 +2326,7 @@
             if(tabId === 'v-poster') buildPoster();
             if(tabId === 'v-analitik') renderCharts();
             if(tabId === 'v-pengurus') renderBagan();
+            if(tabId === 'v-konten') renderKontenMingguan(); // Reload gambar jika tab diklik
         }
         
         function updateCategories() { 
