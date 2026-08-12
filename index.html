@@ -147,16 +147,47 @@
             border: 1px solid rgba(255,255,255,0.18);
             animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
+        
         .auth-header { padding: 40px 30px 15px; text-align: center; }
-        .auth-header img { 
-            height: 90px; width: 120px; object-fit: contain; margin-bottom: 15px; 
-            background: var(--glass-gradient); padding: 10px; border-radius: 18px; 
-            box-shadow: var(--shadow-gold); border: 2px solid var(--nu-gold);
+        
+        /* PENGATURAN LOGO PROFESIONAL DI LOGIN PAGE */
+        .auth-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .auth-logos img { 
+            height: 85px; 
+            width: 105px; 
+            object-fit: contain; 
+            background: var(--glass-gradient); 
+            padding: 10px; 
+            border-radius: 18px; 
+            box-shadow: var(--shadow-gold); 
+            border: 2px solid var(--nu-gold);
             animation: floatLogo 4s ease-in-out infinite;
         }
-        @keyframes floatLogo { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+        /* Efek melayang bergantian untuk logo kedua */
+        .auth-logos img:nth-child(3) {
+            animation-delay: 0.5s;
+        }
+        .logo-divider {
+            height: 60px;
+            width: 3px;
+            background: var(--gold-gradient);
+            border-radius: 4px;
+            opacity: 0.8;
+        }
+        @keyframes floatLogo { 
+            0%, 100% { transform: translateY(0); } 
+            50% { transform: translateY(-6px); } 
+        }
+
         .auth-header h2 { background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-family: 'Cinzel', serif; font-size: 22px; margin-bottom: 6px; font-weight: 800; line-height: 1.3;}
         .auth-header p { color: #cbd5e1; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; }
+        
         .auth-body { padding: 15px 30px 35px; }
         .auth-body label { color: #f8fafc; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
         .auth-body input[type="text"], .auth-body input[type="password"], .auth-body input[type="email"], .auth-body select { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 12px 16px; border-radius: 14px; width: 100%; font-size: 13px; margin-top: 6px; }
@@ -630,7 +661,18 @@
 
         <div class="auth-container">
             <div class="auth-header">
-                <img id="auth-logo" src="logo-nu.png" alt="NU Logo">
+                <!-- PENGATURAN GAMBAR LOGO PROFESIONAL (NU & LAZISNU) -->
+                <div class="auth-logos">
+                    <!-- Paste kode Base64 Logo NU Anda di dalam atribut src="" di bawah ini -->
+                    <img id="auth-logo-nu" src="logo-nu.png" alt="Logo NU">
+                    
+                    <!-- Garis Pemisah -->
+                    <div class="logo-divider"></div>
+                    
+                    <!-- Paste kode Base64 Logo LAZISNU Anda di dalam atribut src="" di bawah ini -->
+                    <img id="auth-logo-lazisnu" src="logo-lazisnu.png" alt="Logo LAZISNU" onerror="this.src='logo-nu.png'">
+                </div>
+                
                 <h2 style="font-size: 20px;">SISTEM BENDAHARA TERPADU<br>LAZISNU</h2>
                 <p style="margin-top:8px;">Otorisasi Keamanan UPZIS</p>
             </div>
@@ -2387,9 +2429,10 @@
             document.getElementById('bb-pdf-ttd-bendahara').innerText = currBendahara;
 
             document.getElementById('badge-username').innerText = profileSettings.username.toUpperCase();
-            ['nav-logo','preview-logo','pdf-logo','auth-logo','bb-pdf-logo','kui-logo', 'poster-logo'].forEach(id => { 
+            ['nav-logo','preview-logo','pdf-logo','auth-logo-nu','bb-pdf-logo','kui-logo', 'poster-logo'].forEach(id => { 
                 const el = document.getElementById(id); 
-                if(el) el.src = profileSettings.logoBase64; 
+                if(el && id !== 'auth-logo-nu') el.src = profileSettings.logoBase64; 
+                // auth-logo-nu is specifically handled in HTML now
             });
             renderAnggota();
             updateCategories();
