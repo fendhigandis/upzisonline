@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sistem Bendahara Premium - UPZIS RANTING KARANGDOWO</title>
+    <title>Sistem Bendahara Premium - LAZISNU</title>
     
     <!-- PWA Requirements -->
     <link rel="manifest" href="manifest.json">
@@ -734,7 +734,7 @@
                     </div>
                 </div>
                 <div class="nav-right-actions">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg" alt="Logo NU" style="height: 35px; margin-right: 8px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">
+                    <img id="navbar-logo" src="https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg" alt="Logo NU" style="height: 35px; margin-right: 8px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">
                     <button class="btn-logout" onclick="logout()" title="Keluar Sistem"><i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar</button>
                 </div>
             </div>
@@ -1175,7 +1175,10 @@
 
                 <!-- PENGURUS -->
                 <div id="v-pengurus" class="panel hidden">
-                    <div class="panel-header"><i class="fa-solid fa-building-user"></i> Profil Lembaga & Pengelolaan Anggota</div>
+                    <div class="panel-header" style="display:flex; justify-content:space-between; align-items:center;">
+                        <div><i class="fa-solid fa-building-user"></i> Profil Lembaga & Pengelolaan Anggota</div>
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg" alt="Logo NU Paten" style="height:45px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">
+                    </div>
                     
                     <div class="grid-2-col">
                         <div>
@@ -2311,6 +2314,9 @@
             renderKontenMingguan(); // Memanggil fitur baru
             updateStorageIndicator();
             checkYearEnd();
+            
+            // Redirect otomatis ke dashboard setiap berhasil masuk
+            switchTab(null, 'v-dashboard');
         }
         
         function switchTab(evt, tabId) { 
@@ -2399,9 +2405,10 @@
             document.getElementById('bb-pdf-ttd-bendahara').innerText = currBendahara;
 
             document.getElementById('badge-username').innerText = profileSettings.username.toUpperCase();
-            ['nav-logo','preview-logo','pdf-logo','auth-logo','bb-pdf-logo','kui-logo', 'poster-logo'].forEach(id => { 
+            ['nav-logo','navbar-logo','preview-logo','pdf-logo','auth-logo-nu','bb-pdf-logo','kui-logo', 'poster-logo'].forEach(id => { 
                 const el = document.getElementById(id); 
-                if(el) el.src = profileSettings.logoBase64; 
+                if(el && id !== 'auth-logo-nu') el.src = profileSettings.logoBase64; 
+                // auth-logo-nu is specifically handled in HTML now
             });
             renderAnggota();
             updateCategories();
@@ -2530,7 +2537,7 @@
                 `).join('');
                 html += `</div>`;
             }
-            document.getElementById('org-chart-container').innerHTML = html || '<div style="text-align:center; color:gray; font-size:12px;">Data kepengurusan belum lengkap.</div>';
+            document.getElementById('org-chart-container').innerHTML = html || '<div style="text-align:center; color:gray; font-size:12px;">Data kepengurusan belum lengkap. Silakan isi di menu Profil Lembaga.</div>';
         }
 
         function editTrx(idFirebase) {
