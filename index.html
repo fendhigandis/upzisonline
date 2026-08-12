@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sistem Bendahara Premium - UPZIS RANTING KARANGDOWO</title>
+    <title>Sistem Bendahara Premium - UPZIS RANTING</title>
     
     <!-- PWA Requirements -->
     <link rel="manifest" href="manifest.json">
@@ -24,7 +24,7 @@
             getFirestore, collection, addDoc, getDocs, doc, setDoc, deleteDoc, getDoc, updateDoc, query, orderBy, onSnapshot 
         } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
         import { 
-            getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged 
+            getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword, sendPasswordResetEmail
         } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
         const firebaseConfig = {
@@ -43,7 +43,7 @@
 
         window.db = db;
         window.auth = auth;
-        window.authServices = { signInWithEmailAndPassword, signOut, onAuthStateChanged };
+        window.authServices = { signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword, sendPasswordResetEmail };
         window.fs = { collection, addDoc, getDocs, doc, setDoc, deleteDoc, getDoc, updateDoc, query, orderBy, onSnapshot };
     </script>
 
@@ -616,7 +616,7 @@
     <div class="top-bar no-print" id="top-widget">
         <div class="top-bar-left">
             <i class="fa-solid fa-layer-group" style="color:var(--nu-gold);"></i> 
-            <span id="desktop-date">SISTEM BENDAHARA TERPADU - UPZIS RANTING KARANGDOWO</span>
+            <span id="desktop-date">SISTEM BENDAHARA TERPADU - UPZIS RANTING</span>
         </div>
         <div class="top-bar-right" id="realtime-clock"></div>
     </div>
@@ -636,6 +636,11 @@
             
             <div class="auth-body">
                 <form id="form-login" action="#" method="POST">
+                    
+                    <div class="form-group" id="group-ranting" style="display: none; margin-bottom: 16px;">
+                        <label>Nama Ranting (Khusus Pendaftar Baru)</label>
+                        <input type="text" id="l-ranting" placeholder="Contoh: Pedan, Cawas...">
+                    </div>
                     
                     <div class="form-group" style="margin-bottom: 16px;">
                         <label>Email Akses (Username)</label>
@@ -657,11 +662,14 @@
                         <label for="remember-me" style="color: #e2e8f0; font-size: 12px; font-weight: 600; text-transform: none; cursor: pointer;">Simpan Kata Sandi (Ingat Saya)</label>
                     </div>
 
-                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 14px;"><i class="fa-solid fa-right-to-bracket"></i> Akses Sistem Terpadu</button>
+                    <button type="submit" id="btn-auth-submit" class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 14px;"><i class="fa-solid fa-right-to-bracket"></i> Akses Sistem Terpadu</button>
                     
                     <div style="margin-top: 20px; text-align: center;">
-                        <a href="#" onclick="recoverPasswordWA()" style="font-size: 12px; color: rgba(255,255,255,0.75); text-decoration: none; font-weight: 600; transition: color 0.3s;">
-                            Lupa Sandi? <span style="color: var(--nu-gold); font-weight: 800;">Pulihkan via WA</span>
+                        <a href="#" onclick="toggleModeAuth(event)" id="link-toggle-auth" style="font-size: 13px; color: var(--nu-gold); text-decoration: underline; font-weight: 800; display: block; margin-bottom: 10px;">
+                            Belum punya akun Ranting? Daftar di sini
+                        </a>
+                        <a href="#" onclick="recoverPasswordEmail()" style="font-size: 12px; color: rgba(255,255,255,0.75); text-decoration: none; font-weight: 600; transition: color 0.3s; cursor: pointer;">
+                            Lupa Sandi? <span style="color: var(--nu-gold); font-weight: 800;">Pulihkan via Email Resmi</span>
                         </a>
                     </div>
                 </form>
@@ -676,8 +684,8 @@
             <div class="sidebar-header">
                 <img id="nav-logo" src="https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg" alt="Logo">
                 <div>
-                    <div class="sidebar-brand-title" id="nav-title">UPZIS Karangdowo</div>
-                    <div class="sidebar-brand-sub">Periode: <span id="nav-period">2024-2029</span></div>
+                    <div class="sidebar-brand-title" id="nav-title">UPZIS Ranting</div>
+                    <div class="sidebar-brand-sub">Periode: <span id="nav-period">-</span></div>
                 </div>
             </div>
 
@@ -688,7 +696,8 @@
                 <button class="tab-btn" onclick="switchTab(event, 'v-histori')"><i class="fa-solid fa-book"></i> Buku Besar</button>
                 <button class="tab-btn" onclick="switchTab(event, 'v-arsip')"><i class="fa-solid fa-box-archive"></i> Riwayat Arsip</button>
                 
-                <div class="menu-section-label">Publikasi & Cetak</div>
+                <div class="menu-section-label">Media & Kampanye</div>
+                <button class="tab-btn" onclick="switchTab(event, 'v-konten')"><i class="fa-solid fa-photo-film"></i> Konten Sosialisasi</button>
                 <button class="tab-btn" onclick="switchTab(event, 'v-poster')"><i class="fa-solid fa-file-image"></i> Poster Laporan</button>
                 <button class="tab-btn" onclick="switchTab(event, 'v-laporan')"><i class="fa-solid fa-file-invoice"></i> Export PDF</button>
 
@@ -725,6 +734,7 @@
                     </div>
                 </div>
                 <div class="nav-right-actions">
+                    <img id="navbar-logo" src="https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg" alt="Logo NU" style="height: 35px; margin-right: 8px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">
                     <button class="btn-logout" onclick="logout()" title="Keluar Sistem"><i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar</button>
                 </div>
             </div>
@@ -757,7 +767,7 @@
                         <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
                             <div class="storage-status-box">
                                 <div style="display: flex; flex-direction: column; gap: 3px;">
-                                    <span class="storage-text" id="storage-info-text">Storage: 2.4 MB / 1 GB</span>
+                                    <span class="storage-text" id="storage-info-text">Storage: 0.0 MB / 1 GB</span>
                                     <div class="storage-bar-bg">
                                         <div class="storage-bar-fill" id="storage-bar-fill" style="width: 0.2%;"></div>
                                     </div>
@@ -869,6 +879,19 @@
                     </div>
                 </div>
 
+                <!-- KONTEN SOSIALISASI HARIAN -->
+                <div id="v-konten" class="panel hidden">
+                    <div class="panel-header"><i class="fa-solid fa-photo-film"></i> Konten Sosialisasi Otomatis</div>
+                    <div style="background: var(--bg-main); padding: 25px; border-radius: 20px; border: 1px solid var(--border-color); margin-bottom: 25px;">
+                        <h4 style="margin-bottom: 15px; font-weight: 800; font-size: 14px;"><i class="fa-solid fa-calendar-day" style="color:var(--nu-gold-dark);"></i> Motivasi Hari Ini (Otomatis Diperbarui Tiap 24 Jam)</h4>
+                        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">Gunakan materi pengingat sedekah yang bersumber dari Al-Qur'an dan Hadis di bawah ini untuk WhatsApp/Media Sosial ranting Anda hari ini.</p>
+                        
+                        <div class="grid-2-col" id="konten-harian-container">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+                </div>
+
                 <!-- BUKU BESAR -->
                 <div id="v-histori" class="panel hidden">
                     <div class="panel-header" style="justify-content: space-between; flex-wrap: wrap; gap: 15px;">
@@ -966,7 +989,7 @@
                                 <div style="text-align:center; margin-bottom: 20px;">
                                     <img id="poster-logo" src="" alt="Logo" style="height:80px; background:white; padding:10px; border-radius:18px; margin-bottom:10px; box-shadow:var(--shadow-md);">
                                     <h2 style="font-family:'Cinzel', serif; font-size:24px; font-weight:800; margin:0; color:var(--nu-gold);">LAPORAN PENERIMAAN INFAK & SEDEKAH</h2>
-                                    <h3 id="poster-lembaga" style="font-size:16px; margin:6px 0 0 0; letter-spacing:1px; color:white;">UPZIS RANTING KARANGDOWO</h3>
+                                    <h3 id="poster-lembaga" style="font-size:16px; margin:6px 0 0 0; letter-spacing:1px; color:white;">UPZIS RANTING</h3>
                                     <p id="poster-periode-text" style="font-size:12px; font-weight:600; color:#e2e8f0; margin-top:6px;"></p>
                                 </div>
                                 
@@ -1010,14 +1033,14 @@
                         <div class="report-page" id="print-area">
                             <div>
                                 <div class="report-header">
-                                    <img id="pdf-logo" src="" alt="Logo">
+                                    <img id="pdf-logo" src="" alt="Logo UPZIS" style="width: 110px !important; height: 110px !important; object-fit: contain;">
                                     <div class="report-title-center">
                                         <h2>LAPORAN PENERIMAAN & PENYALURAN KAS</h2>
-                                        <h3 style="font-weight: bold; margin-top: 2px; font-size: 10pt;" id="pdf-nama-lembaga">UPZIS RANTING KARANGDOWO</h3>
-                                        <p style="margin: 1px 0 0 0; font-size: 8pt; font-weight: bold;">Masa Khidmat: <span id="pdf-masa-khidmat">2024-2029</span></p>
+                                        <h3 style="font-weight: bold; margin-top: 2px; font-size: 10pt;" id="pdf-nama-lembaga">UPZIS RANTING</h3>
+                                        <p style="margin: 1px 0 0 0; font-size: 8pt; font-weight: bold;">Masa Khidmat: <span id="pdf-masa-khidmat">-</span></p>
                                         <p id="lap-periode" style="margin: 1px 0 0 0; font-size: 7.5pt; font-style: italic;">Periode Pelaporan: -</p>
                                     </div>
-                                    <div style="width: 110px;"></div>
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg" alt="Logo NU" style="width: 90px !important; height: 90px !important; object-fit: contain;">
                                 </div>
 
                                 <div class="report-section-title">I. Rincian Penerimaan Dana</div>
@@ -1091,7 +1114,7 @@
                                     </div>
                                 </div>
                                 <div class="report-footer-note">
-                                    Sistem Keuangan Terpadu UPZIS Ranting Karangdowo &copy; 2026 | Dibuat dan Dikelola oleh <strong>Muhamad Efendhi, S. Ak</strong>
+                                    Sistem Keuangan Terpadu UPZIS Ranting &copy; 2026 | Dibuat secara profesional
                                 </div>
                             </div>
                         </div>
@@ -1152,7 +1175,10 @@
 
                 <!-- PENGURUS -->
                 <div id="v-pengurus" class="panel hidden">
-                    <div class="panel-header"><i class="fa-solid fa-building-user"></i> Profil Lembaga & Pengelolaan Anggota</div>
+                    <div class="panel-header" style="display:flex; justify-content:space-between; align-items:center;">
+                        <div><i class="fa-solid fa-building-user"></i> Profil Lembaga & Pengelolaan Anggota</div>
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg" alt="Logo NU Paten" style="height:45px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">
+                    </div>
                     
                     <div class="grid-2-col">
                         <div>
@@ -1331,15 +1357,16 @@
         <div style="background: white; border-radius: 20px; padding: 25px; max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto;">
             <div id="kuitansi-print-area" class="kuitansi-box">
                 <div class="kuitansi-header">
-                    <img id="kui-logo" src="" alt="Logo">
+                    <img id="kui-logo" src="" alt="Logo UPZIS" style="width: 80px !important; height: 80px !important; object-fit: contain; margin-right: 15px;">
                     <div style="flex:1;">
-                        <h3 style="margin:0; font-size: 14pt; color: var(--nu-green-dark);" id="kui-lembaga">UPZIS RANTING KARANGDOWO</h3>
+                        <h3 style="margin:0; font-size: 14pt; color: var(--nu-green-dark);" id="kui-lembaga">UPZIS RANTING</h3>
                         <p style="margin:0; font-size: 9pt;" id="kui-periode">Masa Khidmat: -</p>
                     </div>
-                    <div style="text-align: right;">
+                    <div style="text-align: right; margin-right: 15px;">
                         <h2 style="margin:0; font-size: 16pt; color: var(--nu-gold-dark); text-transform: uppercase;">KUITANSI</h2>
                         <small id="kui-no" style="font-size: 8pt; color: gray;">NO: -</small>
                     </div>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg" alt="Logo NU" style="width: 75px !important; height: 75px !important; object-fit: contain;">
                 </div>
                 <table style="width: 100%; border-collapse: collapse; font-size: 10pt; min-width: 0;">
                     <tr><td style="padding: 6px 0; width: 30%; font-weight: bold;">Telah Diterima / Disalurkan:</td><td id="kui-tipe" style="padding: 6px 0;">-</td></tr>
@@ -1350,7 +1377,7 @@
                 <div style="display: flex; justify-content: space-between; margin-top: 30px; text-align: center; font-size: 9pt;">
                     <div></div>
                     <div>
-                        <p id="kui-tgl">Karangdowo, -</p>
+                        <p id="kui-tgl">Tempat, -</p>
                         <p style="font-weight: bold; margin-top: 5px;">Bendahara</p>
                         <br><br><br>
                         <p style="font-weight: bold; text-decoration: underline;" id="kui-ttd">-</p>
@@ -1371,14 +1398,14 @@
     <div id="hidden-buku-besar-print" class="hidden">
         <div class="report-page" id="buku-besar-area" style="padding: 10mm;">
             <div class="report-header">
-                <img id="bb-pdf-logo" src="" alt="Logo">
+                <img id="bb-pdf-logo" src="" alt="Logo UPZIS" style="width: 110px !important; height: 110px !important; object-fit: contain;">
                 <div class="report-title-center">
                     <h2>BUKU BESAR MUTASI KAS</h2>
-                    <h3 style="font-weight: bold; margin-top: 2px; font-size: 10pt;" id="bb-pdf-nama-lembaga">UPZIS RANTING KARANGDOWO</h3>
-                    <p style="margin: 1px 0 0 0; font-size: 8pt; font-weight: bold;">Masa Khidmat: <span id="bb-pdf-masa-khidmat">2024-2029</span></p>
+                    <h3 style="font-weight: bold; margin-top: 2px; font-size: 10pt;" id="bb-pdf-nama-lembaga">UPZIS RANTING</h3>
+                    <p style="margin: 1px 0 0 0; font-size: 8pt; font-weight: bold;">Masa Khidmat: <span id="bb-pdf-masa-khidmat">-</span></p>
                     <p id="bb-lap-periode" style="margin: 1px 0 0 0; font-size: 7.5pt; font-style: italic;">Rincian Transaksi: -</p>
                 </div>
-                <div style="width: 110px;"></div>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg" alt="Logo NU" style="width: 90px !important; height: 90px !important; object-fit: contain;">
             </div>
 
             <table class="report-table" style="margin-top: 15px;">
@@ -1403,14 +1430,14 @@
                     <p style="text-decoration: underline; font-weight: bold;" id="bb-pdf-ttd-ketua">....................................</p>
                 </div>
                 <div class="sig-box">
-                    <p id="bb-lap-tanggal-cetak">Karangdowo, ..........................</p>
+                    <p id="bb-lap-tanggal-cetak">Tempat, ..........................</p>
                     <p style="font-weight: bold;">Bendahara</p>
                     <br><br><br>
                     <p style="text-decoration: underline; font-weight: bold;" id="bb-pdf-ttd-bendahara">....................................</p>
                 </div>
             </div>
             <div class="report-footer-note">
-                Sistem Keuangan Terpadu UPZIS Ranting Karangdowo &copy; <span id="copyright-year">2026</span> | Dibuat dan Dikelola oleh <strong>Muhamad Efendhi, S. Ak</strong>
+                Sistem Keuangan Terpadu UPZIS Ranting &copy; <span id="copyright-year">2026</span> | Dibuat secara profesional
             </div>
         </div>
     </div>
@@ -1419,6 +1446,9 @@
     <script>
         let isMusicPlaying = false;
         let warningInterval = null;
+
+        let asalRanting = ""; 
+        let isRegisterMode = false;
 
         function playWarningBeep() {
             try {
@@ -1461,6 +1491,44 @@
                 eyeIcon.className = 'fa-solid fa-eye';
             }
         }
+
+        window.toggleModeAuth = function(e) {
+            e.preventDefault();
+            isRegisterMode = !isRegisterMode;
+            const groupRanting = document.getElementById('group-ranting');
+            const btnSubmit = document.getElementById('btn-auth-submit');
+            const linkToggle = document.getElementById('link-toggle-auth');
+            
+            if(isRegisterMode) {
+                groupRanting.style.display = 'block';
+                btnSubmit.innerHTML = '<i class="fa-solid fa-user-plus"></i> Daftarkan Ranting Baru';
+                linkToggle.innerText = 'Sudah punya akun? Masuk di sini';
+                document.getElementById('l-ranting').required = true;
+            } else {
+                groupRanting.style.display = 'none';
+                btnSubmit.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Akses Sistem Terpadu';
+                linkToggle.innerText = 'Belum punya akun Ranting? Daftar di sini';
+                document.getElementById('l-ranting').required = false;
+            }
+        };
+
+        // FUNGSI LUPA SANDI PROFESIONAL
+        window.recoverPasswordEmail = async function() {
+            let email = document.getElementById('l-user').value.trim();
+            if(!email) {
+                email = prompt("MASUKKAN EMAIL PEMULIHAN:\nSilakan ketik alamat email Anda yang terdaftar pada sistem untuk menerima tautan (link) pengaturan ulang kata sandi.");
+                if(!email) return; 
+            }
+            
+            try {
+                showToast("Memproses permintaan pemulihan sandi...", "info");
+                await window.authServices.sendPasswordResetEmail(window.auth, email);
+                showToast("BERHASIL! Link pemulihan telah dikirim ke " + email + ". Silakan periksa Inbox/Spam email Anda.", "success");
+            } catch(e) {
+                console.error(e);
+                showToast("Gagal memulihkan sandi. Pastikan email tersebut valid dan sudah terdaftar.", "error");
+            }
+        };
 
         function playSuccessSound() {
             try {
@@ -1534,7 +1602,6 @@
             }, 3500);
         }
 
-        const ADMIN_WA = "628995697583";
         const formatRp = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
 
         document.getElementById('t-amount').addEventListener('input', function(e) {
@@ -1559,11 +1626,6 @@
             document.getElementById('storage-bar-fill').style.width = `${Math.max(percentage, 0.5)}%`;
         }
 
-        function recoverPasswordWA() {
-            const msg = `Halo Admin, saya lupa kata sandi untuk Sistem Bendahara UPZIS. Mohon bantuan reset kata sandi.`;
-            window.open(`https://api.whatsapp.com/send?phone=${ADMIN_WA}&text=${encodeURIComponent(msg)}`, '_blank');
-        }
-
         function updateClock() {
             const now = new Date();
             const timeOpts = { hour: '2-digit', minute: '2-digit' };
@@ -1574,17 +1636,31 @@
         }
         setInterval(updateClock, 1000); updateClock();
 
+        // FUNGSI JEMBATAN DATABASE MULTI-RANTING
+        function getCol(colName) {
+            if (!asalRanting || asalRanting.trim() === "") {
+                return window.fs.collection(window.db, colName); // Fallback to root (should not happen normally)
+            }
+            return window.fs.collection(window.db, "ranting", asalRanting.toLowerCase(), colName);
+        }
+        
+        function getDoc(colName, docId) {
+            if (!asalRanting || asalRanting.trim() === "") {
+                return window.fs.doc(window.db, colName, docId);
+            }
+            return window.fs.doc(window.db, "ranting", asalRanting.toLowerCase(), colName, docId);
+        }
+
         let profileSettings = {
-            lembaga: 'UPZIS Ranting Karangdowo', periode: '2024-2029', 
-            ketua: 'H. Fulan, S.Ag', bendahara: 'Muhamad Efendhi, S. Ak', 
+            lembaga: '', periode: '', 
+            ketua: '', bendahara: '', 
             username: 'bendahara', password: 'admin', 
-            relawan: ['Mustaqim', 'Ana / Jariyah', 'Fatimah', 'Novi', 'Yusuf', "Rofi'ah", 'Watik / Har / Bu Parno', 'Geger / Ujang'], 
+            relawan: [], 
             anggota: [],
             logoBase64: 'https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg',
             activeYear: new Date().getFullYear()
         };
 
-        // --- PENAMBAHAN MODUL ZAKAT ---
         function getDynamicCategories() {
             let inList = [
                 { code: '101', name: 'Saldo Awal Kas' },
@@ -1652,7 +1728,6 @@
         window.addEventListener('online', () => updateFirebaseIndicator(true));
         window.addEventListener('offline', () => updateFirebaseIndicator(false));
 
-        // --- PENAMBAHAN FITUR KALKULATOR AMIL ---
         function bukaKalkulatorAmil() {
             let totalInfaqZakat = 0;
             const currentMonth = new Date().toISOString().slice(0, 7);
@@ -1663,7 +1738,7 @@
                 }
             });
             
-            const hakAmil = totalInfaqZakat * 0.125; // 12.5% Default
+            const hakAmil = totalInfaqZakat * 0.125; 
             
             document.getElementById('amil-total').innerText = formatRp(totalInfaqZakat);
             document.getElementById('amil-hak').innerText = formatRp(hakAmil);
@@ -1683,7 +1758,6 @@
             }
         }
 
-        // --- PERBAIKAN LOGIKA TUTUP BUKU (SOFT-DELETE / ARSIP) ---
         async function wipeAllDataForNewYear(newYear) {
             const activeYear = profileSettings.activeYear || new Date().getFullYear();
             showToast(`Mengarsipkan data tahun ${activeYear} ke brankas permanen...`, "info");
@@ -1691,31 +1765,28 @@
             try {
                 const deletePromises = [];
                 
-                // Arsip Transaksi
-                const trxSnap = await window.fs.getDocs(window.fs.collection(window.db, "transactions"));
+                const trxSnap = await window.fs.getDocs(getCol("transactions"));
                 trxSnap.forEach(d => {
-                    deletePromises.push(window.fs.setDoc(window.fs.doc(window.db, `arsip_${activeYear}_transactions`, d.id), d.data()));
-                    deletePromises.push(window.fs.deleteDoc(window.fs.doc(window.db, "transactions", d.id)));
+                    deletePromises.push(window.fs.setDoc(getDoc(`arsip_${activeYear}_transactions`, d.id), d.data()));
+                    deletePromises.push(window.fs.deleteDoc(getDoc("transactions", d.id)));
                 });
                 
-                // Arsip Warga
-                const musSnap = await window.fs.getDocs(window.fs.collection(window.db, "mustahik"));
+                const musSnap = await window.fs.getDocs(getCol("mustahik"));
                 musSnap.forEach(d => {
-                    deletePromises.push(window.fs.setDoc(window.fs.doc(window.db, `arsip_${activeYear}_mustahik`, d.id), d.data()));
-                    deletePromises.push(window.fs.deleteDoc(window.fs.doc(window.db, "mustahik", d.id)));
+                    deletePromises.push(window.fs.setDoc(getDoc(`arsip_${activeYear}_mustahik`, d.id), d.data()));
+                    deletePromises.push(window.fs.deleteDoc(getDoc("mustahik", d.id)));
                 });
 
-                // Arsip Logs
-                const logSnap = await window.fs.getDocs(window.fs.collection(window.db, "logs"));
+                const logSnap = await window.fs.getDocs(getCol("logs"));
                 logSnap.forEach(d => {
-                    deletePromises.push(window.fs.setDoc(window.fs.doc(window.db, `arsip_${activeYear}_logs`, d.id), d.data()));
-                    deletePromises.push(window.fs.deleteDoc(window.fs.doc(window.db, "logs", d.id)));
+                    deletePromises.push(window.fs.setDoc(getDoc(`arsip_${activeYear}_logs`, d.id), d.data()));
+                    deletePromises.push(window.fs.deleteDoc(getDoc("logs", d.id)));
                 });
 
                 await Promise.all(deletePromises);
 
                 profileSettings.activeYear = newYear;
-                await window.fs.setDoc(window.fs.doc(window.db, "settings", "profile"), profileSettings);
+                await window.fs.setDoc(getDoc("settings", "profile"), profileSettings);
 
                 transactions = [];
                 dbMustahik = [];
@@ -1736,7 +1807,6 @@
             }
         }
 
-        // --- FUNGSI LOAD RIWAYAT ARSIP ---
         async function loadArsip() {
             const year = document.getElementById('input-arsip-year').value;
             if(!year) return showToast("Masukkan tahun arsip terlebih dahulu!", "error");
@@ -1746,7 +1816,7 @@
             tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">Memuat data dari server arsip...</td></tr>`;
             
             try {
-                const q = window.fs.query(window.fs.collection(window.db, `arsip_${year}_transactions`), window.fs.orderBy("date", "asc"));
+                const q = window.fs.query(getCol(`arsip_${year}_transactions`), window.fs.orderBy("date", "asc"));
                 const snap = await window.fs.getDocs(q);
                 
                 if(snap.empty) {
@@ -1787,7 +1857,7 @@
             
             if(!profileSettings.activeYear) {
                 profileSettings.activeYear = currentYear;
-                window.fs.setDoc(window.fs.doc(window.db, "settings", "profile"), profileSettings);
+                window.fs.setDoc(getDoc("settings", "profile"), profileSettings);
             }
 
             const warningBanner = document.getElementById('year-end-warning');
@@ -1814,14 +1884,14 @@
             const now = new Date();
             const logEntry = { time: now.toISOString(), user: currentUserRole, action: action, detail: detail };
             try {
-                const docRef = await window.fs.addDoc(window.fs.collection(window.db, "logs"), logEntry);
+                const docRef = await window.fs.addDoc(getCol("logs"), logEntry);
                 logEntry.idFirebase = docRef.id;
                 logsData.push(logEntry);
                 if(logsData.length > 500) {
                     logsData.sort((a,b) => new Date(a.time || 0) - new Date(b.time || 0));
                     const toDelete = logsData[0];
                     try {
-                        await window.fs.deleteDoc(window.fs.doc(window.db, "logs", toDelete.idFirebase));
+                        await window.fs.deleteDoc(getDoc("logs", toDelete.idFirebase));
                         logsData.shift(); 
                     } catch(e){}
                 }
@@ -1880,12 +1950,12 @@
                         if(confirm(`Ditemukan ${importedTrx.length} data transaksi dan ${importedWarga.length} data warga. Lakukan import dan timpa data saat ini?`)) {
                             showToast("Mengimpor data ke Cloud...", "info");
                             for(let t of importedTrx) {
-                                const docRef = await window.fs.addDoc(window.fs.collection(window.db, "transactions"), t);
+                                const docRef = await window.fs.addDoc(getCol("transactions"), t);
                                 t.idFirebase = docRef.id;
                                 transactions.push(t);
                             }
                             for(let w of importedWarga) {
-                                const docRef = await window.fs.addDoc(window.fs.collection(window.db, "mustahik"), w);
+                                const docRef = await window.fs.addDoc(getCol("mustahik"), w);
                                 w.idFirebase = docRef.id;
                                 dbMustahik.push(w);
                             }
@@ -1988,15 +2058,17 @@
                 if (!window.fs) throw new Error("Firebase SDK terblokir.");
                 showToast("Menghubungkan ke Saluran Real-Time Firebase...", "info");
 
-                window.fs.onSnapshot(window.fs.doc(window.db, "settings", "profile"), (docSnap) => {
+                window.fs.onSnapshot(getDoc("settings", "profile"), (docSnap) => {
                     if (docSnap.exists()) {
                         profileSettings = { ...profileSettings, ...docSnap.data() };
-                        initAnggota();
-                        applyProfileData();
+                    } else {
+                        profileSettings.lembaga = "UPZIS RANTING " + (asalRanting ? asalRanting.toUpperCase() : "");
                     }
+                    initAnggota();
+                    applyProfileData();
                 });
 
-                const qTrx = window.fs.query(window.fs.collection(window.db, "transactions"), window.fs.orderBy("date", "asc"));
+                const qTrx = window.fs.query(getCol("transactions"), window.fs.orderBy("date", "asc"));
                 window.fs.onSnapshot(qTrx, (snapshot) => {
                     transactions = [];
                     snapshot.forEach((docSnap) => { transactions.push({ idFirebase: docSnap.id, ...docSnap.data() }); });
@@ -2006,13 +2078,13 @@
                     updateStorageIndicator();
                 });
 
-                window.fs.onSnapshot(window.fs.collection(window.db, "mustahik"), (snapshot) => {
+                window.fs.onSnapshot(getCol("mustahik"), (snapshot) => {
                     dbMustahik = [];
                     snapshot.forEach((docSnap) => { dbMustahik.push({ idFirebase: docSnap.id, ...docSnap.data() }); });
                     renderMustahik();
                 });
 
-                const qLog = window.fs.query(window.fs.collection(window.db, "logs"), window.fs.orderBy("time", "asc"));
+                const qLog = window.fs.query(getCol("logs"), window.fs.orderBy("time", "asc"));
                 window.fs.onSnapshot(qLog, (snapshot) => {
                     logsData = [];
                     snapshot.forEach((docSnap) => { logsData.push({ idFirebase: docSnap.id, ...docSnap.data() }); });
@@ -2039,9 +2111,35 @@
                 document.getElementById('remember-me').checked = true;
             }
             
-            window.authServices.onAuthStateChanged(window.auth, (user) => {
+            window.authServices.onAuthStateChanged(window.auth, async (user) => {
                 if (user) {
-                    currentUserRole = sessionStorage.getItem('upzis_role') || 'bendahara';
+                    try {
+                        let userDoc = await window.fs.getDoc(window.fs.doc(window.db, "users", user.uid));
+                        
+                        if(!userDoc.exists() && localStorage.getItem('temp_ranting')) {
+                            await new Promise(r => setTimeout(r, 1500)); 
+                            userDoc = await window.fs.getDoc(window.fs.doc(window.db, "users", user.uid));
+                        }
+
+                        if(userDoc.exists()) {
+                            asalRanting = userDoc.data().ranting || "Default";
+                            currentUserRole = userDoc.data().role || "bendahara";
+                            localStorage.removeItem('temp_ranting'); 
+                        } else {
+                            asalRanting = localStorage.getItem('temp_ranting') || "Default";
+                            currentUserRole = 'bendahara';
+                        }
+                    } catch(e) {
+                        console.error("Gagal load profil", e);
+                        asalRanting = localStorage.getItem('temp_ranting') || "Default";
+                        currentUserRole = 'bendahara';
+                    }
+                    
+                    sessionStorage.setItem('upzis_role', currentUserRole);
+                    
+                    const dt = document.getElementById('desktop-date');
+                    if(dt) dt.innerText = "SISTEM BENDAHARA TERPADU - UPZIS RANTING " + asalRanting.toUpperCase();
+                    
                     showApp();
                     loadAllCloudData();
                 } else {
@@ -2059,24 +2157,29 @@
             e.preventDefault();
             const email = document.getElementById('l-user').value.trim().toLowerCase();
             const pass = document.getElementById('l-pass').value;
+            const rantingName = document.getElementById('l-ranting').value.trim();
             const remember = document.getElementById('remember-me').checked;
 
             try {
                 if (typeof window.authServices === 'undefined') {
-                    throw new Error("Sistem Firebase terblokir. Pastikan Anda menjalankan aplikasi ini melalui Live Server (http://).");
+                    throw new Error("Sistem Firebase terblokir.");
                 }
 
-                showToast("Memverifikasi kredensial ke server...", "info");
+                showToast(isRegisterMode ? "Mendaftarkan ranting ke server..." : "Memverifikasi kredensial ke server...", "info");
                 
-                await window.authServices.signInWithEmailAndPassword(window.auth, email, pass);
-                
-                let role = 'ketua'; 
-                if (email === 'fendhigandis@gmail.com') {
-                    role = 'bendahara';
+                if (isRegisterMode) {
+                    localStorage.setItem('temp_ranting', rantingName);
+                    
+                    const userCredential = await window.authServices.createUserWithEmailAndPassword(window.auth, email, pass);
+                    await window.fs.setDoc(window.fs.doc(window.db, "users", userCredential.user.uid), {
+                        email: email,
+                        ranting: rantingName,
+                        role: 'bendahara'
+                    });
+                    showToast("Pendaftaran Ranting Berhasil!", "success");
+                } else {
+                    await window.authServices.signInWithEmailAndPassword(window.auth, email, pass);
                 }
-                
-                currentUserRole = role;
-                sessionStorage.setItem('upzis_role', role);
                 
                 if(remember) {
                     localStorage.setItem('upzis_saved_user', email);
@@ -2086,15 +2189,14 @@
                     localStorage.removeItem('upzis_saved_pass');
                 }
                 
-                saveLog('LOGIN', `Berhasil masuk ke sistem sebagai ${role}`);
-                showToast("Berhasil masuk ke sistem!", "success");
-                
             } catch (error) {
                 console.error("Login gagal:", error);
                 let errorMsg = error.message || "Terjadi kesalahan saat menghubungi server.";
                 
                 if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
                     errorMsg = "Akses Ditolak! Email atau kata sandi Anda salah / belum didaftarkan.";
+                } else if (error.code === 'auth/email-already-in-use') {
+                    errorMsg = "Email ini sudah digunakan oleh ranting lain!";
                 } else if (error.code === 'auth/too-many-requests') {
                     errorMsg = "Sistem diblokir sementara karena terlalu banyak percobaan gagal.";
                 } else if (error.code === 'auth/invalid-email') {
@@ -2111,12 +2213,109 @@
             try {
                 await window.authServices.signOut(window.auth);
                 sessionStorage.removeItem('upzis_role');
+                
+                // BERSIHKAN SEMUA DATA LOKAL AGAR TIDAK MUNCUL DI RANTING LAIN SAAT LOGIN ULANG
+                transactions = [];
+                dbMustahik = [];
+                logsData = [];
+                profileSettings = {
+                    lembaga: '', periode: '', ketua: '', bendahara: '', username: 'bendahara', password: 'admin', relawan: [], anggota: [], logoBase64: 'https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg', activeYear: new Date().getFullYear()
+                };
+                asalRanting = "";
+                
                 if(warningInterval) clearInterval(warningInterval);
                 showToast("Berhasil keluar dari sistem.", "info");
             } catch (err) {
                 console.error("Gagal logout:", err);
                 showToast("Terjadi kesalahan saat proses logout.", "error");
             }
+        }
+
+        // --- RUMUS KONTEN SOSIALISASI HARIAN (OTOMATIS BERGANTI TIAP HARI) ---
+        function renderKontenHarian() {
+            const kontenList = [
+                {
+                    tipe: 'image',
+                    url: 'https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg',
+                    judul: 'Pahala Berlipat Ganda (Al-Baqarah: 261)',
+                    teks: 'Perumpamaan orang yang menginfakkan hartanya di jalan Allah seperti sebutir biji yang menumbuhkan tujuh tangkai, pada setiap tangkai ada seratus biji. Allah melipatgandakan bagi siapa yang Dia kehendaki.'
+                },
+                {
+                    tipe: 'image', 
+                    url: 'https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg',
+                    judul: 'Sedekah Tidak Mengurangi Harta (HR. Muslim)',
+                    teks: 'Rasulullah SAW bersabda: "Sedekah itu tidak akan mengurangi harta. Tidak ada orang yang memberi maaf kepada orang lain, melainkan Allah akan menambah kemuliaannya."'
+                },
+                {
+                    tipe: 'image',
+                    url: 'https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg',
+                    judul: 'Naungan di Hari Kiamat (HR. Ahmad)',
+                    teks: 'Sesungguhnya sedekah itu akan memadamkan panasnya kubur bagi pelakunya. Dan sungguh, seorang mukmin akan bernaung di bawah naungan sedekahnya pada hari kiamat.'
+                },
+                {
+                    tipe: 'image',
+                    url: 'https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg',
+                    judul: 'Penolak Bala dan Penyakit (HR. Thabrani)',
+                    teks: 'Obatilah orang-orang yang sakit di antara kalian dengan bersedekah. Sesungguhnya sedekah itu dapat meredam murka Allah dan menolak keburukan (bala).'
+                },
+                {
+                    tipe: 'image',
+                    url: 'https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg',
+                    judul: 'Jalan Menuju Surga (Ali \'Imran: 92)',
+                    teks: 'Kamu tidak akan memperoleh kebajikan (yang sempurna), sebelum kamu menginfakkan sebahagian harta yang kamu cintai. Dan apa pun yang kamu infakkan, tentang hal itu sungguh Allah Maha Mengetahui.'
+                },
+                {
+                    tipe: 'image',
+                    url: 'https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg',
+                    judul: 'Doa Malaikat di Pagi Hari (HR. Bukhari)',
+                    teks: 'Tidak ada suatu hari pun ketika seorang hamba melewati paginya kecuali turun dua malaikat. Salah satunya berdoa: "Ya Allah, berikanlah ganti bagi orang yang berinfak..."'
+                },
+                {
+                    tipe: 'image',
+                    url: 'https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg',
+                    judul: 'Menghapus Dosa (HR. Tirmidzi)',
+                    teks: 'Sedekah itu dapat menghapus dosa sebagaimana air memadamkan api.'
+                }
+            ];
+            
+            const dayIndex = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
+            const currentKontenIndex = dayIndex % kontenList.length; 
+            const kontenAktif = kontenList[currentKontenIndex];
+            
+            const container = document.getElementById('konten-harian-container');
+            if(!container) return;
+            
+            let mediaHtml = '';
+            if(kontenAktif.tipe === 'image') {
+                mediaHtml = `<img src="${kontenAktif.url}" alt="Konten" style="width:100%; height:220px; object-fit:contain; background:white; border-radius:12px; margin-bottom:15px; border:1px solid var(--border-color); box-shadow:var(--shadow-sm);">`;
+            } else {
+                mediaHtml = `<video controls style="width:100%; height:220px; background:black; border-radius:12px; margin-bottom:15px; box-shadow:var(--shadow-sm);"><source src="${kontenAktif.url}" type="video/mp4"></video>`;
+            }
+            
+            const waText = encodeURIComponent(`*${kontenAktif.judul}*\n\n${kontenAktif.teks}\n\nMari salurkan ZIS Anda melalui UPZIS Ranting ${asalRanting.toUpperCase()}.\n_Sistem Bendahara Terpadu_`);
+            
+            container.innerHTML = `
+                <div style="background: white; padding: 20px; border-radius: 16px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);">
+                    ${mediaHtml}
+                    <h3 style="font-size: 15px; font-weight: 800; color: var(--nu-green-dark); margin-bottom: 8px;">${kontenAktif.judul}</h3>
+                    <p style="font-size: 12px; color: var(--text-dark); line-height: 1.6; margin-bottom: 15px; font-weight: 500;">"${kontenAktif.teks}"</p>
+                    <div style="display:flex; gap:10px;">
+                        <a href="${kontenAktif.url}" download target="_blank" class="btn btn-outline" style="flex:1; padding:10px; font-size:12px; text-decoration:none; text-align:center;"><i class="fa-solid fa-download"></i> Unduh File</a>
+                        <a href="https://api.whatsapp.com/send?text=${waText}" target="_blank" class="btn btn-primary" style="flex:1; padding:10px; font-size:12px; background:var(--wa-color); border:none; text-decoration:none; text-align:center;"><i class="fa-brands fa-whatsapp"></i> Bagikan WA</a>
+                    </div>
+                </div>
+                <div style="display:flex; flex-direction:column; justify-content:center;">
+                    <div style="background:var(--nu-green-light); padding:20px; border-radius:16px; border:1px solid var(--nu-green);">
+                        <h4 style="color:var(--nu-green-dark); margin-bottom:12px; font-size:14px; font-weight:800;"><i class="fa-solid fa-lightbulb"></i> Tips Kampanye Cerdas</h4>
+                        <ul style="font-size:12px; color:var(--text-dark); padding-left:15px; line-height:1.8; font-weight:500;">
+                            <li>Klik tombol <b>Unduh File</b> untuk menyimpan gambar/video ke Galeri HP Anda.</li>
+                            <li>Tekan tombol <b>Bagikan WA</b> untuk menyalin teks ajakan kampanye secara otomatis ke aplikasi WhatsApp.</li>
+                            <li>Sangat cocok untuk dijadikan sebagai <i>Status / Story WhatsApp</i> secara rutin.</li>
+                            <li>Konten beserta kalimat ajakan akan <b>berubah otomatis setiap hari (24 Jam)</b> agar warga dan donatur selalu mendapatkan pengingat yang menyegarkan!</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
         }
 
         function showApp() { 
@@ -2128,8 +2327,12 @@
             renderLogs();
             buildReport(); 
             buildPoster();
+            renderKontenHarian();
             updateStorageIndicator();
             checkYearEnd();
+            
+            // Redirect otomatis ke dashboard setiap berhasil masuk
+            switchTab(null, 'v-dashboard');
         }
         
         function switchTab(evt, tabId) { 
@@ -2145,6 +2348,7 @@
             if(tabId === 'v-poster') buildPoster();
             if(tabId === 'v-analitik') renderCharts();
             if(tabId === 'v-pengurus') renderBagan();
+            if(tabId === 'v-konten') renderKontenHarian(); 
         }
         
         function updateCategories() { 
@@ -2158,7 +2362,7 @@
             if(currentUserRole !== 'bendahara') return alert("Akses terbatas untuk Bendahara!");
             if(document.getElementById('un-pass').value === profileSettings.password) { 
                 profileSettings.username = document.getElementById('un-new').value; 
-                await window.fs.setDoc(window.fs.doc(window.db, "settings", "profile"), profileSettings);
+                await window.fs.setDoc(getDoc("settings", "profile"), profileSettings);
                 saveLog('EDIT PROFIL', 'Username login diperbarui');
                 showToast("Username diubah! Silakan login ulang.", "success"); 
                 e.target.reset(); 
@@ -2171,7 +2375,7 @@
             if(currentUserRole !== 'bendahara') return alert("Akses terbatas untuk Bendahara!");
             if(document.getElementById('pw-old').value === profileSettings.password) { 
                 profileSettings.password = document.getElementById('pw-new').value; 
-                await window.fs.setDoc(window.fs.doc(window.db, "settings", "profile"), profileSettings);
+                await window.fs.setDoc(getDoc("settings", "profile"), profileSettings);
                 saveLog('EDIT PROFIL', 'Sandi keamanan diperbarui');
                 showToast("Sandi diperbarui di Cloud!", "success"); 
                 e.target.reset(); 
@@ -2180,26 +2384,25 @@
 
         function initAnggota() {
             if (!profileSettings.anggota || profileSettings.anggota.length === 0) {
-                profileSettings.anggota = [];
-                if(profileSettings.ketua) profileSettings.anggota.push({ id: Date.now()+1, nama: profileSettings.ketua, jabatan: 'Ketua' });
-                if(profileSettings.bendahara) profileSettings.anggota.push({ id: Date.now()+2, nama: profileSettings.bendahara, jabatan: 'Bendahara' });
-                if(profileSettings.relawan) {
-                    profileSettings.relawan.forEach((r, i) => {
-                        profileSettings.anggota.push({ id: Date.now()+3+i, nama: r, jabatan: 'Relawan' });
-                    });
-                }
+                profileSettings.anggota = []; // Sengaja dibuat kosong agar Ranting mengisi mandiri
             }
         }
 
         function applyProfileData() {
-            document.getElementById('p-lembaga').value = profileSettings.lembaga;
+            const defaultNama = "UPZIS RANTING " + (asalRanting ? asalRanting.toUpperCase() : "");
+            document.getElementById('p-lembaga').value = profileSettings.lembaga || defaultNama;
             document.getElementById('p-periode').value = profileSettings.periode;
-            document.getElementById('nav-title').innerText = profileSettings.lembaga; 
+            document.getElementById('nav-title').innerText = profileSettings.lembaga || defaultNama; 
             document.getElementById('nav-period').innerText = profileSettings.periode;
             
-            ['pdf-nama-lembaga','pdf-masa-khidmat','bb-pdf-nama-lembaga','bb-pdf-masa-khidmat'].forEach(k => { 
-                const el = document.getElementById(k); 
-                if(el) el.innerText = (k.includes('nama-lembaga')) ? profileSettings.lembaga.toUpperCase() : profileSettings.periode; 
+            ['pdf-nama-lembaga','bb-pdf-nama-lembaga','kui-lembaga', 'poster-lembaga'].forEach(id => { 
+                const el = document.getElementById(id); 
+                if(el) el.innerText = (profileSettings.lembaga || defaultNama).toUpperCase(); 
+            });
+
+            ['pdf-masa-khidmat','bb-pdf-masa-khidmat'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.innerText = profileSettings.periode;
             });
 
             const currKetua = profileSettings.anggota.find(a => (a.jabatan || '').toLowerCase().includes('ketua') && !(a.jabatan || '').toLowerCase().includes('wakil'))?.nama || profileSettings.ketua;
@@ -2211,7 +2414,7 @@
             document.getElementById('bb-pdf-ttd-bendahara').innerText = currBendahara;
 
             document.getElementById('badge-username').innerText = profileSettings.username.toUpperCase();
-            ['nav-logo','preview-logo','pdf-logo','auth-logo','bb-pdf-logo','kui-logo', 'poster-logo'].forEach(id => { 
+            ['nav-logo','navbar-logo','preview-logo','pdf-logo','auth-logo','bb-pdf-logo','kui-logo', 'poster-logo'].forEach(id => { 
                 const el = document.getElementById(id); 
                 if(el) el.src = profileSettings.logoBase64; 
             });
@@ -2228,7 +2431,7 @@
                 reader.onload = async function(evt) { 
                     profileSettings.logoBase64 = evt.target.result; 
                     document.getElementById('preview-logo').src = profileSettings.logoBase64; 
-                    await window.fs.setDoc(window.fs.doc(window.db, "settings", "profile"), profileSettings);
+                    await window.fs.setDoc(getDoc("settings", "profile"), profileSettings);
                     updateStorageIndicator();
                     saveLog('EDIT PROFIL', 'Logo lembaga diubah');
                     showToast("Logo berhasil disimpan ke Cloud.", "success");
@@ -2241,7 +2444,7 @@
             if(currentUserRole !== 'bendahara') return alert("Akses terbatas untuk Bendahara!");
             profileSettings.lembaga = document.getElementById(`p-lembaga`).value;
             profileSettings.periode = document.getElementById(`p-periode`).value; 
-            await window.fs.setDoc(window.fs.doc(window.db, "settings", "profile"), profileSettings);
+            await window.fs.setDoc(getDoc("settings", "profile"), profileSettings);
             applyProfileData(); 
             updateStorageIndicator();
             buildPoster();
@@ -2259,7 +2462,7 @@
                 syncCoreFromAnggota();
                 document.getElementById('input-anggota-nama').value = ''; 
                 document.getElementById('input-anggota-jabatan').value = '';
-                await window.fs.setDoc(window.fs.doc(window.db, "settings", "profile"), profileSettings);
+                await window.fs.setDoc(getDoc("settings", "profile"), profileSettings);
                 renderAnggota(); 
                 updateCategories();
                 updateStorageIndicator();
@@ -2275,7 +2478,7 @@
                 const trgt = profileSettings.anggota.find(a => a.id === id);
                 profileSettings.anggota = profileSettings.anggota.filter(a => a.id !== id); 
                 syncCoreFromAnggota();
-                await window.fs.setDoc(window.fs.doc(window.db, "settings", "profile"), profileSettings);
+                await window.fs.setDoc(getDoc("settings", "profile"), profileSettings);
                 renderAnggota(); 
                 updateCategories();
                 updateStorageIndicator();
@@ -2342,7 +2545,7 @@
                 `).join('');
                 html += `</div>`;
             }
-            document.getElementById('org-chart-container').innerHTML = html || '<div style="text-align:center; color:gray; font-size:12px;">Data kepengurusan belum lengkap.</div>';
+            document.getElementById('org-chart-container').innerHTML = html || '<div style="text-align:center; color:gray; font-size:12px;">Data kepengurusan belum lengkap. Silakan isi di menu Profil Lembaga.</div>';
         }
 
         function editTrx(idFirebase) {
@@ -2439,7 +2642,7 @@
                     if (editId) {
                         const updateData = { type: type, source: sourceInput, code: code, date: dateInput, amount: amountInput, desc: descInput };
                         if(proofBase64) updateData.proof = proofBase64;
-                        await window.fs.updateDoc(window.fs.doc(window.db, "transactions", editId), updateData);
+                        await window.fs.updateDoc(getDoc("transactions", editId), updateData);
                         const idx = transactions.findIndex(t => t.idFirebase === editId);
                         if(idx !== -1) transactions[idx] = { ...transactions[idx], ...updateData };
 
@@ -2449,7 +2652,7 @@
                         showToast("Data transaksi berhasil diperbarui!", "success");
                     } else {
                         const dt = { type: type, source: sourceInput, code: code, date: dateInput, amount: amountInput, desc: descInput, proof: proofBase64 };
-                        const docRef = await window.fs.addDoc(window.fs.collection(window.db, "transactions"), dt);
+                        const docRef = await window.fs.addDoc(getCol("transactions"), dt);
                         dt.idFirebase = docRef.id;
                         transactions.push(dt); 
                         document.getElementById('t-amount').value = ''; 
@@ -2473,7 +2676,7 @@
             if(currentUserRole !== 'bendahara') return alert("Akses terbatas untuk Bendahara!");
             if(confirm('Hapus transaksi ini secara permanen dari Cloud?')) { 
                 try {
-                    await window.fs.deleteDoc(window.fs.doc(window.db, "transactions", idFirebase));
+                    await window.fs.deleteDoc(getDoc("transactions", idFirebase));
                     transactions = transactions.filter(t => t.idFirebase !== idFirebase); 
                     refreshUI(); buildReport(); buildPoster(); updateStorageIndicator();
                     saveLog('HAPUS TRANSAKSI', `Menghapus transaksi ID ${idFirebase}`);
@@ -2611,7 +2814,6 @@
             let periodText = "Seluruh Periode";
             if(start && end) periodText = `Periode: ${formatTanggalIndo(start)} s/d ${formatTanggalIndo(end)}`;
             document.getElementById('poster-periode-text').innerText = periodText;
-            document.getElementById('poster-lembaga').innerText = profileSettings.lembaga.toUpperCase();
 
             let breakdownHtml = '';
             let chartLabels = [];
@@ -2760,26 +2962,22 @@
             const allCats = [...cats.in, ...cats.out];
             const catObj = allCats.find(c => c.code === trx.code);
 
-            document.getElementById('kui-logo').src = profileSettings.logoBase64;
-            document.getElementById('kui-lembaga').innerText = profileSettings.lembaga.toUpperCase();
-            document.getElementById('kui-periode').innerText = `Masa Khidmat: ${profileSettings.periode}`;
             document.getElementById('kui-no').innerText = `NO: KUI/${trx.idFirebase.slice(0, 8)}`;
             document.getElementById('kui-tipe').innerText = trx.type === 'in' ? 'PEMASUKAN (DONASI / SETORAN)' : 'PENYALURAN (BANTUAN / OPERASIONAL)';
             document.getElementById('kui-nominal').innerText = formatRp(trx.amount);
             document.getElementById('kui-ket').innerText = `[${trx.code} - ${catObj ? catObj.name : ''}] ${trx.desc || '-'}`;
             document.getElementById('kui-sumber').innerText = trx.source;
             document.getElementById('kui-tgl').innerText = `Karangdowo, ${formatTanggalIndo(trx.date)}`;
-            document.getElementById('kui-ttd').innerText = profileSettings.anggota.find(a => (a.jabatan || '').toLowerCase().includes('bendahara'))?.nama || profileSettings.bendahara;
+            
             document.getElementById('modal-kuitansi').classList.remove('hidden');
         }
 
         function closeKuitansi() { document.getElementById('modal-kuitansi').classList.add('hidden'); }
         function cetakKuitansiPDF() {
             const element = document.getElementById('kuitansi-print-area');
-            html2pdf().set({ margin: 10, filename: `Kuitansi_LAZISNU_${Date.now()}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a5', orientation: 'landscape' } }).from(element).save();
+            html2pdf().set({ margin: 10, filename: `Kuitansi_LAZISNU_${Date.now()}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a5', orientation: 'landscape' } }).from(element).save();
         }
 
-        // --- PENAMBAHAN FITUR KIRIM WA ---
         function kirimKuitansiWA() {
             const nominal = document.getElementById('kui-nominal').innerText;
             const ket = document.getElementById('kui-ket').innerText;
@@ -2847,7 +3045,7 @@
             const m = { nama: document.getElementById('m-nama').value, nik: document.getElementById('m-nik').value || '-', kategori: document.getElementById('m-kategori').value, hp: document.getElementById('m-hp').value || '-', alamat: document.getElementById('m-alamat').value || '-' };
             try {
                 showToast("Menyimpan ke Cloud...", "info");
-                const docRef = await window.fs.addDoc(window.fs.collection(window.db, "mustahik"), m);
+                const docRef = await window.fs.addDoc(getCol("mustahik"), m);
                 m.idFirebase = docRef.id;
                 dbMustahik.push(m); 
                 e.target.reset(); 
@@ -2865,7 +3063,7 @@
             if(currentUserRole !== 'bendahara') return alert("Akses terbatas untuk Bendahara!");
             if(confirm('Hapus data warga ini dari Cloud?')) { 
                 try {
-                    await window.fs.deleteDoc(window.fs.doc(window.db, "mustahik", idFirebase));
+                    await window.fs.deleteDoc(getDoc("mustahik", idFirebase));
                     dbMustahik = dbMustahik.filter(m => m.idFirebase !== idFirebase); 
                     renderMustahik(); updateStorageIndicator();
                     saveLog('HAPUS WARGA', `Menghapus data mustahik ID ${idFirebase}`);
@@ -2893,7 +3091,7 @@
             const monthDateObj = new Date(yearVal, monthVal, 1);
 
             document.getElementById('lap-periode').innerText = `Bulan Pelaporan: ${monthDateObj.toLocaleString('id-ID', { month: 'long', year: 'numeric' })}`;
-            document.getElementById('lap-tanggal-cetak').innerText = `Karangdowo, ${formatTanggalIndo(new Date().toISOString().slice(0, 10))}`;
+            document.getElementById('lap-tanggal-cetak').innerText = `Tempat, ${formatTanggalIndo(new Date().toISOString().slice(0, 10))}`;
             
             const cats = getDynamicCategories();
             let sums = { in: {}, out: {} }, fMasuk = 0, fKeluar = 0, saldoAwalBulan = 0, saldoTunai = 0, saldoBank = 0;
