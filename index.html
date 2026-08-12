@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sistem Bendahara Premium - UPZIS RANTING KARANGDOWO</title>
+    <title>Sistem Bendahara Premium - UPZIS RANTING</title>
     
     <!-- PWA Requirements -->
     <link rel="manifest" href="manifest.json">
@@ -616,7 +616,7 @@
     <div class="top-bar no-print" id="top-widget">
         <div class="top-bar-left">
             <i class="fa-solid fa-layer-group" style="color:var(--nu-gold);"></i> 
-            <span id="desktop-date">SISTEM BENDAHARA TERPADU - UPZIS RANTING KARANGDOWO</span>
+            <span id="desktop-date">SISTEM BENDAHARA TERPADU - UPZIS RANTING</span>
         </div>
         <div class="top-bar-right" id="realtime-clock"></div>
     </div>
@@ -881,10 +881,10 @@
 
                 <!-- KONTEN SOSIALISASI HARIAN -->
                 <div id="v-konten" class="panel hidden">
-                    <div class="panel-header"><i class="fa-solid fa-photo-film"></i> Konten Sosialisasi Otomatis</div>
+                    <div class="panel-header"><i class="fa-solid fa-video"></i> Studio Konten Video & Sosialisasi</div>
                     <div style="background: var(--bg-main); padding: 25px; border-radius: 20px; border: 1px solid var(--border-color); margin-bottom: 25px;">
-                        <h4 style="margin-bottom: 15px; font-weight: 800; font-size: 14px;"><i class="fa-solid fa-calendar-day" style="color:var(--nu-gold-dark);"></i> Motivasi Hari Ini (Otomatis Diperbarui Tiap 24 Jam)</h4>
-                        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">Gunakan materi pengingat sedekah yang bersumber dari Al-Qur'an dan Hadis di bawah ini untuk WhatsApp/Media Sosial ranting Anda hari ini.</p>
+                        <h4 style="margin-bottom: 15px; font-weight: 800; font-size: 14px;"><i class="fa-solid fa-clapperboard" style="color:var(--nu-gold-dark);"></i> Render Video Edukasi & Ajakan Sedekah (Diperbarui per 24 Jam)</h4>
+                        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">Sistem menggabungkan Al-Qur'an/Hadis dengan Animasi Logo secara otomatis untuk Anda bagikan ke WhatsApp/Media Sosial.</p>
                         
                         <div class="grid-2-col" id="konten-harian-container">
                             <!-- Injected by JS -->
@@ -1107,14 +1107,14 @@
                                         <p style="text-decoration: underline; font-weight: bold;" id="pdf-ttd-ketua">....................................</p>
                                     </div>
                                     <div class="sig-box">
-                                        <p id="lap-tanggal-cetak">Tempat, ..........................</p>
+                                        <p id="lap-tanggal-cetak">Karangdowo, ..........................</p>
                                         <p style="font-weight: bold;">Bendahara</p>
                                         <br><br><br>
                                         <p style="text-decoration: underline; font-weight: bold;" id="pdf-ttd-bendahara">....................................</p>
                                     </div>
                                 </div>
                                 <div class="report-footer-note">
-                                    Sistem Keuangan Terpadu UPZIS Ranting &copy; 2026 | Dibuat secara profesional
+                                    Sistem Keuangan Terpadu UPZIS Ranting &copy; <span id="copyright-year">2026</span> | Dibuat secara profesional
                                 </div>
                             </div>
                         </div>
@@ -1447,8 +1447,44 @@
         let isMusicPlaying = false;
         let warningInterval = null;
 
-        let asalRanting = "Karangdowo"; 
+        let asalRanting = ""; 
         let isRegisterMode = false;
+        window.activeKontenText = null;
+
+        // Polyfill untuk fungsi Gambar Kotak Tumpul di Canvas (roundRect) bagi browser lawas
+        if (!CanvasRenderingContext2D.prototype.roundRect) {
+            CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
+                if (w < 2 * r) r = w / 2;
+                if (h < 2 * r) r = h / 2;
+                this.beginPath();
+                this.moveTo(x+r, y);
+                this.arcTo(x+w, y,   x+w, y+h, r);
+                this.arcTo(x+w, y+h, x,   y+h, r);
+                this.arcTo(x,   y+h, x,   y,   r);
+                this.arcTo(x,   y,   x+w, y,   r);
+                this.closePath();
+                return this;
+            }
+        }
+
+        // Rumus Membungkus Teks di dalam Canvas (Word Wrap)
+        function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+            var words = text.split(' ');
+            var line = '';
+            for(var n = 0; n < words.length; n++) {
+                var testLine = line + words[n] + ' ';
+                var metrics = ctx.measureText(testLine);
+                var testWidth = metrics.width;
+                if (testWidth > maxWidth && n > 0) {
+                    ctx.fillText(line, x, y);
+                    line = words[n] + ' ';
+                    y += lineHeight;
+                } else {
+                    line = testLine;
+                }
+            }
+            ctx.fillText(line, x, y);
+        }
 
         function playWarningBeep() {
             try {
@@ -1512,7 +1548,6 @@
             }
         };
 
-        // FUNGSI LUPA SANDI PROFESIONAL
         window.recoverPasswordEmail = async function() {
             let email = document.getElementById('l-user').value.trim();
             if(!email) {
@@ -1636,22 +1671,21 @@
         }
         setInterval(updateClock, 1000); updateClock();
 
-        // FUNGSI JEMBATAN DATABASE MULTI-RANTING
         function getCol(colName) {
-            if (!asalRanting || asalRanting.trim() === "") {
+            if (!asalRanting || asalRanting.toLowerCase() === "karangdowo") {
                 return window.fs.collection(window.db, colName); 
             }
             return window.fs.collection(window.db, "ranting", asalRanting.toLowerCase(), colName);
         }
         
         function getDoc(colName, docId) {
-            if (!asalRanting || asalRanting.trim() === "") {
+            if (!asalRanting || asalRanting.toLowerCase() === "karangdowo") {
                 return window.fs.doc(window.db, colName, docId);
             }
             return window.fs.doc(window.db, "ranting", asalRanting.toLowerCase(), colName, docId);
         }
 
-        // KEMBALIKAN DEFAULT DATA KARANGDOWO
+        // DEFAULT PROFIL (HANYA UNTUK RANTING KARANGDOWO, RANTING LAIN AKAN KOSONG/BERSIH SAAT DAFTAR)
         let profileSettings = {
             lembaga: 'UPZIS Ranting Karangdowo', periode: '2024-2029', 
             ketua: 'H. Fulan, S.Ag', bendahara: 'Muhamad Efendhi, S. Ak', 
@@ -2063,7 +2097,13 @@
                     if (docSnap.exists()) {
                         profileSettings = { ...profileSettings, ...docSnap.data() };
                     } else {
-                        profileSettings.lembaga = "UPZIS RANTING " + (asalRanting ? asalRanting.toUpperCase() : "");
+                        if (asalRanting.toLowerCase() !== 'karangdowo') {
+                            profileSettings.lembaga = "UPZIS RANTING " + (asalRanting ? asalRanting.toUpperCase() : "");
+                            profileSettings.ketua = '';
+                            profileSettings.bendahara = '';
+                            profileSettings.relawan = [];
+                            profileSettings.anggota = [];
+                        }
                     }
                     initAnggota();
                     applyProfileData();
@@ -2220,258 +2260,230 @@
                 await window.authServices.signOut(window.auth);
                 sessionStorage.removeItem('upzis_role');
                 
-                // BERSIHKAN DATA LOKAL SAAT LOGOUT (UNTUK KEAMANAN MULTI-RANTING)
+                // MENGHAPUS SEMUA DATA CACHE / MEMORI LOKAL SECARA BERSIH
                 transactions = [];
                 dbMustahik = [];
                 logsData = [];
+                profileSettings = {
+                    lembaga: '', periode: '', ketua: '', bendahara: '', username: 'bendahara', password: 'admin', relawan: [], anggota: [], logoBase64: 'https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg', activeYear: new Date().getFullYear()
+                };
                 asalRanting = "";
                 
                 if(warningInterval) clearInterval(warningInterval);
-                showToast("Berhasil keluar dari sistem.", "info");
+                
+                // OTOMATIS REDIRECT DAN SEMBUNYIKAN APLIKASI
+                document.getElementById('app-screen').classList.add('hidden');
+                document.getElementById('auth-screen').classList.remove('hidden');
+                
+                showToast("Berhasil keluar dan membersihkan sesi.", "info");
             } catch (err) {
                 console.error("Gagal logout:", err);
                 showToast("Terjadi kesalahan saat proses logout.", "error");
             }
         }
 
-        // --- FUNGSI GENERATOR VIDEO KONTEN OTOMATIS ---
-        window.unduhVideoKampanye = async function(judul, teks) {
-            const btn = document.getElementById('btn-download-video');
-            if(btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Merender Video...';
-            
-            showToast("Sedang merender video kampanye. Mohon tunggu beberapa detik...", "info");
-            
-            const canvas = document.createElement('canvas');
-            canvas.width = 1080;
-            canvas.height = 1920; 
-            const ctx = canvas.getContext('2d');
-            
-            const stream = canvas.captureStream(30);
-            
-            let mime = 'video/webm; codecs=vp9';
-            if (!MediaRecorder.isTypeSupported(mime)) {
-                mime = 'video/webm';
-            }
-            
-            const recorder = new MediaRecorder(stream, { mimeType: mime });
-            const chunks = [];
-            recorder.ondataavailable = e => chunks.push(e.data);
-            recorder.onstop = () => {
-                const blob = new Blob(chunks, { type: mime });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `Video_Kampanye_${asalRanting}_${Date.now()}.webm`;
-                a.click();
-                URL.revokeObjectURL(url);
-                showToast("Video berhasil diunduh! Silakan bagikan ke Status WhatsApp atau Media Sosial.", "success");
-                if(btn) btn.innerHTML = '<i class="fa-solid fa-video"></i> Unduh Video Animasi (WebM)';
-            };
-            
-            recorder.start();
-            const duration = 5000; 
-            const start = Date.now();
-            
-            const logoImg = new Image();
-            logoImg.crossOrigin = "Anonymous";
-            logoImg.src = profileSettings.logoBase64;
-            await new Promise(r => {
-                logoImg.onload = r;
-                logoImg.onerror = r;
-            });
-
-            function drawFrame() {
-                const now = Date.now();
-                const elapsed = now - start;
-                const progress = Math.min(elapsed / duration, 1);
-                
-                const grad = ctx.createLinearGradient(0, 0, 1080, 1920);
-                grad.addColorStop(0, '#012a14');
-                grad.addColorStop(1, '#005a2b');
-                ctx.fillStyle = grad;
-                ctx.fillRect(0, 0, 1080, 1920);
-                
-                ctx.fillStyle = 'rgba(212, 175, 55, 0.1)';
-                ctx.beginPath();
-                ctx.arc(540, 960 + Math.sin(progress * Math.PI * 4) * 50, 400, 0, Math.PI * 2);
-                ctx.fill();
-
-                ctx.globalAlpha = Math.min(progress * 3, 1);
-                if (logoImg.complete && logoImg.naturalWidth > 0) {
-                    ctx.fillStyle = '#ffffff';
-                    ctx.beginPath();
-                    if(ctx.roundRect) ctx.roundRect(80, 80, 150, 150, 25);
-                    else ctx.rect(80, 80, 150, 150);
-                    ctx.fill();
-                    ctx.drawImage(logoImg, 95, 95, 120, 120);
-                }
-                
-                ctx.fillStyle = '#d4af37';
-                ctx.font = 'bold 40px "Plus Jakarta Sans", sans-serif';
-                ctx.fillText("LAZISNU RANTING", 260, 140);
-                ctx.fillStyle = '#ffffff';
-                ctx.font = 'bold 50px "Plus Jakarta Sans", sans-serif';
-                ctx.fillText((asalRanting || "KARANGDOWO").toUpperCase(), 260, 200);
-
-                ctx.fillStyle = '#fbf5e5';
-                ctx.font = 'bold 70px "Cinzel", serif';
-                wrapText(ctx, judul, 80, 600, 920, 90);
-                
-                ctx.fillStyle = '#e2e8f0';
-                ctx.font = '45px "Plus Jakarta Sans", sans-serif';
-                wrapText(ctx, `"${teks}"`, 80, 900, 920, 65);
-
-                ctx.fillStyle = 'rgba(255,255,255,0.5)';
-                ctx.font = '30px "Plus Jakarta Sans", sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText("Sistem Bendahara Terpadu UPZIS", 540, 1800);
-                ctx.textAlign = 'left';
-
-                if (elapsed < duration) {
-                    requestAnimationFrame(drawFrame);
-                } else {
-                    recorder.stop();
-                }
-            }
-            drawFrame();
-        };
-
-        window.unduhGambarKampanye = async function(judul, teks) {
-            showToast("Merender gambar... Mohon tunggu...", "info");
-            const canvas = document.createElement('canvas');
-            canvas.width = 1080; canvas.height = 1920; 
-            const ctx = canvas.getContext('2d');
-            
-            const logoImg = new Image();
-            logoImg.crossOrigin = "Anonymous";
-            logoImg.src = profileSettings.logoBase64;
-            await new Promise(r => { logoImg.onload = r; logoImg.onerror = r; });
-
-            const grad = ctx.createLinearGradient(0, 0, 1080, 1920);
-            grad.addColorStop(0, '#012a14'); grad.addColorStop(1, '#005a2b');
-            ctx.fillStyle = grad; ctx.fillRect(0, 0, 1080, 1920);
-            
-            ctx.fillStyle = 'rgba(212, 175, 55, 0.1)';
-            ctx.beginPath(); ctx.arc(540, 960, 400, 0, Math.PI * 2); ctx.fill();
-
-            if (logoImg.complete && logoImg.naturalWidth > 0) {
-                ctx.fillStyle = '#ffffff'; ctx.beginPath();
-                if(ctx.roundRect) ctx.roundRect(80, 80, 150, 150, 25); else ctx.rect(80, 80, 150, 150);
-                ctx.fill(); ctx.drawImage(logoImg, 95, 95, 120, 120);
-            }
-            
-            ctx.fillStyle = '#d4af37'; ctx.font = 'bold 40px "Plus Jakarta Sans", sans-serif'; ctx.fillText("LAZISNU RANTING", 260, 140);
-            ctx.fillStyle = '#ffffff'; ctx.font = 'bold 50px "Plus Jakarta Sans", sans-serif'; ctx.fillText((asalRanting || "KARANGDOWO").toUpperCase(), 260, 200);
-
-            ctx.fillStyle = '#fbf5e5'; ctx.font = 'bold 70px "Cinzel", serif'; wrapText(ctx, judul, 80, 600, 920, 90);
-            ctx.fillStyle = '#e2e8f0'; ctx.font = '45px "Plus Jakarta Sans", sans-serif'; wrapText(ctx, `"${teks}"`, 80, 900, 920, 65);
-
-            ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.font = '30px "Plus Jakarta Sans", sans-serif'; ctx.textAlign = 'center'; ctx.fillText("Sistem Bendahara Terpadu UPZIS", 540, 1800);
-            
-            const url = canvas.toDataURL('image/jpeg', 0.9);
-            const a = document.createElement('a');
-            a.href = url; a.download = `Kampanye_${asalRanting}_${Date.now()}.jpg`; a.click();
-            showToast("Gambar kampanye berhasil diunduh!", "success");
-        };
-
-        function wrapText(context, text, x, y, maxWidth, lineHeight) {
-            const words = text.split(' ');
-            let line = '';
-            for(let n = 0; n < words.length; n++) {
-              const testLine = line + words[n] + ' ';
-              const metrics = context.measureText(testLine);
-              const testWidth = metrics.width;
-              if (testWidth > maxWidth && n > 0) {
-                context.fillText(line, x, y);
-                line = words[n] + ' ';
-                y += lineHeight;
-              } else {
-                line = testLine;
-              }
-            }
-            context.fillText(line, x, y);
-        }
-
-        // --- RUMUS KONTEN SOSIALISASI HARIAN ---
+        // --- SISTEM GENERATOR VIDEO KONTEN SOSIALISASI ---
         function renderKontenHarian() {
             const kontenList = [
                 {
-                    judul: 'Pahala Berlipat Ganda (Al-Baqarah: 261)',
-                    teks: 'Perumpamaan orang yang menginfakkan hartanya di jalan Allah seperti sebutir biji yang menumbuhkan tujuh tangkai, pada setiap tangkai ada seratus biji. Allah melipatgandakan bagi siapa yang Dia kehendaki.'
+                    judul: "Pahala Berlipat Ganda",
+                    teks: "Perumpamaan orang yang menginfakkan hartanya di jalan Allah seperti sebutir biji yang menumbuhkan tujuh tangkai, pada setiap tangkai ada seratus biji. (Al-Baqarah: 261)"
                 },
                 {
-                    judul: 'Sedekah Tidak Mengurangi Harta (HR. Muslim)',
-                    teks: 'Rasulullah SAW bersabda: "Sedekah itu tidak akan mengurangi harta. Tidak ada orang yang memberi maaf kepada orang lain, melainkan Allah akan menambah kemuliaannya."'
+                    judul: "Sedekah Penolak Bala",
+                    teks: "Bersegeralah bersedekah, sebab bala bencana tidak pernah bisa mendahului sedekah. (HR. Thabrani)"
                 },
                 {
-                    judul: 'Naungan di Hari Kiamat (HR. Ahmad)',
-                    teks: 'Sesungguhnya sedekah itu akan memadamkan panasnya kubur bagi pelakunya. Dan sungguh, seorang mukmin akan bernaung di bawah naungan sedekahnya pada hari kiamat.'
+                    judul: "Sedekah Tak Kurangi Harta",
+                    teks: "Rasulullah SAW bersabda: Sedekah itu tidak akan mengurangi harta. Tidak ada orang yang memberi maaf kepada orang lain, melainkan Allah akan menambah kemuliaannya. (HR. Muslim)"
                 },
                 {
-                    judul: 'Penolak Bala dan Penyakit (HR. Thabrani)',
-                    teks: 'Obatilah orang-orang yang sakit di antara kalian dengan bersedekah. Sesungguhnya sedekah itu dapat meredam murka Allah dan menolak keburukan (bala).'
+                    judul: "Jalan Menuju Surga",
+                    teks: "Kamu tidak akan memperoleh kebajikan, sebelum kamu menginfakkan sebahagian harta yang kamu cintai. Dan apa pun yang kamu infakkan, Allah Maha Mengetahui. (Ali 'Imran: 92)"
                 },
                 {
-                    judul: 'Jalan Menuju Surga (Ali \'Imran: 92)',
-                    teks: 'Kamu tidak akan memperoleh kebajikan (yang sempurna), sebelum kamu menginfakkan sebahagian harta yang kamu cintai. Dan apa pun yang kamu infakkan, tentang hal itu sungguh Allah Maha Mengetahui.'
+                    judul: "Doa Malaikat di Pagi Hari",
+                    teks: "Setiap pagi turun dua malaikat. Salah satunya berdoa: Ya Allah, berikanlah ganti bagi orang yang berinfak... (HR. Bukhari)"
                 },
                 {
-                    judul: 'Doa Malaikat di Pagi Hari (HR. Bukhari)',
-                    teks: 'Tidak ada suatu hari pun ketika seorang hamba melewati paginya kecuali turun dua malaikat. Salah satunya berdoa: "Ya Allah, berikanlah ganti bagi orang yang berinfak..."'
+                    judul: "Menghapus Dosa",
+                    teks: "Sedekah itu dapat menghapus dosa sebagaimana air memadamkan api. (HR. Tirmidzi)"
                 },
                 {
-                    judul: 'Menghapus Dosa (HR. Tirmidzi)',
-                    teks: 'Sedekah itu dapat menghapus dosa sebagaimana air memadamkan api.'
+                    judul: "Naungan di Hari Kiamat",
+                    teks: "Sungguh, seorang mukmin akan bernaung di bawah naungan sedekahnya pada hari kiamat. (HR. Ahmad)"
                 }
             ];
             
             const dayIndex = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
-            const currentKontenIndex = dayIndex % kontenList.length; 
-            const kontenAktif = kontenList[currentKontenIndex];
+            const kontenAktif = kontenList[dayIndex % kontenList.length];
+            window.activeKontenText = kontenAktif;
             
             const container = document.getElementById('konten-harian-container');
             if(!container) return;
             
-            const waText = encodeURIComponent(`*${kontenAktif.judul}*\n\n"${kontenAktif.teks}"\n\nMari salurkan ZIS Anda melalui UPZIS Ranting ${(asalRanting || 'KARANGDOWO').toUpperCase()}.\n_Sistem Bendahara Terpadu_`);
+            const waText = encodeURIComponent(`*${kontenAktif.judul}*\n\n${kontenAktif.teks}\n\nMari salurkan ZIS Anda melalui UPZIS Ranting ${asalRanting.toUpperCase()}.\n_Sistem Bendahara Terpadu_`);
             
             container.innerHTML = `
-                <div style="background: white; padding: 20px; border-radius: 16px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);">
+                <div style="background: white; padding: 20px; border-radius: 16px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); text-align:center;">
                     
-                    <!-- KOTAK PREVIEW -->
-                    <div style="position:relative; width:100%; height:320px; background: linear-gradient(135deg, var(--nu-green-dark), #005a2b); border-radius:12px; overflow:hidden; box-shadow:var(--shadow-md); display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:20px; color:white; border: 2px solid var(--nu-gold); margin-bottom:15px; animation: fadeIn 1s ease-out;">
-                        <div style="position:absolute; top:15px; left:15px; display:flex; align-items:center; gap:8px;">
-                            <img src="${profileSettings.logoBase64}" style="height:35px; width:35px; object-fit:contain; background:white; padding:4px; border-radius:8px;">
-                            <div style="text-align:left; line-height:1.2;">
-                                <div style="font-size:10px; color:var(--nu-gold); font-weight:800;">LAZISNU</div>
-                                <div style="font-size:12px; font-weight:800; text-transform:uppercase;">RANTING ${asalRanting || "KARANGDOWO"}</div>
-                            </div>
-                        </div>
-                        
-                        <div style="animation: pulseLedGreen 2s infinite; font-size:30px; margin-bottom:15px; color:var(--nu-gold);"><i class="fa-solid fa-play"></i> Preview Rendering</div>
-                        
-                        <h3 style="font-size:18px; font-weight:800; color:var(--nu-gold-light); font-family:'Cinzel', serif; margin-bottom:10px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${kontenAktif.judul}</h3>
-                        <p style="font-size:12px; line-height:1.6; font-weight:500; max-width:90%;">${kontenAktif.teks}</p>
-                    </div>
-
-                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                        <button id="btn-download-video" onclick="unduhVideoKampanye('${kontenAktif.judul.replace(/'/g, "\\'")}', '${kontenAktif.teks.replace(/'/g, "\\'")}')" class="btn btn-outline" style="flex:1; min-width:140px; padding:10px; font-size:12px; text-align:center;"><i class="fa-solid fa-video"></i> Unduh Video Animasi (WebM)</button>
-                        <button onclick="unduhGambarKampanye('${kontenAktif.judul.replace(/'/g, "\\'")}', '${kontenAktif.teks.replace(/'/g, "\\'")}')" class="btn btn-outline" style="flex:1; min-width:140px; padding:10px; font-size:12px; text-align:center;"><i class="fa-solid fa-image"></i> Unduh Gambar (JPG)</button>
-                        <a href="https://api.whatsapp.com/send?text=${waText}" target="_blank" class="btn btn-primary" style="flex:1; min-width:140px; padding:10px; font-size:12px; background:var(--wa-color); border:none; text-decoration:none; text-align:center;"><i class="fa-brands fa-whatsapp"></i> Bagikan Teks ke WA</a>
+                    <!-- KANVAS RENDER VIDEO -->
+                    <canvas id="video-canvas" width="800" height="800" style="width:100%; max-width:400px; border-radius:12px; box-shadow:var(--shadow-md); background:#012a14;"></canvas>
+                    
+                    <div style="display:flex; flex-direction:column; gap:10px; margin-top:20px;">
+                        <button id="btn-download-video" onclick="downloadCanvasAsVideo()" class="btn btn-outline" style="width:100%; padding:14px; font-size:13px;"><i class="fa-solid fa-video"></i> Render & Unduh Video MP4</button>
+                        <a href="https://api.whatsapp.com/send?text=${waText}" target="_blank" class="btn btn-primary" style="width:100%; padding:14px; font-size:13px; background:var(--wa-color); border:none; text-decoration:none;"><i class="fa-brands fa-whatsapp"></i> Bagikan WA (Otomatis Teks)</a>
                     </div>
                 </div>
                 <div style="display:flex; flex-direction:column; justify-content:center;">
                     <div style="background:var(--nu-green-light); padding:20px; border-radius:16px; border:1px solid var(--nu-green);">
-                        <h4 style="color:var(--nu-green-dark); margin-bottom:12px; font-size:14px; font-weight:800;"><i class="fa-solid fa-lightbulb"></i> Generator Media Otomatis</h4>
+                        <h4 style="color:var(--nu-green-dark); margin-bottom:12px; font-size:14px; font-weight:800;"><i class="fa-solid fa-lightbulb"></i> Cara Penggunaan Studio Video</h4>
                         <ul style="font-size:12px; color:var(--text-dark); padding-left:15px; line-height:1.8; font-weight:500;">
-                            <li>Sistem ini merender <b>Video Animasi Kampanye</b> dengan logo Ranting Anda secara langsung.</li>
-                            <li>Klik <b>Unduh Video</b> untuk file video siap upload ke Status WhatsApp.</li>
-                            <li>Jika perangkat HP Anda tidak mendukung format render video, gunakan opsi <b>Unduh Gambar</b>.</li>
-                            <li>Konten dan kutipan bersumber dari Ayat/Hadis Sahih dan <b>berubah otomatis setiap 24 Jam</b>.</li>
+                            <li>Sistem ini <b>otomatis merender sebuah Video Animasi Profesional</b> langsung dari HP/Laptop Anda tanpa perlu aplikasi edit tambahan!</li>
+                            <li>Video yang dihasilkan akan memuat <b>Kutipan Al-Qur'an/Hadis yang otomatis berubah setiap hari</b>, lengkap dengan Nama Ranting dan Logo LAZISNU.</li>
+                            <li>Klik tombol <b>Render & Unduh Video</b> untuk menyimpan video ke Galeri (proses memakan waktu sekitar 5 detik).</li>
+                            <li>Setelah video tersimpan, tekan tombol <b>Bagikan WA</b> untuk menyalin otomatis *Caption/Kata-kata ajakannya*.</li>
+                            <li>Sangat cocok dan rapi untuk dijadikan sebagai <i>Status / Story WhatsApp</i> rutin setiap pagi.</li>
                         </ul>
                     </div>
                 </div>
             `;
+            
+            startVideoAnimation();
         }
+
+        // MESIN ANIMASI CANVAS VIDEO
+        function startVideoAnimation() {
+            const canvas = document.getElementById('video-canvas');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let frame = 0;
+            const logoImg = new Image();
+            logoImg.src = profileSettings.logoBase64;
+            
+            function draw() {
+                frame++;
+                // Background
+                const grad = ctx.createLinearGradient(0, 0, 800, 800);
+                grad.addColorStop(0, '#012a14');
+                grad.addColorStop(1, '#005a2b');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0,0,800,800);
+                
+                // Particles
+                ctx.fillStyle = 'rgba(212, 175, 55, 0.3)';
+                for(let i=0; i<30; i++) {
+                    const x = (Math.sin(frame*0.01 + i*10) * 400) + 400;
+                    const y = (Math.cos(frame*0.015 + i*10) * 400) + 400;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3 + Math.sin(frame*0.05+i), 0, Math.PI*2);
+                    ctx.fill();
+                }
+
+                // Logo
+                if(logoImg.complete && logoImg.width) {
+                    ctx.drawImage(logoImg, 50, 50, 100, 100);
+                }
+
+                // Kop
+                ctx.fillStyle = '#d4af37';
+                ctx.font = 'bold 26px "Plus Jakarta Sans", sans-serif';
+                ctx.textAlign = 'left';
+                ctx.fillText("LAZISNU", 170, 90);
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 30px "Plus Jakarta Sans", sans-serif';
+                ctx.fillText("RANTING " + (asalRanting ? asalRanting.toUpperCase() : "KARANGDOWO"), 170, 130);
+
+                // Content Box
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+                ctx.beginPath();
+                ctx.roundRect(50, 220, 700, 420, 20);
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(212, 175, 55, 0.5)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Text
+                if(window.activeKontenText) {
+                    ctx.textAlign = 'center';
+                    ctx.fillStyle = '#d4af37';
+                    ctx.font = 'bold 36px "Cinzel", serif';
+                    const yTitle = 300 + Math.sin(frame*0.05)*5; // Float effect
+                    wrapText(ctx, window.activeKontenText.judul, 400, yTitle, 640, 45);
+
+                    ctx.fillStyle = '#e2e8f0';
+                    ctx.font = 'italic 26px "Plus Jakarta Sans", sans-serif';
+                    wrapText(ctx, `"${window.activeKontenText.teks}"`, 400, 450, 600, 38);
+                }
+
+                // Footer
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 22px "Plus Jakarta Sans", sans-serif';
+                ctx.fillText("Mari Salurkan Infaq & Sedekah Anda Melalui UPZIS Kami", 400, 720);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                ctx.font = '16px sans-serif';
+                ctx.fillText(`Sistem Bendahara Terpadu - ${new Date().toLocaleDateString('id-ID')}`, 400, 755);
+
+                window.animationFrameId = requestAnimationFrame(draw);
+            }
+            if(window.animationFrameId) cancelAnimationFrame(window.animationFrameId);
+            draw();
+        }
+
+        // FUNGSI RENDER MP4 / WEBM DARI KANVAS
+        window.downloadCanvasAsVideo = function() {
+            const canvas = document.getElementById('video-canvas');
+            if(!canvas) return;
+            
+            let mimeType = 'video/webm; codecs=vp9';
+            if (MediaRecorder.isTypeSupported('video/mp4')) {
+                mimeType = 'video/mp4';
+            } else if (MediaRecorder.isTypeSupported('video/webm; codecs=h264')) {
+                mimeType = 'video/webm; codecs=h264';
+            }
+            
+            const stream = canvas.captureStream(30); 
+            const mediaRecorder = new MediaRecorder(stream, { mimeType: mimeType });
+            const chunks = [];
+            
+            mediaRecorder.ondataavailable = function(e) {
+                if (e.data.size > 0) chunks.push(e.data);
+            };
+            
+            mediaRecorder.onstop = function() {
+                const blob = new Blob(chunks, { type: mimeType });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                const ext = mimeType.includes('mp4') ? 'mp4' : 'webm';
+                a.download = `Kampanye_LAZISNU_${asalRanting}_${Date.now()}.${ext}`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                
+                showToast("Video berhasil dirender dan diunduh!", "success");
+                
+                const btn = document.getElementById('btn-download-video');
+                if(btn) {
+                    btn.innerHTML = '<i class="fa-solid fa-video"></i> Render & Unduh Video MP4';
+                    btn.disabled = false;
+                }
+            };
+            
+            mediaRecorder.start();
+            showToast("Sistem sedang merender Video Animasi... (Mohon tunggu sekitar 6 detik)", "info");
+            
+            const btn = document.getElementById('btn-download-video');
+            if(btn) {
+                btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Rendering Video...';
+                btn.disabled = true;
+            }
+            
+            // Rekam Canvas Animasi Selama 6 Detik
+            setTimeout(() => {
+                mediaRecorder.stop();
+            }, 6000);
+        };
 
         function showApp() { 
             document.getElementById('auth-screen').classList.add('hidden'); 
@@ -2482,10 +2494,11 @@
             renderLogs();
             buildReport(); 
             buildPoster();
-            renderKontenHarian();
+            renderKontenHarian(); 
             updateStorageIndicator();
             checkYearEnd();
             
+            // Redirect otomatis ke dashboard setiap berhasil masuk
             switchTab(null, 'v-dashboard');
         }
         
@@ -2502,7 +2515,7 @@
             if(tabId === 'v-poster') buildPoster();
             if(tabId === 'v-analitik') renderCharts();
             if(tabId === 'v-pengurus') renderBagan();
-            if(tabId === 'v-konten') renderKontenHarian(); 
+            if(tabId === 'v-konten') renderKontenHarian();
         }
         
         function updateCategories() { 
@@ -2538,7 +2551,7 @@
 
         function initAnggota() {
             if (!profileSettings.anggota || profileSettings.anggota.length === 0) {
-                profileSettings.anggota = []; 
+                profileSettings.anggota = [];
                 if(profileSettings.ketua) profileSettings.anggota.push({ id: Date.now()+1, nama: profileSettings.ketua, jabatan: 'Ketua' });
                 if(profileSettings.bendahara) profileSettings.anggota.push({ id: Date.now()+2, nama: profileSettings.bendahara, jabatan: 'Bendahara' });
                 if(profileSettings.relawan) {
@@ -2575,9 +2588,9 @@
             document.getElementById('bb-pdf-ttd-bendahara').innerText = currBendahara;
 
             document.getElementById('badge-username').innerText = profileSettings.username.toUpperCase();
-            ['nav-logo','navbar-logo','preview-logo','pdf-logo','auth-logo-nu','bb-pdf-logo','kui-logo', 'poster-logo'].forEach(id => { 
+            ['nav-logo','navbar-logo','preview-logo','pdf-logo','auth-logo','bb-pdf-logo','kui-logo', 'poster-logo'].forEach(id => { 
                 const el = document.getElementById(id); 
-                if(el && id !== 'auth-logo-nu') el.src = profileSettings.logoBase64; 
+                if(el && id !== 'auth-logo') el.src = profileSettings.logoBase64; 
             });
             renderAnggota();
             updateCategories();
