@@ -2,2994 +2,349 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sistem Bendahara Premium - UPZIS RANTING KARANGDOWO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Bendahara Terpadu - UPZIS</title>
     
-    <!-- PWA Requirements -->
+    <!-- PWA Manifest & Theme -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#012a14">
-    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="theme-color" content="#004d00">
 
-    <!-- External Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- FIREBASE SDK (MODULAR V10) -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { 
-            getFirestore, collection, addDoc, getDocs, doc, setDoc, deleteDoc, getDoc, updateDoc, query, orderBy, onSnapshot 
-        } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-        import { 
-            getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged 
-        } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyBpsQLNhyFL-agq2Iwmw2TU42F51LrvkHI",
-            authDomain: "upzis-lazisnu.firebaseapp.com",
-            projectId: "upzis-lazisnu",
-            storageBucket: "upzis-lazisnu.firebasestorage.app",
-            messagingSenderId: "1284852623",
-            appId: "1:1284852623:web:a2b24c2e261273c59099fa",
-            measurementId: "G-L9Q1Z2XELY"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-
-        window.db = db;
-        window.auth = auth;
-        window.authServices = { signInWithEmailAndPassword, signOut, onAuthStateChanged };
-        window.fs = { collection, addDoc, getDocs, doc, setDoc, deleteDoc, getDoc, updateDoc, query, orderBy, onSnapshot };
-    </script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
     <style>
-        :root {
-            --nu-green-dark: #012a14;
-            --nu-green: #005a2b;
-            --nu-green-mid: #054a26;
-            --nu-green-light: #e6f2eb;
-            --nu-gold-dark: #996515;
-            --nu-gold: #d4af37;
-            --nu-gold-light: #fbf5e5;
-            --accent-blue: #0284c7;
-            --bg-main: #f8fafc;
-            --card-bg: #ffffff;
-            --text-dark: #0f172a;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
-            --wa-color: #25D366;
-            --danger: #ef4444;
-            
-            --gold-gradient: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
-            --green-gradient: linear-gradient(135deg, #012a14 0%, #005a2b 100%);
-            --glass-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.9));
-            
-            --shadow-sm: 0 4px 6px -1px rgba(0, 42, 20, 0.04), 0 2px 4px -2px rgba(0, 42, 20, 0.04);
-            --shadow-md: 0 10px 25px -5px rgba(0, 42, 20, 0.08), 0 8px 10px -6px rgba(0, 42, 20, 0.04);
-            --shadow-lg: 0 25px 50px -12px rgba(0, 42, 20, 0.2);
-            --shadow-gold: 0 10px 25px -5px rgba(212, 175, 55, 0.3);
-            --shadow-green: 0 10px 25px -5px rgba(0, 90, 43, 0.3);
-            
-            --sidebar-width: 280px;
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { margin: 0; background-color: #f4f7f6; color: #333; }
+        
+        /* HEADER DASHBOARD */
+        header {
+            background-color: #004d00; color: white; padding: 10px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .header-left img { height: 50px; }
+        .logo-nu-dashboard { position: absolute; right: 20px; top: 10px; height: 50px; object-fit: contain; }
+        
+        .container { padding: 20px; max-width: 900px; margin: auto; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        
+        button { background-color: #004d00; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #003300; }
+        .btn-danger { background-color: #d9534f; }
+        .btn-danger:hover { background-color: #c9302c; }
+        
+        input, select { width: 100%; padding: 10px; margin: 8px 0 15px 0; border: 1px solid #ccc; border-radius: 4px; }
+        
+        /* HALAMAN LOGIN */
+        #login-page {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #003300; display: flex; justify-content: center; align-items: center; z-index: 9999;
+        }
+        .login-container {
+            background: white; padding: 30px; border-radius: 10px; width: 90%; max-width: 400px; text-align: center;
         }
         
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        table, th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
         
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: var(--bg-main); 
-            background-image: radial-gradient(circle at top right, rgba(212, 175, 55, 0.06), transparent 40%), 
-                              radial-gradient(circle at bottom left, rgba(0, 90, 43, 0.06), transparent 40%);
-            color: var(--text-dark); 
-            -webkit-font-smoothing: antialiased;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .hidden { display: none !important; }
-        
-        .blink-warning {
-            animation: blinker 1s linear infinite;
-            background-color: #fef2f2 !important;
-            color: #dc2626 !important;
-            border-color: #dc2626 !important;
-        }
-        @keyframes blinker { 50% { opacity: 0.4; } }
-
-        #toast-container { position: fixed; bottom: 30px; right: 30px; z-index: 99999; display: flex; flex-direction: column; gap: 12px; }
-        .toast { background: rgba(1, 42, 20, 0.98); color: white; padding: 16px 24px; border-radius: 16px; box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 14px; font-size: 13px; font-weight: 600; backdrop-filter: blur(12px); border-left: 5px solid var(--nu-gold); animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        @keyframes slideIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(120%); opacity: 0; } }
-        
-        .top-bar {
-            background: linear-gradient(90deg, #000000, #012a14); 
-            color: #cbd5e1; 
-            font-size: 11px; 
-            font-weight: 700;
-            padding: 8px 24px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            position: relative;
-            z-index: 101;
-            border-bottom: 2px solid var(--nu-gold-dark);
-            letter-spacing: 0.5px;
-        }
-        .top-bar-left { display: flex; align-items: center; gap: 10px; text-transform: uppercase; }
-        .top-bar-right { display: flex; align-items: center; gap: 15px; }
-
-        #auth-screen {
-            background: linear-gradient(135deg, rgba(1, 42, 20, 0.95), rgba(0, 90, 43, 0.9)), url('https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg') center/cover no-repeat;
-            min-height: 100vh; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            padding: 20px;
-            position: relative;
-        }
-
-        .auth-container { 
-            background: rgba(255, 255, 255, 0.08); 
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            width: 100%; 
-            max-width: 440px; 
-            border-radius: 28px; 
-            box-shadow: 0 30px 60px rgba(0,0,0,0.5); 
-            overflow: hidden; 
-            border: 1px solid rgba(255,255,255,0.18);
-            animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .auth-header { padding: 40px 30px 15px; text-align: center; }
-        .auth-header img { 
-            height: 80px; width: 110px; object-fit: contain; margin-bottom: 15px; 
-            background: var(--glass-gradient); padding: 10px; border-radius: 18px; 
-            box-shadow: var(--shadow-gold); border: 2px solid var(--nu-gold);
-            animation: floatLogo 4s ease-in-out infinite;
-        }
-        @keyframes floatLogo { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-        .auth-header h2 { background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-family: 'Cinzel', serif; font-size: 24px; margin-bottom: 6px; font-weight: 800; }
-        .auth-header p { color: #cbd5e1; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; }
-        .auth-body { padding: 15px 30px 35px; }
-        .auth-body label { color: #f8fafc; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
-        .auth-body input[type="text"], .auth-body input[type="password"], .auth-body input[type="email"], .auth-body select { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 12px 16px; border-radius: 14px; width: 100%; font-size: 13px; margin-top: 6px; }
-        .auth-body input:focus, .auth-body select:focus { border-color: var(--nu-gold); background: rgba(0,0,0,0.5); box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.25); outline: none; }
-        .auth-body input::placeholder { color: rgba(255,255,255,0.4); }
-
-        .app-layout {
-            display: flex;
-            min-height: calc(100vh - 35px);
-            position: relative;
-            background: var(--bg-main);
-        }
-
-        .sidebar {
-            width: var(--sidebar-width);
-            background: #ffffff;
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            z-index: 1000;
-            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: var(--shadow-sm);
-        }
-
-        @media (max-width: 1024px) {
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.mobile-open { transform: translateX(0); }
-        }
-
-        .sidebar-header {
-            padding: 24px 20px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            border-bottom: 1px solid var(--border-color);
-            background: linear-gradient(135deg, rgba(0,90,43,0.03), transparent);
-        }
-        .sidebar-header img {
-            height: 48px;
-            width: 48px;
-            object-fit: contain;
-            border-radius: 12px;
-            background: white;
-            padding: 6px;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border-color);
-        }
-        .sidebar-brand-title {
-            font-family: 'Cinzel', serif;
-            font-size: 15px;
-            color: var(--nu-green-dark);
-            font-weight: 800;
-            line-height: 1.2;
-        }
-        .sidebar-brand-sub {
-            font-size: 10px;
-            color: var(--text-muted);
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 3px;
-        }
-
-        .sidebar-menu {
-            padding: 20px 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            overflow-y: auto;
-            flex: 1;
-            scrollbar-width: thin;
-        }
-        .sidebar-menu::-webkit-scrollbar { width: 5px; }
-        .sidebar-menu::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
-
-        .menu-section-label {
-            font-size: 10px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-            color: var(--text-muted);
-            padding: 10px 12px 6px;
-            margin-top: 6px;
-        }
-
-        .tab-btn {
-            width: 100%;
-            padding: 13px 16px;
-            border: none;
-            background: transparent;
-            color: var(--text-muted);
-            font-weight: 700;
-            font-size: 13px;
-            border-radius: 14px;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-align: left;
-        }
-        .tab-btn i {
-            font-size: 16px;
-            width: 22px;
-            text-align: center;
-            transition: transform 0.25s ease;
-        }
-        .tab-btn:hover {
-            background: var(--nu-green-light);
-            color: var(--nu-green-dark);
-            transform: translateX(4px);
-        }
-        .tab-btn:hover i { transform: scale(1.1); }
-        .tab-btn.active {
-            background: var(--green-gradient);
-            color: white;
-            box-shadow: var(--shadow-green);
-        }
-        .tab-btn.active i { color: var(--nu-gold); }
-
-        .sidebar-footer {
-            padding: 16px 20px;
-            border-top: 1px solid var(--border-color);
-            background: #f8fafc;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .sidebar-user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .sidebar-user-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: var(--nu-green-light);
-            color: var(--nu-green-dark);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 14px;
-            border: 1px solid var(--border-color);
-        }
-        .sidebar-username {
-            font-size: 12px;
-            font-weight: 800;
-            color: var(--text-dark);
-        }
-        .sidebar-user-role {
-            font-size: 10px;
-            color: var(--nu-gold-dark);
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .main-content-wrapper {
-            flex: 1;
-            margin-left: var(--sidebar-width);
-            display: flex;
-            flex-direction: column;
-            min-width: 0;
-            transition: margin 0.3s ease;
-        }
-        @media (max-width: 1024px) {
-            .main-content-wrapper { margin-left: 0; }
-        }
-
-        .navbar {
-            background: var(--glass-gradient);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: var(--shadow-sm);
-            position: sticky;
-            top: 0;
-            z-index: 99;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .hamburger-btn {
-            background: white;
-            border: 1px solid var(--border-color);
-            width: 42px;
-            height: 42px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: var(--nu-green-dark);
-            font-size: 18px;
-            box-shadow: var(--shadow-sm);
-            transition: all 0.2s ease;
-        }
-        .hamburger-btn:hover { background: var(--nu-green-light); border-color: var(--nu-green); }
-
-        .nav-right-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .btn-logout {
-            background: white;
-            border: 1px solid var(--danger);
-            color: var(--danger);
-            padding: 9px 16px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.3s ease;
-            font-weight: 700;
-            box-shadow: var(--shadow-sm);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-logout:hover { background: var(--danger); color: white; box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3); transform: translateY(-2px); }
-
-        .sidebar-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(4px);
-            z-index: 999;
-            display: none;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        .sidebar-overlay.active { display: block; opacity: 1; }
-
-        .container { 
-            max-width: 1400px; 
-            margin: 0 auto; 
-            padding: 30px; 
-            flex: 1; 
-            display: flex; 
-            flex-direction: column; 
-            width: 100%; 
-        }
-        @media(max-width: 768px) { .container { padding: 15px; } }
-        
-        .panel { 
-            background: white; 
-            padding: 30px; 
-            border-radius: 24px; 
-            box-shadow: var(--shadow-md); 
-            border: 1px solid var(--border-color); 
-            animation: fadeInPanel 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
-            flex: 1;
-        }
-        @media(max-width: 768px) { .panel { padding: 20px; border-radius: 18px; } }
-        @keyframes fadeInPanel { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .panel-header { font-family: 'Cinzel', serif; font-size: 22px; color: var(--nu-green-dark); margin-bottom: 30px; font-weight: 800; display: flex; align-items: center; gap: 14px; }
-        @media(max-width: 768px) { .panel-header { font-size: 18px; margin-bottom: 20px; gap: 10px; } }
-        .panel-header i { background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 26px; }
-
-        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 35px; }
-        @media(max-width: 768px) { .summary-grid { gap: 15px; margin-bottom: 25px; } }
-        
-        .card { 
-            padding: 24px; 
-            border-radius: 20px; 
-            background: white; 
-            border: 1px solid var(--border-color); 
-            box-shadow: var(--shadow-sm); 
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-        .card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; }
-        .c-saldo::before { background: var(--gold-gradient); }
-        .c-bank::before { background: var(--accent-blue); }
-        .c-in::before { background: var(--nu-green); }
-        .c-out::before { background: var(--danger); }
-
-        .card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--nu-gold); }
-        .card-icon { height: 48px; width: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 16px; box-shadow: var(--shadow-sm); }
-        .c-saldo .card-icon { background: var(--nu-gold-light); color: var(--nu-gold-dark); }
-        .c-bank .card-icon { background: #f0f9ff; color: var(--accent-blue); }
-        .c-in .card-icon { background: var(--nu-green-light); color: var(--nu-green-mid); }
-        .c-out .card-icon { background: #fef2f2; color: var(--danger); }
-        .card h3 { margin: 0 0 8px 0; font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
-        .card p { margin: 0; font-size: 26px; font-weight: 800; color: var(--text-dark); letter-spacing: -0.5px; }
-        @media(max-width: 768px) { .card p { font-size: 22px; } }
-
-        .smart-cloud-mini-bar {
-            background: linear-gradient(135deg, #0f172a, #020617);
-            border-radius: 16px;
-            padding: 16px 24px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 15px;
-            flex-wrap: wrap;
-            box-shadow: 0 10px 25px -8px rgba(15, 23, 42, 0.4);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .cloud-mini-left { display: flex; align-items: center; gap: 14px; }
-        .realtime-led-wrapper { width: 38px; height: 38px; border-radius: 12px; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; position: relative; border: 1px solid rgba(255,255,255,0.15); }
-        
-        .led-light { width: 12px; height: 12px; border-radius: 50%; }
-        .led-green { background-color: #22c55e; box-shadow: 0 0 10px #22c55e; animation: pulseLedGreen 1.8s infinite ease-in-out; }
-        .led-red { background-color: #ef4444; box-shadow: 0 0 10px #ef4444; animation: pulseLedRed 1.8s infinite ease-in-out; }
-        @keyframes pulseLedGreen { 0%, 100% { transform: scale(0.95); opacity: 0.8; box-shadow: 0 0 4px #22c55e; } 50% { transform: scale(1.15); opacity: 1; box-shadow: 0 0 12px #22c55e; } }
-        @keyframes pulseLedRed { 0%, 100% { transform: scale(0.95); opacity: 0.8; box-shadow: 0 0 4px #ef4444; } 50% { transform: scale(1.15); opacity: 1; box-shadow: 0 0 12px #ef4444; } }
-
-        .cloud-mini-title { font-weight: 800; font-size: 13px; display: flex; align-items: center; gap: 8px; letter-spacing: 0.3px; }
-        .cloud-mini-sub { font-size: 11px; color: #94a3b8; font-weight: 500; margin-top: 2px; }
-        
-        .storage-status-box {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: rgba(255,255,255,0.05);
-            padding: 8px 16px;
-            border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .storage-bar-bg { width: 90px; height: 6px; background: rgba(255,255,255,0.15); border-radius: 3px; overflow: hidden; }
-        .storage-bar-fill { height: 100%; background: #38bdf8; width: 12%; border-radius: 3px; transition: width 0.5s ease; }
-        .storage-text { font-size: 11px; font-weight: 700; color: #e2e8f0; white-space: nowrap; }
-
-        .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-        @media(max-width: 768px) { .form-grid { grid-template-columns: 1fr; gap: 15px; } }
-        .form-group { display: flex; flex-direction: column; gap: 8px; }
-        .form-group label { font-size: 11px; font-weight: 800; color: var(--text-dark); text-transform: uppercase; letter-spacing: 0.8px; }
-        
-        input, select, textarea { 
-            padding: 13px 18px; 
-            border: 2px solid var(--border-color); 
-            border-radius: 14px; 
-            font-size: 14px; 
-            outline: none; 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: #f8fafc; 
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-            width: 100%; 
-            color: var(--text-dark);
-            font-weight: 600;
-        }
-        input:focus, select:focus, textarea:focus { border-color: var(--nu-gold); background: #ffffff; box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15); }
-        
-        .btn { 
-            border: none; 
-            padding: 13px 24px; 
-            border-radius: 14px; 
-            cursor: pointer; 
-            font-weight: 800; 
-            display: inline-flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 10px; 
-            font-size: 14px; 
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            letter-spacing: 0.5px; 
-        }
-        .btn-primary { background: var(--green-gradient); color: white; box-shadow: var(--shadow-sm); }
-        .btn-primary:hover { box-shadow: var(--shadow-green); transform: translateY(-2px); }
-        .btn-gold { background: var(--gold-gradient); color: var(--nu-green-dark); box-shadow: var(--shadow-sm); }
-        .btn-gold:hover { box-shadow: var(--shadow-gold); transform: translateY(-2px); }
-        .btn-glass { background: rgba(255,255,255,0.08); color: white; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(8px); padding: 8px 14px; font-size: 12px; border-radius: 10px; }
-        .btn-glass:hover { background: rgba(255,255,255,0.18); transform: translateY(-2px); }
-        .btn-outline { background: white; border: 2px solid var(--nu-gold); color: var(--nu-gold-dark); }
-        .btn-outline:hover { background: var(--nu-gold-light); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
-        
-        .table-responsive { overflow-x: auto; border-radius: 18px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); background: white; }
-        table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 850px; }
-        th { background: #f8fafc; color: var(--text-muted); padding: 18px 20px; text-align: left; font-weight: 800; border-bottom: 2px solid var(--border-color); white-space: nowrap; text-transform: uppercase; font-size: 11px; letter-spacing: 1px; }
-        td { padding: 18px 20px; border-bottom: 1px solid var(--border-color); vertical-align: middle; color: var(--text-dark); font-weight: 500; }
-        tbody tr { transition: background 0.2s; }
-        tbody tr:hover { background: var(--nu-gold-light); }
-        
-        .badge { padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; display: inline-block; letter-spacing: 0.5px; }
-        .badge-in { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
-        .badge-out { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
-        .badge-bank { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
-        
-        .btn-action { background: white; border: 1px solid var(--border-color); padding: 9px 14px; border-radius: 12px; cursor: pointer; color: var(--text-muted); transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .btn-action:hover { transform: translateY(-2px); border-color: var(--nu-gold); color: var(--nu-green-dark); }
-        .btn-delete-sm { color: var(--danger); background: #fff5f5; border-color: #fed7d7; }
-        .btn-delete-sm:hover { background: var(--danger); color: white; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3); transform: scale(1.05); }
-
-        .pdf-preview-wrapper { background: #525659; padding: 25px; border-radius: 18px; overflow-x: auto; display: flex; justify-content: center; }
-        .report-page { background: white; color: #000; font-family: 'Times New Roman', Times, serif; padding: 10mm 12mm; width: 100%; max-width: 297mm; box-sizing: border-box; margin: 0 auto; position: relative; }
-        .report-page table { width: 100% !important; min-width: 0 !important; table-layout: fixed; border-collapse: collapse; word-wrap: break-word; }
-        .report-page th, .report-page td { word-break: break-word; padding: 6px 4px; font-size: 11px; }
-        .report-header, .report-section-title, .signature-area { page-break-inside: avoid; }
-        .report-table tr { page-break-inside: avoid; }
-        .report-header img { height: 75px !important; width: 110px !important; object-fit: contain; }
-        #preview-logo { width: 100px !important; height: 100px !important; object-fit: contain; }
-        
-        .kuitansi-box { background: white; border: 2px double var(--nu-green-dark); padding: 25px; border-radius: 12px; font-family: 'Times New Roman', Times, serif; max-width: 650px; margin: 0 auto; position: relative; }
-        .kuitansi-header { display: flex; align-items: center; border-bottom: 2px solid var(--nu-gold); padding-bottom: 12px; margin-bottom: 20px; }
-        .kuitansi-header img { height: 65px !important; width: 95px !important; object-fit: contain; margin-right: 15px; }
-
-        .poster-container {
-            width: 100%; max-width: 650px; margin: 0 auto;
-            background: linear-gradient(135deg, var(--nu-green-dark), var(--nu-green));
-            border-radius: 24px; padding: 40px; position: relative; overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3); color: white;
-            border: 2px solid var(--nu-gold-dark);
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-        .poster-overlay {
-            position: absolute; inset: 0; opacity: 0.04;
-            background: url('https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg') center/80% no-repeat;
-            z-index: 1; pointer-events: none;
-        }
-        .poster-content { position: relative; z-index: 2; }
-        .poster-card {
-            background: white; padding: 22px; border-radius: 16px;
-            box-shadow: var(--shadow-md); color: var(--text-dark); text-align: center;
-        }
-
+        /* PENGATURAN CETAK PDF / KOP SURAT FORMAL */
+        #print-header-area { display: none; }
         @media print {
-            @page { size: A4 landscape; margin: 10mm; }
-            html, body { width: 297mm; height: 100%; background: white !important; margin: 0 !important; padding: 0 !important; }
-            #auth-screen, .top-bar, .sidebar, .navbar, .no-print, .pdf-preview-wrapper > *:not(#print-area, #poster-print-area) { display: none !important; }
-            .main-content-wrapper { margin-left: 0 !important; }
-            #v-laporan, #v-poster { box-shadow: none !important; padding: 0 !important; border: none !important; margin: 0 !important; background: transparent !important; display: block !important; }
-            .pdf-preview-wrapper { background: white !important; padding: 0 !important; box-shadow: none !important; }
-            .report-page { padding: 10mm 12mm !important; width: 100% !important; max-width: 297mm !important; box-shadow: none !important; border: none !important; margin: 0 !important; }
-            .poster-container { box-shadow: none !important; border: none !important; }
+            body { background-color: white; }
+            header, .card:not(#area-laporan), button, .no-print { display: none !important; }
+            #area-laporan { box-shadow: none; padding: 0; margin: 0; }
+            
+            #print-header-area {
+                display: flex; justify-content: space-between; align-items: center;
+                border-bottom: 3px solid black; padding-bottom: 15px; margin-bottom: 20px;
+                position: relative;
+            }
+            .print-logo-upzis { height: 70px; }
+            .print-logo-nu { position: absolute; right: 0; top: 0; height: 80px; }
+            .print-title { text-align: center; width: 100%; margin-top: 10px; }
         }
-
-        .report-page::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 75%; height: 75%; background: url('https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg') center/contain no-repeat; opacity: 0.025; pointer-events: none; z-index: 0; }
-        .report-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2.5px double #000; padding-bottom: 6px; margin-bottom: 10px; position: relative; z-index: 1; }
-        .report-title-center { text-align: center; flex: 1; padding: 0 6px; }
-        .report-title-center h2 { margin: 0; font-size: 12pt; color: #000; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px; }
-        .report-section-title { color: #000; margin-top: 12px; margin-bottom: 6px; border-bottom: 1px solid #000; padding-bottom: 2px; font-size: 9.5pt; font-weight: bold; text-transform: uppercase; position: relative; z-index: 1; }
-        .report-table { width: 100%; border-collapse: collapse; margin: 4px 0; font-size: 8pt; table-layout: fixed; position: relative; z-index: 1; min-width: 0 !important; }
-        .report-table th, .report-table td { border: 1px solid #000; padding: 4px 6px; word-wrap: break-word; }
-        .report-table th { background-color: #f1f5f9; color: #000; text-align: center; font-size: 8pt; text-transform: uppercase; }
-        .signature-area { display: flex; justify-content: space-between; margin-top: 20px; text-align: center; font-size: 8.5pt; padding: 0 10px; position: relative; z-index: 1; page-break-inside: avoid; }
-        .sig-box { width: 38%; }
-        .report-footer-note { text-align: center; font-size: 7.5pt; color: #64748b; border-top: 1px solid #cbd5e1; padding-top: 6px; margin-top: 12px; position: relative; z-index: 1; }
-        .grid-2-col { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
-        @media(max-width: 768px) { .grid-2-col { grid-template-columns: 1fr; gap: 15px; } }
     </style>
 </head>
 <body>
 
-    <div class="top-bar no-print" id="top-widget">
-        <div class="top-bar-left">
-            <i class="fa-solid fa-layer-group" style="color:var(--nu-gold);"></i> 
-            <span id="desktop-date">SISTEM BENDAHARA TERPADU - UPZIS RANTING KARANGDOWO</span>
-        </div>
-        <div class="top-bar-right" id="realtime-clock"></div>
-    </div>
-
-    <!-- 1. AUTH SCREEN -->
-    <div id="auth-screen">
-        <audio id="bg-music" loop preload="auto" style="display:none;">
-            <source src="https://actions.google.com/sounds/v1/ambiences/islamic_meditation_flute.ogg" type="audio/ogg">
-        </audio>
-
-        <div class="auth-container">
-            <div class="auth-header">
-                <img id="auth-logo" src="https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg" alt="NU Logo">
-                <h2>Sistem Bendahara</h2>
-                <p>Otorisasi Keamanan UPZIS</p>
-            </div>
+    <!-- HALAMAN LOGIN & DAFTAR MULTI-RANTING -->
+    <div id="login-page">
+        <div class="login-container">
+            <img src="logo-nu.png" alt="Logo NU" style="height: 80px; margin-bottom: 10px;">
+            <h2 style="margin: 0; color: #004d00;">SISTEM BENDAHARA</h2>
+            <p style="font-size: 12px; color: #666; margin-bottom: 20px;">Otorisasi Keamanan Multi-Ranting</p>
             
-            <div class="auth-body">
-                <form id="form-login" action="#" method="POST">
-                    
-                    <div class="form-group" style="margin-bottom: 16px;">
-                        <label>Email Akses (Username)</label>
-                        <input type="email" id="l-user" name="email" autocomplete="email" required placeholder="Masukkan Email... (misal: admin@upzis.org)">
-                    </div>
-                    
-                    <div class="form-group" style="margin-bottom: 20px;">
-                        <label>Kata Sandi Keamanan</label>
-                        <div style="position: relative;">
-                            <input type="password" id="l-pass" name="password" autocomplete="current-password" required placeholder="Masukkan Sandi..." style="padding-right: 40px;">
-                            <button type="button" onclick="togglePasswordVisibility()" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: rgba(255,255,255,0.7); cursor: pointer; font-size: 14px;">
-                                <i class="fa-solid fa-eye" id="eye-icon"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group" style="flex-direction: row; align-items: center; gap: 10px; margin-bottom: 22px;">
-                        <input type="checkbox" id="remember-me" style="width: 18px; height: 18px; accent-color: var(--nu-green); cursor: pointer; background: transparent; border: 1px solid rgba(255,255,255,0.3);">
-                        <label for="remember-me" style="color: #e2e8f0; font-size: 12px; font-weight: 600; text-transform: none; cursor: pointer;">Simpan Kata Sandi (Ingat Saya)</label>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 14px;"><i class="fa-solid fa-right-to-bracket"></i> Akses Sistem Terpadu</button>
-                    
-                    <div style="margin-top: 20px; text-align: center;">
-                        <a href="#" onclick="recoverPasswordWA()" style="font-size: 12px; color: rgba(255,255,255,0.75); text-decoration: none; font-weight: 600; transition: color 0.3s;">
-                            Lupa Sandi? <span style="color: var(--nu-gold); font-weight: 800;">Pulihkan via WA</span>
-                        </a>
-                    </div>
-                </form>
-            </div>
+            <input type="email" id="email" placeholder="Email Akses (Username)">
+            <input type="password" id="password" placeholder="Kata Sandi Keamanan">
+            <input type="text" id="nama-ranting" placeholder="Nama Ranting (Misal: Karangdowo)" style="display: none;">
+            
+            <button onclick="prosesLogin()" id="btn-masuk" style="width: 100%;">Masuk Aplikasi</button>
+            <button onclick="prosesDaftar()" id="btn-daftar" style="display: none; width: 100%; background-color: #006600;">Daftarkan Ranting</button>
+            
+            <p id="toggle-auth" style="font-size: 12px; margin-top: 15px; cursor: pointer; color: #004d00; text-decoration: underline;" onclick="toggleDaftar()">
+                Belum punya akun Ranting? Daftar di sini
+            </p>
         </div>
     </div>
 
-    <!-- 2. MAIN APPLICATION -->
-    <div id="app-screen" class="hidden app-layout">
-        
-        <div class="sidebar" id="app-sidebar">
-            <div class="sidebar-header">
-                <img id="nav-logo" src="https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg" alt="Logo">
+    <!-- HEADER DASHBOARD APLIKASI -->
+    <header>
+        <div class="header-left">
+            <img src="icon-192.png" alt="UPZIS Logo">
+            <div>
+                <h2 id="header-title" style="margin: 0; font-size: 18px;">SISTEM BENDAHARA - UPZIS</h2>
+                <p id="tanggal-sekarang" style="margin: 0; font-size: 12px;"></p>
+            </div>
+        </div>
+        <img src="logo-nu.png" alt="Logo NU" class="logo-nu-dashboard">
+    </header>
+
+    <div class="container">
+        <!-- INFO SALDO & IDENTITAS -->
+        <div class="card no-print">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
-                    <div class="sidebar-brand-title" id="nav-title">UPZIS Karangdowo</div>
-                    <div class="sidebar-brand-sub">Periode: <span id="nav-period">2024-2029</span></div>
+                    <h3 style="margin:0;">Total Saldo Kas</h3>
+                    <h1 id="display-saldo" style="color: #004d00; margin: 5px 0;">Rp 0</h1>
+                    <p style="margin:0; font-size: 12px; color: #666;">Login sebagai: <b id="user-role-display">Mengecek...</b></p>
                 </div>
-            </div>
-
-            <div class="sidebar-menu">
-                <div class="menu-section-label">Menu Utama</div>
-                <button class="tab-btn active" onclick="switchTab(event, 'v-dashboard')"><i class="fa-solid fa-chart-pie"></i> Dashboard Kas</button>
-                <button class="tab-btn" onclick="switchTab(event, 'v-analitik')"><i class="fa-solid fa-chart-line"></i> Grafik & Analitik</button>
-                <button class="tab-btn" onclick="switchTab(event, 'v-histori')"><i class="fa-solid fa-book"></i> Buku Besar</button>
-                <button class="tab-btn" onclick="switchTab(event, 'v-arsip')"><i class="fa-solid fa-box-archive"></i> Riwayat Arsip</button>
-                
-                <div class="menu-section-label">Publikasi & Cetak</div>
-                <button class="tab-btn" onclick="switchTab(event, 'v-poster')"><i class="fa-solid fa-file-image"></i> Poster Laporan</button>
-                <button class="tab-btn" onclick="switchTab(event, 'v-laporan')"><i class="fa-solid fa-file-invoice"></i> Export PDF</button>
-
-                <div class="menu-section-label">Manajemen Data</div>
-                <button class="tab-btn" onclick="switchTab(event, 'v-mustahik')"><i class="fa-solid fa-users"></i> Database Warga</button>
-                <button class="tab-btn" onclick="switchTab(event, 'v-pengurus')"><i class="fa-solid fa-building-user"></i> Kepengurusan & Bagan</button>
-                
-                <div class="menu-section-label">Audit & Sistem</div>
-                <button class="tab-btn" onclick="switchTab(event, 'v-log')"><i class="fa-solid fa-list-check"></i> Log Aktivitas (Audit)</button>
-                <button class="tab-btn" id="nav-tutup-buku" onclick="switchTab(event, 'v-tutup-buku')"><i class="fa-solid fa-folder-closed"></i> Tutup Buku & Cloud</button>
-                <button class="tab-btn" onclick="switchTab(event, 'v-pengaturan')"><i class="fa-solid fa-shield-halved"></i> Keamanan Akun</button>
-            </div>
-
-            <div class="sidebar-footer">
-                <div class="sidebar-user-info">
-                    <div class="sidebar-user-avatar"><i class="fa-solid fa-user-shield"></i></div>
-                    <div>
-                        <div class="sidebar-username" id="badge-username">Bendahara</div>
-                        <div class="sidebar-user-role" id="badge-role-text">Administrator</div>
-                    </div>
+                <div style="text-align: right;">
+                    <button onclick="cetakLaporan()" style="margin-bottom: 5px;">🖨️ Cetak Laporan</button><br>
+                    <button onclick="logoutApp()" class="btn-danger">Keluar Keluar</button>
                 </div>
             </div>
         </div>
 
-        <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
-
-        <div class="main-content-wrapper">
-            <div class="navbar no-print">
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <button class="hamburger-btn" onclick="toggleSidebar()" title="Buka Menu Navigasi"><i class="fa-solid fa-bars"></i></button>
-                    <div>
-                        <h2 style="font-size: 16px; font-weight: 800; color: var(--nu-green-dark); font-family: 'Cinzel', serif;">Panel Kontrol Bendahara</h2>
-                        <span style="font-size: 11px; color: var(--text-muted); font-weight: 600;">Sistem Manajemen Keuangan Transparan & Akuntabel</span>
-                    </div>
-                </div>
-                <div class="nav-right-actions">
-                    <button class="btn-logout" onclick="logout()" title="Keluar Sistem"><i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar</button>
-                </div>
-            </div>
-
-            <div id="year-end-warning" class="hidden no-print" style="background: #fef2f2; border: 2px solid #ef4444; color: #b91c1c; padding: 15px 30px; border-radius: 14px; margin: 30px 30px 0 30px; font-weight: bold; text-align: left; display: flex; align-items: center; gap: 15px;">
-                <i class="fa-solid fa-triangle-exclamation blink-warning" style="font-size: 28px; border:none; background:none; padding:0; box-shadow:none;"></i> 
-                <div>
-                    <span style="font-size:14px;">PERINGATAN AKHIR TAHUN: Sisa waktu kurang dari 30 hari!</span><br>
-                    <span style="font-size:12px; font-weight:500;">Segera cadangkan data Anda. Seluruh riwayat akan diarsipkan otomatis pada 1 Januari untuk tutup buku.</span>
-                </div>
-            </div>
-
-            <div class="container">
-                <!-- DASHBOARD -->
-                <div id="v-dashboard" class="panel">
-                    <div class="smart-cloud-mini-bar no-print">
-                        <div class="cloud-mini-left">
-                            <div class="realtime-led-wrapper">
-                                <div class="led-light led-green" id="firebase-led" title="Terhubung Real-Time ke Firebase"></div>
-                            </div>
-                            <div>
-                                <div class="cloud-mini-title">
-                                    Firebase Cloud Real-Time 
-                                    <span id="sync-badge" class="badge" style="background: rgba(74, 222, 128, 0.15); color: #4ade80; font-size: 9px; padding: 2px 6px;">ONLINE</span>
-                                </div>
-                                <div class="cloud-mini-sub">Sinkronisasi database otomatis & aman.</div>
-                            </div>
-                        </div>
-
-                        <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-                            <div class="storage-status-box">
-                                <div style="display: flex; flex-direction: column; gap: 3px;">
-                                    <span class="storage-text" id="storage-info-text">Storage: 2.4 MB / 1 GB</span>
-                                    <div class="storage-bar-bg">
-                                        <div class="storage-bar-fill" id="storage-bar-fill" style="width: 0.2%;"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <button class="btn btn-glass" onclick="loadAllCloudData()" title="Muat Ulang Data Terbaru"><i class="fa-solid fa-rotate"></i> Sync Live</button>
-                        </div>
-                    </div>
-
-                    <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;" class="no-print">
-                        <button class="btn btn-outline" style="font-size: 12px; padding: 8px 16px; background: white;" onclick="bukaKalkulatorAmil()"><i class="fa-solid fa-calculator"></i> Kalkulator Hak Amil (12.5%)</button>
-                    </div>
-
-                    <div class="summary-grid">
-                        <div class="card c-saldo">
-                            <div class="card-icon"><i class="fa-solid fa-wallet"></i></div>
-                            <h3>Saldo Kas Tunai</h3>
-                            <p id="sum-tunai">Rp 0</p>
-                        </div>
-                        <div class="card c-bank">
-                            <div class="card-icon"><i class="fa-solid fa-building-columns"></i></div>
-                            <h3>Rekening Bank BRI</h3>
-                            <p id="sum-bank">Rp 0</p>
-                        </div>
-                        <div class="card c-in">
-                            <div class="card-icon"><i class="fa-solid fa-arrow-trend-up"></i></div>
-                            <h3>Total Penerimaan</h3>
-                            <p id="sum-masuk">Rp 0</p>
-                        </div>
-                        <div class="card c-out">
-                            <div class="card-icon"><i class="fa-solid fa-arrow-trend-down"></i></div>
-                            <h3>Total Penyaluran</h3>
-                            <p id="sum-keluar">Rp 0</p>
-                        </div>
-                    </div>
-
-                    <div class="panel-header" style="margin-top: 40px; border-top: 1px solid var(--border-color); padding-top: 30px;">
-                        <i class="fa-solid fa-pen-nib"></i> Entri Jurnal Keuangan
-                    </div>
-
-                    <form id="form-trx">
-                        <input type="hidden" id="t-edit-id" value="">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Jenis Mutasi Kas</label>
-                                <select id="t-type" onchange="updateCategories()">
-                                    <option value="in">Pemasukan (Debit)</option>
-                                    <option value="out">Pengeluaran (Kredit)</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Sumber / Tujuan Dana</label>
-                                <select id="t-source" required>
-                                    <option value="Kas Tunai">Kas Tunai (Tunai/Cash)</option>
-                                    <option value="Rekening Bank BRI">Rekening Bank BRI (Transfer)</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Klasifikasi Akun</label>
-                                <select id="t-category" required></select>
-                            </div>
-                            <div class="form-group">
-                                <label>Tanggal Transaksi</label>
-                                <input type="date" id="t-date" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Nominal (IDR)</label>
-                                <input type="text" id="t-amount" required placeholder="Misal: 150.000">
-                            </div>
-
-                            <div class="form-group">
-                                <label><i class="fa-solid fa-paperclip"></i> Unggah Lampiran Nota / Bukti (Opsional)</label>
-                                <input type="file" id="t-proof" accept="image/*" style="padding: 10px; background: white;">
-                            </div>
-
-                            <div class="form-group" style="grid-column: 1 / -1;">
-                                <label>Uraian / Keterangan Lengkap</label>
-                                <input type="text" id="t-desc" required placeholder="Catatan transaksi...">
-                            </div>
-                        </div>
-                        <div style="text-align: right; margin-top: 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
-                            <div></div>
-                            <div style="display: flex; gap: 10px;">
-                                <button type="button" id="btn-cancel-edit" class="btn btn-outline hidden" onclick="cancelEditTrx()">Batal</button>
-                                <button type="submit" id="btn-submit-trx" class="btn btn-primary"><i class="fa-solid fa-check"></i> Rekam Transaksi</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- ANALITIK -->
-                <div id="v-analitik" class="panel hidden">
-                    <div class="panel-header"><i class="fa-solid fa-chart-line"></i> Analitik & Grafik Keuangan Kas Interaktif</div>
-                    
-                    <div style="background: var(--bg-main); padding: 25px; border-radius: 20px; border: 1px solid var(--border-color); margin-bottom: 25px;">
-                        <h4 style="margin-bottom: 15px; font-weight: 800; font-size: 14px; display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-chart-area" style="color:var(--nu-gold-dark);"></i> Tren Arus Kas Bulanan (Interaktif)</h4>
-                        <canvas id="chartTrenBulanan" style="max-height: 300px;"></canvas>
-                    </div>
-
-                    <div class="grid-2-col">
-                        <div style="background: var(--bg-main); padding: 25px; border-radius: 20px; border: 1px solid var(--border-color);">
-                            <h4 style="margin-bottom: 20px; text-align: center; font-weight: 800; font-size: 14px;">Perbandingan Pemasukan vs Penyaluran</h4>
-                            <canvas id="chartArusKas" style="max-height: 260px;"></canvas>
-                        </div>
-                        <div style="background: var(--bg-main); padding: 25px; border-radius: 20px; border: 1px solid var(--border-color);">
-                            <h4 style="margin-bottom: 20px; text-align: center; font-weight: 800; font-size: 14px;">Distribusi Penyaluran Dana Program</h4>
-                            <canvas id="chartPenyaluran" style="max-height: 260px;"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- BUKU BESAR -->
-                <div id="v-histori" class="panel hidden">
-                    <div class="panel-header" style="justify-content: space-between; flex-wrap: wrap; gap: 15px;">
-                        <div><i class="fa-solid fa-book"></i> Buku Besar Transaksi</div>
-                        <button class="btn btn-primary" onclick="cetakBukuBesarPDF()" style="font-size: 13px; padding: 12px 20px;"><i class="fa-solid fa-file-pdf"></i> Cetak Buku Besar (PDF A4 Landscape)</button>
-                    </div>
-                    
-                    <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 25px; background: var(--bg-main); padding: 20px; border-radius: 18px; border: 1px solid var(--border-color);">
-                        <div style="flex: 2; min-width: 200px;">
-                            <input type="text" id="search-keyword" placeholder="🔍 Cari uraian, akun, sumber..." onkeyup="refreshUI()" style="background: white;">
-                        </div>
-                        <div style="flex: 1; min-width: 150px;">
-                            <select id="filter-type" onchange="refreshUI()" style="background: white;">
-                                <option value="">Semua Transaksi</option>
-                                <option value="in">Pemasukan (Debit)</option>
-                                <option value="out">Pengeluaran (Kredit)</option>
-                            </select>
-                        </div>
-                        <div style="flex: 1; min-width: 150px;">
-                            <input type="date" id="filter-start-date" onchange="refreshUI()" title="Dari Tanggal" style="background: white;">
-                        </div>
-                        <div style="flex: 1; min-width: 150px;">
-                            <input type="date" id="filter-end-date" onchange="refreshUI()" title="Sampai Tanggal" style="background: white;">
-                        </div>
-                        <button class="btn btn-outline" onclick="clearFilters()" style="width: auto; padding: 12px 18px;"><i class="fa-solid fa-rotate-left"></i> Reset</button>
-                    </div>
-
-                    <div class="table-responsive">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Tanggal</th>
-                                    <th>Ref/Sumber Dana</th>
-                                    <th>Akun & Keterangan</th>
-                                    <th>Debit</th>
-                                    <th>Kredit</th>
-                                    <th>Saldo</th>
-                                    <th>Nota</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="table-body"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- RIWAYAT ARSIP -->
-                <div id="v-arsip" class="panel hidden">
-                    <div class="panel-header"><i class="fa-solid fa-box-archive"></i> Riwayat Arsip Tahunan</div>
-                    <div style="display:flex; gap:15px; margin-bottom:20px; flex-wrap:wrap;">
-                        <input type="number" id="input-arsip-year" placeholder="Ketik Tahun (contoh: 2025)" style="max-width:250px; background: white;">
-                        <button class="btn btn-primary" onclick="loadArsip()"><i class="fa-solid fa-magnifying-glass"></i> Cari Arsip</button>
-                    </div>
-                    <div class="table-responsive">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Tanggal</th>
-                                    <th>Ref/Sumber Dana</th>
-                                    <th>Akun & Keterangan</th>
-                                    <th>Debit</th>
-                                    <th>Kredit</th>
-                                </tr>
-                            </thead>
-                            <tbody id="table-arsip-body">
-                                <tr><td colspan="5" style="text-align:center; color: var(--text-muted);">Silakan masukkan tahun untuk memuat data arsip.</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- POSTER -->
-                <div id="v-poster" class="panel hidden">
-                    <div class="panel-header"><i class="fa-solid fa-file-image"></i> Generator Poster Transparansi Pemasukan</div>
-                    
-                    <div class="no-print" style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 25px; background: var(--bg-main); padding: 20px; border-radius: 18px; border: 1px solid var(--border-color);">
-                        <div style="flex: 1; min-width: 150px;">
-                            <label style="font-size:11px; font-weight:800; color:var(--text-dark); text-transform:uppercase;">Dari Tanggal</label>
-                            <input type="date" id="poster-start" onchange="buildPoster()" style="background: white; margin-top:6px;">
-                        </div>
-                        <div style="flex: 1; min-width: 150px;">
-                            <label style="font-size:11px; font-weight:800; color:var(--text-dark); text-transform:uppercase;">Sampai Tanggal</label>
-                            <input type="date" id="poster-end" onchange="buildPoster()" style="background: white; margin-top:6px;">
-                        </div>
-                        <div style="display:flex; align-items:flex-end; gap:10px;">
-                            <button class="btn btn-outline" onclick="resetPosterFilter()" style="width: auto; padding: 13px 18px;"><i class="fa-solid fa-rotate-left"></i> Reset</button>
-                            <button class="btn btn-primary" onclick="cetakPosterPDF()" style="width: auto;"><i class="fa-solid fa-download"></i> Download Poster PDF</button>
-                        </div>
-                    </div>
-
-                    <div class="pdf-preview-wrapper no-print">
-                        <div id="poster-print-area" class="poster-container">
-                            <div class="poster-overlay"></div>
-                            <div class="poster-content">
-                                <div style="text-align:center; margin-bottom: 20px;">
-                                    <img id="poster-logo" src="" alt="Logo" style="height:80px; background:white; padding:10px; border-radius:18px; margin-bottom:10px; box-shadow:var(--shadow-md);">
-                                    <h2 style="font-family:'Cinzel', serif; font-size:24px; font-weight:800; margin:0; color:var(--nu-gold);">LAPORAN PENERIMAAN INFAK & SEDEKAH</h2>
-                                    <h3 id="poster-lembaga" style="font-size:16px; margin:6px 0 0 0; letter-spacing:1px; color:white;">UPZIS RANTING KARANGDOWO</h3>
-                                    <p id="poster-periode-text" style="font-size:12px; font-weight:600; color:#e2e8f0; margin-top:6px;"></p>
-                                </div>
-                                
-                                <div class="poster-card" style="margin-bottom: 20px; background:var(--gold-gradient); color:var(--nu-green-dark); border:none; padding:15px;">
-                                    <div style="font-size:13px; font-weight:800; text-transform:uppercase; letter-spacing:1px;">Total Penerimaan Keseluruhan</div>
-                                    <div id="poster-in" style="font-size:32px; font-weight:800; margin-top:4px;">Rp 0</div>
-                                </div>
-
-                                <div style="display:grid; grid-template-columns:1.2fr 0.8fr; gap:20px; margin-bottom:25px; align-items: center;">
-                                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2);">
-                                        <h4 style="font-size:12px; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.2); padding-bottom:5px;">Rincian Pemasukan per Relawan</h4>
-                                        <div id="poster-breakdown" style="font-size:12px; display:flex; flex-direction:column; gap:8px;">
-                                        </div>
-                                    </div>
-                                    <div style="background: white; padding: 15px; border-radius: 12px; box-shadow: var(--shadow-sm);">
-                                        <canvas id="posterChart" style="max-height: 180px;"></canvas>
-                                    </div>
-                                </div>
-
-                                <div style="text-align:center; font-size:11px; font-weight:500; color:#e2e8f0; padding-top:15px; border-top:1px solid rgba(255,255,255,0.2); line-height: 1.5;">
-                                    <p style="margin-bottom: 5px; font-style: italic;">"Jazakumullah ahsanal jaza, jazakumullah khairan katsiran."</p>
-                                    <p style="margin-bottom: 10px;">Ya Allah, berikanlah ganjaran pahala atas harta yang telah mereka keluarkan, jadikanlah ia sebagai pembersih, dan berikanlah keberkahan pada harta mereka yang tersisa. Aamiin.</p>
-                                    <p style="font-weight:700; color:var(--nu-gold); font-size:12px;">Pengurus & Bendahara UPZIS</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- LAPORAN -->
-                <div id="v-laporan" class="panel hidden">
-                    <div class="no-print" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; background: var(--bg-main); padding: 24px 30px; border-radius: 20px; margin-bottom: 30px; border: 1px solid var(--border-color);">
-                        <div style="display: flex; gap: 15px; align-items: center; width: 100%;">
-                            <label style="font-weight: 800; color: var(--text-dark); text-transform: uppercase; font-size: 12px;">Periode Cetak</label>
-                            <input type="month" id="filter-month" onchange="buildReport()" style="width: auto; background: white;">
-                        </div>
-                        <button class="btn btn-primary" onclick="cetakPDF()" style="width: 100%;"><i class="fa-solid fa-print"></i> Download Laporan Resmi (PDF Landscape)</button>
-                    </div>
-
-                    <div class="pdf-preview-wrapper no-print">
-                        <div class="report-page" id="print-area">
-                            <div>
-                                <div class="report-header">
-                                    <img id="pdf-logo" src="" alt="Logo">
-                                    <div class="report-title-center">
-                                        <h2>LAPORAN PENERIMAAN & PENYALURAN KAS</h2>
-                                        <h3 style="font-weight: bold; margin-top: 2px; font-size: 10pt;" id="pdf-nama-lembaga">UPZIS RANTING KARANGDOWO</h3>
-                                        <p style="margin: 1px 0 0 0; font-size: 8pt; font-weight: bold;">Masa Khidmat: <span id="pdf-masa-khidmat">2024-2029</span></p>
-                                        <p id="lap-periode" style="margin: 1px 0 0 0; font-size: 7.5pt; font-style: italic;">Periode Pelaporan: -</p>
-                                    </div>
-                                    <div style="width: 110px;"></div>
-                                </div>
-
-                                <div class="report-section-title">I. Rincian Penerimaan Dana</div>
-                                <table class="report-table">
-                                    <thead>
-                                        <tr>
-                                            <th style="width: 12%;">Kode</th>
-                                            <th style="width: 58%;">Sumber Penerimaan Dana</th>
-                                            <th style="width: 30%;">Nominal (Rp)</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="lap-tbl-masuk"></tbody>
-                                </table>
-
-                                <div class="report-section-title">II. Rincian Penyaluran Dana</div>
-                                <table class="report-table">
-                                    <thead>
-                                        <tr>
-                                            <th style="width: 12%;">Kode</th>
-                                            <th style="width: 58%;">Program Penyaluran / Bantuan</th>
-                                            <th style="width: 30%;">Nominal (Rp)</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="lap-tbl-keluar"></tbody>
-                                </table>
-
-                                <div class="report-section-title">III. Rekapitulasi Posisi Kas</div>
-                                <table class="report-table">
-                                    <tbody>
-                                        <tr>
-                                            <td style="width: 70%;">Saldo Awal Kas Sebelum / Awal Bulan Ini</td>
-                                            <td id="lap-saldo-awal" style="width: 30%; text-align: right; font-weight: bold;">Rp 0</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Total Penerimaan Dana Periode Ini</td>
-                                            <td id="lap-tot-masuk" style="text-align: right; color: #15803d; font-weight: bold;">Rp 0</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Total Penyaluran Dana Periode Ini</td>
-                                            <td id="lap-tot-keluar" style="text-align: right; color: #dc2626; font-weight: bold;">(Rp 0)</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Saldo Kas Tunai Akhir</td>
-                                            <td id="lap-saldo-tunai" style="text-align: right;">Rp 0</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Saldo Rekening Bank BRI Akhir</td>
-                                            <td id="lap-saldo-bank" style="text-align: right;">Rp 0</td>
-                                        </tr>
-                                        <tr style="background-color: #f1f5f9;">
-                                            <td style="font-weight: bold; font-size: 8pt;">TOTAL SALDO AKHIR KAS TERSEDIA</td>
-                                            <td id="lap-saldo-akhir" style="text-align: right; font-weight: bold; font-size: 8pt;">Rp 0</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <div>
-                                <div class="signature-area">
-                                    <div class="sig-box">
-                                        <p>Mengetahui & Mengesahkan,</p>
-                                        <p style="font-weight: bold;">Ketua UPZIS</p>
-                                        <br><br><br>
-                                        <p style="text-decoration: underline; font-weight: bold;" id="pdf-ttd-ketua">....................................</p>
-                                    </div>
-                                    <div class="sig-box">
-                                        <p id="lap-tanggal-cetak">Karangdowo, ..........................</p>
-                                        <p style="font-weight: bold;">Bendahara</p>
-                                        <br><br><br>
-                                        <p style="text-decoration: underline; font-weight: bold;" id="pdf-ttd-bendahara">....................................</p>
-                                    </div>
-                                </div>
-                                <div class="report-footer-note">
-                                    Sistem Keuangan Terpadu UPZIS Ranting Karangdowo &copy; 2026 | Dibuat dan Dikelola oleh <strong>Muhamad Efendhi, S. Ak</strong>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- MUSTAHIK -->
-                <div id="v-mustahik" class="panel hidden">
-                    <div class="panel-header"><i class="fa-solid fa-users"></i> Database Warga & Mustahik</div>
-                    <form id="form-mustahik" style="background: var(--bg-main); padding: 30px; border-radius: 20px; margin-bottom: 35px; border: 1px solid var(--border-color);">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Nama Lengkap</label>
-                                <input type="text" id="m-nama" required placeholder="Sesuai KTP/KK">
-                            </div>
-                            <div class="form-group">
-                                <label>Nomor NIK KTP</label>
-                                <input type="number" id="m-nik" placeholder="16 Digit NIK">
-                            </div>
-                            <div class="form-group">
-                                <label>Kategori Relasi</label>
-                                <select id="m-kategori">
-                                    <option value="Relawan/Donatur">Relawan / Donatur Kolektor</option>
-                                    <option value="Mustahik Kesehatan">Mustahik - Kesehatan</option>
-                                    <option value="Mustahik Pendidikan">Mustahik - Pendidikan</option>
-                                    <option value="Mustahik Ekonomi">Mustahik - Ekonomi/Fakir</option>
-                                    <option value="Bantuan Umum">Bantuan Sosial Lainnya</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>No. WhatsApp Aktif</label>
-                                <input type="number" id="m-hp" placeholder="Contoh: 08123...">
-                            </div>
-                            <div class="form-group" style="grid-column: 1 / -1;">
-                                <label>Alamat & Catatan Tambahan</label>
-                                <textarea id="m-alamat" rows="2" placeholder="Detail alamat..."></textarea>
-                            </div>
-                        </div>
-                        <div style="text-align: right; margin-top: 25px;">
-                            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-user-plus"></i> Simpan Data Warga</button>
-                        </div>
-                    </form>
-
-                    <div class="table-responsive">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Identitas Warga</th>
-                                    <th>Kategori</th>
-                                    <th>Kontak & Alamat</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="table-mustahik"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- PENGURUS -->
-                <div id="v-pengurus" class="panel hidden">
-                    <div class="panel-header"><i class="fa-solid fa-building-user"></i> Profil Lembaga & Pengelolaan Anggota</div>
-                    
-                    <div class="grid-2-col">
-                        <div>
-                            <div style="background: var(--bg-main); padding: 30px; border-radius: 20px; border: 1px solid var(--border-color); margin-bottom: 24px;">
-                                <h4 style="margin-bottom: 20px; font-weight: 800; font-size: 15px; display: flex; align-items: center; gap: 10px;"><i class="fa-solid fa-sitemap" style="color:var(--nu-gold-dark);"></i> Identitas Lembaga</h4>
-                                <form id="form-profil">
-                                    <div class="form-group" style="margin-bottom: 18px;">
-                                        <label>Nama Lembaga (Ranting)</label>
-                                        <input type="text" id="p-lembaga" required>
-                                    </div>
-                                    <div class="form-group" style="margin-bottom: 25px;">
-                                        <label>Masa Khidmat (Periode)</label>
-                                        <input type="text" id="p-periode" required>
-                                    </div>
-                                    <button type="button" onclick="simpanProfil()" class="btn btn-primary" style="width: 100%;"><i class="fa-solid fa-floppy-disk"></i> Simpan Identitas</button>
-                                </form>
-                            </div>
-
-                            <div style="background: var(--bg-main); padding: 30px; border-radius: 20px; border: 1px solid var(--border-color);">
-                                <h4 style="margin: 0 0 15px 0; font-weight: 800; font-size: 15px; display: flex; align-items: center; gap: 10px;"><i class="fa-solid fa-image" style="color:var(--nu-gold-dark);"></i> Logo Lembaga</h4>
-                                <div style="display: flex; align-items: center; gap: 20px;">
-                                    <img id="preview-logo" src="" alt="Logo" style="width: 100px; height: 100px; object-fit: contain; border-radius: 14px; background: white; padding: 8px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);">
-                                    <input type="file" id="upload-logo" accept="image/*" style="font-size: 13px; width: 100%; cursor: pointer; background: white; padding: 12px; border-radius: 12px; border: 1px dashed var(--nu-gold);">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div style="background: var(--bg-main); padding: 30px; border-radius: 20px; border: 1px solid var(--border-color); margin-bottom: 24px;">
-                                <h4 style="margin: 0 0 15px 0; font-weight: 800; font-size: 15px; display: flex; align-items: center; gap: 10px;"><i class="fa-solid fa-users-gear" style="color:var(--nu-gold-dark);"></i> Manajemen Anggota Kepengurusan</h4>
-                                <div style="display: flex; gap: 12px; margin-bottom: 15px; flex-wrap: wrap;">
-                                    <input type="text" id="input-anggota-nama" placeholder="Nama Lengkap..." style="flex: 2; min-width: 150px;">
-                                    <input type="text" id="input-anggota-jabatan" placeholder="Jabatan..." list="default-jabatan" style="flex: 1; min-width: 150px;">
-                                    <datalist id="default-jabatan">
-                                        <option value="Ketua"><option value="Wakil Ketua"><option value="Sekretaris"><option value="Bendahara"><option value="Relawan">
-                                    </datalist>
-                                    <button type="button" class="btn btn-primary" onclick="tambahAnggota()"><i class="fa-solid fa-plus"></i> Tambah</button>
-                                </div>
-                                <div id="list-anggota" style="display: flex; flex-direction: column; gap: 10px; max-height: 250px; overflow-y: auto; padding-right: 4px;"></div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div style="background: var(--bg-main); padding: 30px; border-radius: 20px; border: 1px solid var(--border-color); margin-top: 24px;">
-                        <h4 style="margin: 0 0 20px 0; font-weight: 800; font-size: 15px; display: flex; align-items: center; gap: 10px; justify-content: center;"><i class="fa-solid fa-sitemap" style="color:var(--nu-gold-dark);"></i> Bagan Kepengurusan UPZIS</h4>
-                        <div id="org-chart-container" style="padding: 20px; background: white; border-radius: 16px; border: 1px dashed var(--border-color);"></div>
-                    </div>
-                </div>
-
-                <!-- LOG -->
-                <div id="v-log" class="panel hidden">
-                    <div class="panel-header"><i class="fa-solid fa-list-check"></i> Log Aktivitas Sistem (Audit Trail)</div>
-                    <div style="margin-bottom: 20px; padding: 15px; background: #e0f2fe; color: #0369a1; border-radius: 12px; border: 1px solid #bae6fd; font-size: 13px; font-weight: 500;">
-                        <i class="fa-solid fa-circle-info"></i> Sistem secara otomatis merekam setiap perubahan data secara real-time.
-                    </div>
-                    <div class="table-responsive">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th style="width: 20%;">Waktu & Tanggal</th>
-                                    <th style="width: 15%;">Pengguna</th>
-                                    <th style="width: 25%;">Tindakan</th>
-                                    <th style="width: 40%;">Detail Keterangan</th>
-                                </tr>
-                            </thead>
-                            <tbody id="table-logs"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- TUTUP BUKU & CLOUD DRIVE -->
-                <div id="v-tutup-buku" class="panel hidden">
-                    <div class="panel-header"><i class="fa-solid fa-folder-closed"></i> Tutup Buku, Import/Export & Cloud Drive</div>
-                    
-                    <div class="grid-2-col" style="margin-bottom: 25px;">
-                        <div style="background: var(--bg-main); padding: 25px; border-radius: 20px; border: 1px solid var(--border-color);">
-                            <h4 style="font-size: 15px; font-weight: 800; margin-bottom: 12px; display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-file-import" style="color:var(--nu-gold-dark);"></i> Import Data Keseluruhan</h4>
-                            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">Unggah file Excel/CSV cadangan sebelumnya untuk memuat ulang seluruh transaksi dan data warga secara kompatibel.</p>
-                            <input type="file" id="import-file-input" accept=".xlsx, .xls, .csv" style="background:white; padding:10px; margin-bottom:12px; font-size:12px;" onchange="importDataFromFile(event)">
-                            <button class="btn btn-outline" style="width:100%;" onclick="document.getElementById('import-file-input').click()"><i class="fa-solid fa-upload"></i> Pilih File untuk Di-import</button>
-                        </div>
-
-                        <div style="background: var(--bg-main); padding: 25px; border-radius: 20px; border: 1px solid var(--border-color);">
-                            <h4 style="font-size: 15px; font-weight: 800; margin-bottom: 12px; display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-cloud-arrow-up" style="color:var(--accent-blue);"></i> Sinkronisasi Awan (Cloud Sync)</h4>
-                            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">Otorisasi koneksi End-to-End untuk mengamankan salinan database terbaru langsung ke brankas Cloud (Drive) Anda.</p>
-                            <div style="display:flex; flex-direction:column; gap:10px;">
-                                <button id="btn-sync-gdrive" class="btn btn-primary" style="background:linear-gradient(135deg, #4285F4, #34A853);" onclick="syncCloudDrive('Google Drive')"><i class="fa-brands fa-google-drive"></i> Otorisasi & Enkripsi ke Google Drive</button>
-                                <button id="btn-sync-onedrive" class="btn btn-primary" style="background:linear-gradient(135deg, #0078D4, #00188F);" onclick="syncCloudDrive('OneDrive')"><i class="fa-brands fa-microsoft"></i> Otorisasi & Enkripsi ke OneDrive</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div style="background: var(--bg-main); padding: 30px; border-radius: 20px; border: 1px solid var(--danger);">
-                        <h4 style="color: var(--danger); margin-bottom: 15px; font-size: 16px;"><i class="fa-solid fa-triangle-exclamation"></i> Zona Berbahaya: Tutup Buku Akhir Tahun</h4>
-                        <p style="font-size: 14px; margin-bottom: 10px; line-height: 1.6;">Lakukan pencadangan (Backup) terlebih dahulu sebelum melakukan Tutup Buku.</p>
-                        <p style="font-size: 13px; margin-bottom: 25px; color: var(--text-muted); line-height: 1.6;">Proses Tutup Buku akan memindahkan seluruh riwayat transaksi ke <strong>Brankas Arsip Tahunan</strong> untuk memulai buku di tahun yang baru. Cadangkan data Anda di bawah ini:</p>
-                        <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 25px;">
-                            <button class="btn btn-outline" onclick="backupData('pdf')"><i class="fa-solid fa-file-pdf"></i> Cadangkan PDF</button>
-                            <button class="btn btn-outline" onclick="backupData('excel')"><i class="fa-solid fa-file-excel"></i> Cadangkan Excel</button>
-                            <button class="btn btn-outline" onclick="backupData('csv')"><i class="fa-solid fa-file-csv"></i> Cadangkan CSV</button>
-                        </div>
-                        <div style="border-top: 1px dashed var(--danger); padding-top: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
-                            <span style="font-size: 12px; color: var(--danger); font-weight: 700;">Data lama akan masuk ke Riwayat Arsip!</span>
-                            <button class="btn btn-primary" style="background: var(--danger);" onclick="eksekusiTutupBuku()"><i class="fa-solid fa-folder-minus"></i> Eksekusi Tutup Buku Sekarang</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- PENGATURAN -->
-                <div id="v-pengaturan" class="panel hidden">
-                    <div class="panel-header"><i class="fa-solid fa-shield-halved"></i> Kredensial & Keamanan Akun</div>
-                    
-                    <div class="grid-2-col">
-                        <div style="background: var(--bg-main); padding: 30px; border-radius: 20px; border: 1px solid var(--border-color);">
-                            <h4 style="margin: 0 0 10px 0; font-size: 15px; font-weight: 800; display:flex; align-items:center; gap:10px;"><i class="fa-solid fa-id-badge" style="color: var(--nu-gold-dark);"></i> Ubah Username (ID)</h4>
-                            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 24px; font-weight: 500;">Ubah ID Login yang digunakan untuk mengakses sistem ini.</p>
-                            
-                            <form id="form-username">
-                                <div class="form-group" style="margin-bottom: 18px;">
-                                    <label>Username Baru</label>
-                                    <input type="text" id="un-new" required placeholder="Ketik ID baru...">
-                                </div>
-                                <div class="form-group" style="margin-bottom: 25px;">
-                                    <label>Konfirmasi Sandi Saat Ini</label>
-                                    <input type="password" id="un-pass" required placeholder="Sandi Anda...">
-                                </div>
-                                <button type="submit" class="btn btn-outline" style="width: 100%;"><i class="fa-solid fa-check"></i> Terapkan Username</button>
-                            </form>
-                        </div>
-
-                        <div style="background: var(--bg-main); padding: 30px; border-radius: 20px; border: 1px solid var(--border-color);">
-                            <h4 style="margin: 0 0 10px 0; font-size: 15px; font-weight: 800; display:flex; align-items:center; gap:10px;"><i class="fa-solid fa-key" style="color: var(--nu-gold-dark);"></i> Ubah Kata Sandi</h4>
-                            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 24px; font-weight: 500;">Pastikan menggunakan kata sandi yang kuat dan kombinasi unik.</p>
-                            
-                            <form id="form-password">
-                                <div class="form-group" style="margin-bottom: 18px;">
-                                    <label>Kata Sandi Lama</label>
-                                    <input type="password" id="pw-old" required>
-                                </div>
-                                <div class="form-group" style="margin-bottom: 25px;">
-                                    <label>Kata Sandi Baru</label>
-                                    <input type="password" id="pw-new" required>
-                                </div>
-                                <button type="submit" class="btn btn-primary" style="width: 100%;"><i class="fa-solid fa-lock"></i> Perbarui Keamanan Sandi</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+        <!-- FORM INPUT TRANSAKSI (Hanya Muncul Untuk Bendahara) -->
+        <div class="card no-print" id="form-input-area" style="display: none;">
+            <h3>Input Transaksi Baru</h3>
+            <input type="text" id="ket-transaksi" placeholder="Keterangan (Contoh: Zakat Fitrah)">
+            <input type="number" id="nominal-transaksi" placeholder="Nominal (Hanya Angka)">
+            <select id="tipe-transaksi">
+                <option value="masuk">Kas Masuk (Penerimaan)</option>
+                <option value="keluar">Kas Keluar (Pengeluaran)</option>
+            </select>
+            <button onclick="simpanTransaksi()" style="width: 100%;">Simpan Transaksi</button>
         </div>
-    </div>
 
-    <!-- MODAL KALKULATOR AMIL -->
-    <div id="modal-amil" class="hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 20px;">
-        <div style="background: white; border-radius: 20px; padding: 30px; max-width: 400px; width: 100%; text-align: center; position: relative;">
-            <h3 style="color: var(--nu-green-dark); margin-bottom: 20px;"><i class="fa-solid fa-calculator"></i> Kalkulator Hak Amil</h3>
-            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Menghitung 12.5% hak operasional (Amil) dari total seluruh penerimaan Infaq & Zakat bulan berjalan ini.</p>
-            
-            <div style="background: #f8fafc; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--border-color);">
-                <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--text-muted);">Total Penerimaan (Bulan Ini)</div>
-                <div id="amil-total" style="font-size: 24px; font-weight: 800; color: var(--text-dark);">Rp 0</div>
-            </div>
-            
-            <div style="background: var(--green-gradient); padding: 15px; border-radius: 12px; margin-bottom: 25px; color: white; box-shadow: var(--shadow-md);">
-                <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--nu-gold-light);">Alokasi Hak Amil (12.5%)</div>
-                <div id="amil-hak" style="font-size: 28px; font-weight: 800; color: var(--nu-gold);">Rp 0</div>
-            </div>
-            
-            <button class="btn btn-outline" style="width: 100%;" onclick="document.getElementById('modal-amil').classList.add('hidden')">Tutup Kalkulator</button>
-        </div>
-    </div>
-
-    <!-- MODAL KUITANSI -->
-    <div id="modal-kuitansi" class="hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 20px;">
-        <div style="background: white; border-radius: 20px; padding: 25px; max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto;">
-            <div id="kuitansi-print-area" class="kuitansi-box">
-                <div class="kuitansi-header">
-                    <img id="kui-logo" src="" alt="Logo">
-                    <div style="flex:1;">
-                        <h3 style="margin:0; font-size: 14pt; color: var(--nu-green-dark);" id="kui-lembaga">UPZIS RANTING KARANGDOWO</h3>
-                        <p style="margin:0; font-size: 9pt;" id="kui-periode">Masa Khidmat: -</p>
-                    </div>
-                    <div style="text-align: right;">
-                        <h2 style="margin:0; font-size: 16pt; color: var(--nu-gold-dark); text-transform: uppercase;">KUITANSI</h2>
-                        <small id="kui-no" style="font-size: 8pt; color: gray;">NO: -</small>
-                    </div>
+        <!-- TABEL DATA -->
+        <div class="card" id="area-laporan">
+            <!-- KOP SURAT (Hanya muncul saat dicetak/PDF) -->
+            <div id="print-header-area">
+                <img src="icon-192.png" alt="Logo UPZIS" class="print-logo-upzis">
+                <div class="print-title">
+                    <h2 style="margin:0; font-size:20px;">LEMBAGA AMIL ZAKAT INFAQ DAN SHADAQAH NAHDLATUL ULAMA</h2>
+                    <h3 id="print-ranting-title" style="margin:5px 0; font-size:18px;">UPZIS RANTING ...</h3>
+                    <p style="margin:0; font-size:12px;">Laporan Rekapitulasi Kas Keuangan</p>
                 </div>
-                <table style="width: 100%; border-collapse: collapse; font-size: 10pt; min-width: 0;">
-                    <tr><td style="padding: 6px 0; width: 30%; font-weight: bold;">Telah Diterima / Disalurkan:</td><td id="kui-tipe" style="padding: 6px 0;">-</td></tr>
-                    <tr><td style="padding: 6px 0; font-weight: bold;">Uang Sejumlah:</td><td id="kui-nominal" style="padding: 6px 0; font-weight: bold; font-size: 12pt; color: var(--nu-green);">-</td></tr>
-                    <tr><td style="padding: 6px 0; font-weight: bold;">Untuk Pembayaran:</td><td id="kui-ket" style="padding: 6px 0;">-</td></tr>
-                    <tr><td style="padding: 6px 0; font-weight: bold;">Metode Dana:</td><td id="kui-sumber" style="padding: 6px 0;">-</td></tr>
-                </table>
-                <div style="display: flex; justify-content: space-between; margin-top: 30px; text-align: center; font-size: 9pt;">
-                    <div></div>
-                    <div>
-                        <p id="kui-tgl">Karangdowo, -</p>
-                        <p style="font-weight: bold; margin-top: 5px;">Bendahara</p>
-                        <br><br><br>
-                        <p style="font-weight: bold; text-decoration: underline;" id="kui-ttd">-</p>
-                    </div>
-                </div>
-            </div>
-            <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: space-between; flex-wrap: wrap;">
-                <button type="button" class="btn btn-outline" style="background: #25D366; border-color: #25D366; color: white;" onclick="kirimKuitansiWA()"><i class="fa-brands fa-whatsapp"></i> Kirim ke WA</button>
-                <div style="display: flex; gap: 10px;">
-                    <button type="button" class="btn btn-outline" onclick="closeKuitansi()"><i class="fa-solid fa-xmark"></i> Tutup</button>
-                    <button type="button" class="btn btn-primary" onclick="cetakKuitansiPDF()"><i class="fa-solid fa-print"></i> Cetak / Save PDF</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- BUKU BESAR PRINT TEMPLATE -->
-    <div id="hidden-buku-besar-print" class="hidden">
-        <div class="report-page" id="buku-besar-area" style="padding: 10mm;">
-            <div class="report-header">
-                <img id="bb-pdf-logo" src="" alt="Logo">
-                <div class="report-title-center">
-                    <h2>BUKU BESAR MUTASI KAS</h2>
-                    <h3 style="font-weight: bold; margin-top: 2px; font-size: 10pt;" id="bb-pdf-nama-lembaga">UPZIS RANTING KARANGDOWO</h3>
-                    <p style="margin: 1px 0 0 0; font-size: 8pt; font-weight: bold;">Masa Khidmat: <span id="bb-pdf-masa-khidmat">2024-2029</span></p>
-                    <p id="bb-lap-periode" style="margin: 1px 0 0 0; font-size: 7.5pt; font-style: italic;">Rincian Transaksi: -</p>
-                </div>
-                <div style="width: 110px;"></div>
+                <img src="logo-nu.png" alt="Logo NU" class="print-logo-nu">
             </div>
 
-            <table class="report-table" style="margin-top: 15px;">
+            <h3 class="no-print">Riwayat Transaksi</h3>
+            <table>
                 <thead>
                     <tr>
-                        <th style="width: 12%;">Tanggal</th>
-                        <th style="width: 14%;">Ref/Sumber</th>
-                        <th style="width: 32%;">Akun & Uraian Transaksi</th>
-                        <th style="width: 14%;">Debit (Rp)</th>
-                        <th style="width: 14%;">Kredit (Rp)</th>
-                        <th style="width: 14%;">Saldo (Rp)</th>
+                        <th>Tanggal</th>
+                        <th>Keterangan</th>
+                        <th>Tipe</th>
+                        <th>Nominal</th>
+                        <th class="aksi-kolom no-print" style="display:none;">Aksi</th>
                     </tr>
                 </thead>
-                <tbody id="bb-table-rows"></tbody>
+                <tbody id="tabel-transaksi">
+                    <!-- Data dimuat dari Firebase -->
+                </tbody>
             </table>
-
-            <div class="signature-area">
-                <div class="sig-box">
-                    <p>Mengetahui & Mengesahkan,</p>
-                    <p style="font-weight: bold;">Ketua UPZIS</p>
-                    <br><br><br>
-                    <p style="text-decoration: underline; font-weight: bold;" id="bb-pdf-ttd-ketua">....................................</p>
-                </div>
-                <div class="sig-box">
-                    <p id="bb-lap-tanggal-cetak">Karangdowo, ..........................</p>
-                    <p style="font-weight: bold;">Bendahara</p>
-                    <br><br><br>
-                    <p style="text-decoration: underline; font-weight: bold;" id="bb-pdf-ttd-bendahara">....................................</p>
-                </div>
-            </div>
-            <div class="report-footer-note">
-                Sistem Keuangan Terpadu UPZIS Ranting Karangdowo &copy; <span id="copyright-year">2026</span> | Dibuat dan Dikelola oleh <strong>Muhamad Efendhi, S. Ak</strong>
-            </div>
         </div>
     </div>
 
-    <!-- SCRIPT UTAMA -->
+    <!-- SCRIPT FIREBASE & SISTEM -->
     <script>
-        let isMusicPlaying = false;
-        let warningInterval = null;
-
-        function playWarningBeep() {
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'square';
-                osc.frequency.setValueAtTime(800, audioCtx.currentTime); 
-                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.3);
-            } catch (e) {}
-        }
-
-        function initAudioPlayer() {
-            const audio = document.getElementById('bg-music');
-            if(audio) {
-                audio.volume = 0.20; 
-                const playOnInteraction = () => {
-                    if(audio.paused) { audio.play().catch(() => {}); }
-                    ['click', 'touchstart', 'keydown'].forEach(evt => document.removeEventListener(evt, playOnInteraction));
-                };
-                audio.play().catch(e => {
-                    ['click', 'touchstart', 'keydown'].forEach(evt => document.addEventListener(evt, playOnInteraction, { once: true }));
-                });
-            }
-        }
-
-        function togglePasswordVisibility() {
-            const passInput = document.getElementById('l-pass');
-            const eyeIcon = document.getElementById('eye-icon');
-            if(passInput.type === 'password') {
-                passInput.type = 'text';
-                eyeIcon.className = 'fa-solid fa-eye-slash';
-            } else {
-                passInput.type = 'password';
-                eyeIcon.className = 'fa-solid fa-eye';
-            }
-        }
-
-        function playSuccessSound() {
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15);
-                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.15);
-            } catch (e) {}
-        }
-
-        function formatTanggalIndo(dateString) {
-            if (!dateString) return '-';
-            const opsi = { day: 'numeric', month: 'long', year: 'numeric' };
-            const dateObj = new Date(dateString);
-            return isNaN(dateObj) ? dateString : dateObj.toLocaleDateString('id-ID', opsi);
-        }
-
-        function compressImage(file, callback) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    let width = img.width, height = img.height;
-                    const maxDim = 800;
-                    if (width > maxDim || height > maxDim) {
-                        if (width > height) { height *= maxDim / width; width = maxDim; }
-                        else { width *= maxDim / height; height = maxDim; }
-                    }
-                    canvas.width = width; canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-                    callback(canvas.toDataURL('image/jpeg', 0.7));
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function showToast(msg, type='info') {
-            let container = document.getElementById('toast-container');
-            if(!container) { 
-                container = document.createElement('div'); 
-                container.id = 'toast-container'; 
-                document.body.appendChild(container); 
-            }
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            
-            let icon = '<i class="fa-solid fa-circle-info" style="color:var(--accent-blue); font-size:18px;"></i>';
-            if (type === 'success') {
-                icon = '<i class="fa-solid fa-circle-check" style="color:#4ade80; font-size:18px;"></i>';
-                playSuccessSound();
-            } else if (type === 'error') {
-                icon = '<i class="fa-solid fa-circle-xmark" style="color:var(--danger); font-size:18px;"></i>';
-            }
-            
-            toast.innerHTML = `${icon} <span>${msg}</span>`;
-            container.appendChild(toast);
-            setTimeout(() => { 
-                toast.style.animation = 'slideOut 0.4s forwards'; 
-                setTimeout(() => toast.remove(), 400); 
-            }, 3500);
-        }
-
-        const ADMIN_WA = "628995697583";
-        const formatRp = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
-
-        document.getElementById('t-amount').addEventListener('input', function(e) {
-            let val = this.value.replace(/[^0-9]/g, '');
-            if(val) {
-                this.value = parseInt(val, 10).toLocaleString('id-ID');
-            } else {
-                this.value = '';
-            }
-        });
-
-        let chart1 = null, chart2 = null, chart3 = null;
-        let currentUserRole = 'bendahara';
-
-        function updateStorageIndicator() {
-            const totalBytes = new Blob([JSON.stringify(transactions) + JSON.stringify(dbMustahik) + JSON.stringify(profileSettings) + JSON.stringify(logsData)]).size;
-            const totalMb = (totalBytes / (1024 * 1024)).toFixed(2);
-            const quotaMb = 1024; 
-            const percentage = Math.min((totalMb / quotaMb) * 100, 100).toFixed(1);
-
-            document.getElementById('storage-info-text').innerText = `Storage: ${totalMb} MB / 1 GB`;
-            document.getElementById('storage-bar-fill').style.width = `${Math.max(percentage, 0.5)}%`;
-        }
-
-        function recoverPasswordWA() {
-            const msg = `Halo Admin, saya lupa kata sandi untuk Sistem Bendahara UPZIS. Mohon bantuan reset kata sandi.`;
-            window.open(`https://api.whatsapp.com/send?phone=${ADMIN_WA}&text=${encodeURIComponent(msg)}`, '_blank');
-        }
-
-        function updateClock() {
-            const now = new Date();
-            const timeOpts = { hour: '2-digit', minute: '2-digit' };
-            const dateOpts = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-            document.getElementById('realtime-clock').innerHTML = `<span>${now.toLocaleDateString('id-ID', dateOpts)}</span> | <span style="color:var(--nu-gold);">${now.toLocaleTimeString('id-ID', timeOpts)} WIB</span>`;
-            const copyYear = document.getElementById('copyright-year');
-            if(copyYear) copyYear.innerText = now.getFullYear();
-        }
-        setInterval(updateClock, 1000); updateClock();
-
-        let profileSettings = {
-            lembaga: 'UPZIS Ranting Karangdowo', periode: '2024-2029', 
-            ketua: 'H. Fulan, S.Ag', bendahara: 'Muhamad Efendhi, S. Ak', 
-            username: 'bendahara', password: 'admin', 
-            relawan: ['Mustaqim', 'Ana / Jariyah', 'Fatimah', 'Novi', 'Yusuf', "Rofi'ah", 'Watik / Har / Bu Parno', 'Geger / Ujang'], 
-            anggota: [],
-            logoBase64: 'https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg',
-            activeYear: new Date().getFullYear()
+        // MASUKKAN CONFIG FIREBASE AKANG DI SINI
+        const firebaseConfig = {
+            apiKey: "AIzaSyBpsQLNhyFL-agq2Iwmw2TU42F51LrvkHI",
+            authDomain: "upzis-lazisnu.firebaseapp.com",
+            databaseURL: "https://upzis-lazisnu-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId:  "upzis-lazisnu",
+            storageBucket: "upzis-lazisnu.firebasestorage.app",
+            messagingSenderId: "1284852623",
+            appId: "1:1284852623:web:a2b24c2e261273c59099fa"
         };
 
-        // --- PENAMBAHAN MODUL ZAKAT ---
-        function getDynamicCategories() {
-            let inList = [
-                { code: '101', name: 'Saldo Awal Kas' },
-                { code: '120', name: 'Pindah Buku Rekening Bank ke tunai' },
-                { code: '220', name: 'Pindah Tunai ke Rekening' }
-            ];
-            if(profileSettings.relawan && profileSettings.relawan.length > 0) {
-                profileSettings.relawan.forEach((rel, idx) => {
-                    let codeNum = 111 + idx;
-                    inList.push({ code: String(codeNum), name: `Setoran Bulanan dari Relawan ${rel}` });
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        // Variabel Global
+        let asalRanting = "Karangdowo";
+        let role = "ketua";
+
+        // Tampilkan Tanggal di Dashboard
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('tanggal-sekarang').innerText = new Date().toLocaleDateString('id-ID', options);
+
+        // Fungsi Ganti Tampilan Form (Masuk/Daftar)
+        function toggleDaftar() {
+            const inputRanting = document.getElementById('nama-ranting');
+            const btnMasuk = document.getElementById('btn-masuk');
+            const btnDaftar = document.getElementById('btn-daftar');
+            const textToggle = document.getElementById('toggle-auth');
+            
+            if (inputRanting.style.display === 'none') {
+                inputRanting.style.display = 'block';
+                btnMasuk.style.display = 'none';
+                btnDaftar.style.display = 'block';
+                textToggle.innerText = 'Sudah punya akun? Masuk di sini';
+            } else {
+                inputRanting.style.display = 'none';
+                btnMasuk.style.display = 'block';
+                btnDaftar.style.display = 'none';
+                textToggle.innerText = 'Belum punya akun Ranting? Daftar di sini';
+            }
+        }
+
+        // Fungsi Daftar
+        function prosesDaftar() {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            const ranting = document.getElementById('nama-ranting').value.trim();
+
+            if(!ranting) { alert("Nama Ranting wajib diisi!"); return; }
+
+            firebase.auth().createUserWithEmailAndPassword(email, pass)
+            .then((userCredential) => {
+                firebase.database().ref('users/' + userCredential.user.uid).set({
+                    email: email, ranting: ranting, role: 'bendahara'
                 });
-            }
-            inList.push(
-                { code: '199', name: 'Penerimaan / Donasi Lainnya' },
-                { code: '301', name: 'Penerimaan Zakat Fitrah' },
-                { code: '302', name: 'Penerimaan Zakat Mal' }
-            );
-
-            let outList = [
-                { code: '201', name: 'Santunan Kematian (Duka)' },
-                { code: '202', name: 'Santunan Kesehatan' },
-                { code: '203', name: 'Santunan Pendidikan' },
-                { code: '204', name: 'Klaim Operasional Ambulan' },
-                { code: '205', name: 'Akomodasi (Transport)' },
-                { code: '206', name: 'Konsumsi (Rapat)' },
-                { code: '207', name: 'Setoran ke LAZISNU Cabang' },
-                { code: '208', name: 'Santunan Tanggap Bencana' },
-                { code: '299', name: 'Penyaluran Lainnya' },
-                { code: '401', name: 'Penyaluran Zakat Fitrah' },
-                { code: '402', name: 'Penyaluran Zakat Mal' }
-            ];
-            return { in: inList, out: outList };
+                alert("Pendaftaran Ranting " + ranting + " Berhasil!");
+                toggleDaftar();
+            })
+            .catch((error) => alert("Gagal daftar: " + error.message));
         }
 
-        let transactions = [];
-        let dbMustahik = [];
-        let logsData = [];
-
-        function toggleSidebar() {
-            const sidebar = document.getElementById('app-sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            sidebar.classList.toggle('mobile-open');
-            overlay.classList.toggle('active');
+        // Fungsi Login
+        function prosesLogin() {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            firebase.auth().signInWithEmailAndPassword(email, pass)
+            .catch((error) => alert("Gagal login: " + error.message));
         }
 
-        function updateFirebaseIndicator(isOnline) {
-            const led = document.getElementById('firebase-led');
-            const badge = document.getElementById('sync-badge');
-            if (led && badge) {
-                if (isOnline) {
-                    led.classList.remove('led-red');
-                    led.classList.add('led-green');
-                    badge.innerText = 'ONLINE';
-                    badge.style.background = 'rgba(74, 222, 128, 0.15)';
-                    badge.style.color = '#4ade80';
-                } else {
-                    led.classList.remove('led-green');
-                    led.classList.add('led-red');
-                    badge.innerText = 'OFFLINE';
-                    badge.style.background = 'rgba(239, 68, 68, 0.15)';
-                    badge.style.color = '#ef4444';
-                }
-            }
-        }
-        window.addEventListener('online', () => updateFirebaseIndicator(true));
-        window.addEventListener('offline', () => updateFirebaseIndicator(false));
-
-        // --- PENAMBAHAN FITUR KALKULATOR AMIL ---
-        function bukaKalkulatorAmil() {
-            let totalInfaqZakat = 0;
-            const currentMonth = new Date().toISOString().slice(0, 7);
-            
-            transactions.forEach(t => {
-                if(t.type === 'in' && t.code !== '120' && t.code !== '220' && t.code !== '101' && t.date.slice(0, 7) === currentMonth) {
-                    totalInfaqZakat += Number(t.amount || 0);
-                }
-            });
-            
-            const hakAmil = totalInfaqZakat * 0.125; // 12.5% Default
-            
-            document.getElementById('amil-total').innerText = formatRp(totalInfaqZakat);
-            document.getElementById('amil-hak').innerText = formatRp(hakAmil);
-            document.getElementById('modal-amil').classList.remove('hidden');
+        // Fungsi Keluar
+        function logoutApp() {
+            firebase.auth().signOut().then(() => location.reload());
         }
 
-        async function eksekusiTutupBuku() {
-            if(currentUserRole !== 'bendahara') return alert("Hanya Bendahara yang dapat melakukan Tutup Buku!");
-            
-            const nextYear = new Date().getFullYear();
-            const pass = prompt(`PERINGATAN FATAL!\nSeluruh data akan dipindah ke Riwayat Arsip.\nKetik kata sandi Anda untuk melanjutkan Tutup Buku ${nextYear}:`);
-            
-            if (pass === profileSettings.password) {
-                wipeAllDataForNewYear(nextYear);
-            } else if (pass !== null) {
-                showToast("Kata sandi salah. Proses dibatalkan.", "error");
-            }
-        }
-
-        // --- PERBAIKAN LOGIKA TUTUP BUKU (SOFT-DELETE / ARSIP) ---
-        async function wipeAllDataForNewYear(newYear) {
-            const activeYear = profileSettings.activeYear || new Date().getFullYear();
-            showToast(`Mengarsipkan data tahun ${activeYear} ke brankas permanen...`, "info");
-            
-            try {
-                const deletePromises = [];
-                
-                // Arsip Transaksi
-                const trxSnap = await window.fs.getDocs(window.fs.collection(window.db, "transactions"));
-                trxSnap.forEach(d => {
-                    deletePromises.push(window.fs.setDoc(window.fs.doc(window.db, `arsip_${activeYear}_transactions`, d.id), d.data()));
-                    deletePromises.push(window.fs.deleteDoc(window.fs.doc(window.db, "transactions", d.id)));
-                });
-                
-                // Arsip Warga
-                const musSnap = await window.fs.getDocs(window.fs.collection(window.db, "mustahik"));
-                musSnap.forEach(d => {
-                    deletePromises.push(window.fs.setDoc(window.fs.doc(window.db, `arsip_${activeYear}_mustahik`, d.id), d.data()));
-                    deletePromises.push(window.fs.deleteDoc(window.fs.doc(window.db, "mustahik", d.id)));
-                });
-
-                // Arsip Logs
-                const logSnap = await window.fs.getDocs(window.fs.collection(window.db, "logs"));
-                logSnap.forEach(d => {
-                    deletePromises.push(window.fs.setDoc(window.fs.doc(window.db, `arsip_${activeYear}_logs`, d.id), d.data()));
-                    deletePromises.push(window.fs.deleteDoc(window.fs.doc(window.db, "logs", d.id)));
-                });
-
-                await Promise.all(deletePromises);
-
-                profileSettings.activeYear = newYear;
-                await window.fs.setDoc(window.fs.doc(window.db, "settings", "profile"), profileSettings);
-
-                transactions = [];
-                dbMustahik = [];
-                logsData = [];
-                
-                refreshUI();
-                renderMustahik();
-                renderLogs();
-                buildReport();
-                buildPoster();
-                updateStorageIndicator();
-                
-                saveLog('SISTEM', `Sistem mengarsipkan data ke tahun ${activeYear} dan memulai buku baru untuk ${newYear}`);
-                showToast("Tutup Buku berhasil! Data lama kini tersedia di menu Riwayat Arsip.", "success");
-            } catch(e) { 
-                console.error(e);
-                showToast("Terjadi kesalahan saat mengarsipkan data.", "error");
-            }
-        }
-
-        // --- FUNGSI LOAD RIWAYAT ARSIP ---
-        async function loadArsip() {
-            const year = document.getElementById('input-arsip-year').value;
-            if(!year) return showToast("Masukkan tahun arsip terlebih dahulu!", "error");
-            
-            showToast(`Mencari data arsip tahun ${year}...`, "info");
-            const tbody = document.getElementById('table-arsip-body');
-            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">Memuat data dari server arsip...</td></tr>`;
-            
-            try {
-                const q = window.fs.query(window.fs.collection(window.db, `arsip_${year}_transactions`), window.fs.orderBy("date", "asc"));
-                const snap = await window.fs.getDocs(q);
-                
-                if(snap.empty) {
-                    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--danger); font-weight: bold;">Data arsip untuk tahun ${year} tidak ditemukan di database.</td></tr>`;
-                    return;
-                }
-                
-                let html = '';
-                const cats = getDynamicCategories();
-                const allCats = [...cats.in, ...cats.out];
-                
-                snap.forEach(docSnap => {
-                    const t = docSnap.data();
-                    const catObj = allCats.find(c => c.code === t.code);
-                    const catName = catObj ? catObj.name : 'Lainnya';
-                    
-                    html += `<tr>
-                        <td>${formatTanggalIndo(t.date)}</td>
-                        <td><span class="badge" style="background:#e2e8f0; color:#334155;">${t.source || '-'}</span></td>
-                        <td><span class="${t.type === 'in' ? 'badge badge-in' : 'badge badge-out'}" style="margin-bottom:4px;">${t.code}</span><br><strong style="font-size:13px; color:var(--text-dark);">${catName}</strong><br><small style="color:var(--text-muted);">${t.desc || '-'}</small></td>
-                        <td style="color:#15803d; font-weight:800;">${t.type === 'in' ? formatRp(t.amount) : '-'}</td>
-                        <td style="color:#b91c1c; font-weight:800;">${t.type === 'out' ? formatRp(t.amount) : '-'}</td>
-                    </tr>`;
-                });
-                tbody.innerHTML = html;
-                showToast(`Berhasil memuat ${snap.size} data arsip tahun ${year}.`, "success");
-            } catch(e) {
-                console.error(e);
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--danger); font-weight: bold;">Gagal memuat arsip. Koneksi terputus.</td></tr>`;
-                showToast("Gagal memuat riwayat arsip.", "error");
-            }
-        }
-
-        function checkYearEnd() {
-            const now = new Date();
-            const currentYear = now.getFullYear();
-            const currentMonth = now.getMonth(); 
-            
-            if(!profileSettings.activeYear) {
-                profileSettings.activeYear = currentYear;
-                window.fs.setDoc(window.fs.doc(window.db, "settings", "profile"), profileSettings);
-            }
-
-            const warningBanner = document.getElementById('year-end-warning');
-            const menuBtn = document.getElementById('nav-tutup-buku');
-
-            if(currentYear > profileSettings.activeYear) {
-                if(warningBanner) {
-                    warningBanner.classList.remove('hidden');
-                    warningBanner.innerHTML = `<i class="fa-solid fa-triangle-exclamation blink-warning" style="font-size: 28px; border:none; background:none; padding:0; box-shadow:none;"></i> 
-                    <div>
-                        <span style="font-size:14px;">TAHUN PEMBUKUAN BARU TERDETEKSI (${currentYear})</span><br>
-                        <span style="font-size:12px; font-weight:500;">Silakan masuk ke menu <b>Tutup Buku & Cloud</b> untuk mencadangkan (Backup) data tahun lalu, lalu lakukan Eksekusi Tutup Buku (Arsip).</span>
-                    </div>`;
-                }
-                if(menuBtn) menuBtn.classList.add('blink-warning');
-            } else if (currentMonth === 11) {
-                if(warningBanner) warningBanner.classList.remove('hidden');
-                if(menuBtn) menuBtn.classList.add('blink-warning');
-                if(!warningInterval) { warningInterval = setInterval(playWarningBeep, 2000); }
-            }
-        }
-
-        async function saveLog(action, detail) {
-            const now = new Date();
-            const logEntry = { time: now.toISOString(), user: currentUserRole, action: action, detail: detail };
-            try {
-                const docRef = await window.fs.addDoc(window.fs.collection(window.db, "logs"), logEntry);
-                logEntry.idFirebase = docRef.id;
-                logsData.push(logEntry);
-                if(logsData.length > 500) {
-                    logsData.sort((a,b) => new Date(a.time || 0) - new Date(b.time || 0));
-                    const toDelete = logsData[0];
-                    try {
-                        await window.fs.deleteDoc(window.fs.doc(window.db, "logs", toDelete.idFirebase));
-                        logsData.shift(); 
-                    } catch(e){}
-                }
-                renderLogs();
-            } catch(e) { console.error("Log error", e); }
-        }
-
-        function renderLogs() {
-            const tbody = document.getElementById('table-logs');
-            if(!tbody) return;
-            tbody.innerHTML = logsData.sort((a,b) => new Date(b.time || 0) - new Date(a.time || 0)).map(l => {
-                const timeStr = l.time || new Date().toISOString();
-                return `<tr>
-                    <td>${formatTanggalIndo(timeStr.slice(0,10))} <span style="color:var(--nu-gold-dark); font-weight:bold;">${new Date(timeStr).toLocaleTimeString('id-ID')}</span></td>
-                    <td><span class="badge" style="background:#e2e8f0; color:#334155;">${(l.user || 'Sistem').toUpperCase()}</span></td>
-                    <td><strong style="color:var(--text-dark);">${l.action || 'Info'}</strong></td>
-                    <td><small style="color:var(--text-muted);">${l.detail || '-'}</small></td>
-                </tr>`;
-            }).join('');
-        }
-
-        function importDataFromFile(event) {
-            const file = event.target.files[0];
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = async function(e) {
-                try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, {type: 'array'});
-                    let importedTrx = [];
-                    let importedWarga = [];
-
-                    workbook.SheetNames.forEach(sheetName => {
-                        const jsonSheet = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
-                        if(sheetName.toLowerCase().includes('trx') || sheetName.toLowerCase().includes('transaksi') || jsonSheet.some(r => r.Nominal || r.Jenis)) {
-                            importedTrx = jsonSheet.map(r => ({
-                                date: r.Tanggal || r.date || new Date().toISOString().slice(0,10),
-                                type: (r.Jenis === 'Pemasukan' || r.type === 'in') ? 'in' : 'out',
-                                code: String(r.Akun_Kode || r.code || '199'),
-                                source: r.Sumber_Dana || r.source || 'Kas Tunai',
-                                amount: Number(r.Nominal || r.amount || 0),
-                                desc: r.Keterangan || r.desc || 'Import Data'
-                            }));
-                        } else if(sheetName.toLowerCase().includes('warga') || sheetName.toLowerCase().includes('mustahik') || jsonSheet.some(r => r.NIK || r.Nama_Lengkap)) {
-                            importedWarga = jsonSheet.map(r => ({
-                                nama: r.Nama_Lengkap || r.nama || 'Tanpa Nama',
-                                nik: String(r.NIK || r.nik || '-'),
-                                kategori: r.Kategori || r.kategori || 'Bantuan Umum',
-                                hp: String(r.No_HP || r.hp || '-'),
-                                alamat: r.Alamat || r.alamat || '-'
-                            }));
-                        }
-                    });
-
-                    if(importedTrx.length > 0 || importedWarga.length > 0) {
-                        if(confirm(`Ditemukan ${importedTrx.length} data transaksi dan ${importedWarga.length} data warga. Lakukan import dan timpa data saat ini?`)) {
-                            showToast("Mengimpor data ke Cloud...", "info");
-                            for(let t of importedTrx) {
-                                const docRef = await window.fs.addDoc(window.fs.collection(window.db, "transactions"), t);
-                                t.idFirebase = docRef.id;
-                                transactions.push(t);
-                            }
-                            for(let w of importedWarga) {
-                                const docRef = await window.fs.addDoc(window.fs.collection(window.db, "mustahik"), w);
-                                w.idFirebase = docRef.id;
-                                dbMustahik.push(w);
-                            }
-                            refreshUI();
-                            renderMustahik();
-                            updateStorageIndicator();
-                            saveLog('IMPORT DATA', `Berhasil mengimport data dari file ${file.name}`);
-                            showToast("Data berhasil diimport dan disinkronkan!", "success");
-                        }
+        // Pengecekan Akses (Identifikasi Multi-Ranting)
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                firebase.database().ref('users/' + user.uid).once('value').then((snapshot) => {
+                    if (snapshot.exists()) {
+                        asalRanting = snapshot.val().ranting;
+                        role = snapshot.val().role;
                     } else {
-                        showToast("Format file tidak dikenali atau kosong.", "error");
-                    }
-                } catch(err) {
-                    console.error("Import error:", err);
-                    showToast("Gagal membaca file import.", "error");
-                }
-            };
-            reader.readAsArrayBuffer(file);
-        }
-
-        async function syncCloudDrive(providerName) {
-            if(currentUserRole !== 'bendahara') return alert("Hanya Bendahara yang diizinkan menyinkronkan data aman ke Cloud Drive!");
-            
-            showToast(`Memulai protokol otorisasi End-to-End ke ${providerName}...`, "info");
-            
-            const btnGdrive = document.getElementById('btn-sync-gdrive');
-            const btnOnedrive = document.getElementById('btn-sync-onedrive');
-            if(btnGdrive) btnGdrive.disabled = true;
-            if(btnOnedrive) btnOnedrive.disabled = true;
-            
-            setTimeout(() => { showToast(`[${providerName}] Mengenkripsi data backup transaksi & warga...`, "info"); }, 1800);
-
-            setTimeout(() => {
-                showToast(`[${providerName}] Menyiapkan file untuk diunggah ke direktori aman...`, "info");
-                const currentY = new Date().getFullYear();
-                const wb = XLSX.utils.book_new();
-                
-                const wsTrx = XLSX.utils.json_to_sheet(transactions.map(t => ({
-                    "ID_Sistem": t.idFirebase, "Tanggal": t.date, "Jenis": t.type === 'in' ? 'Pemasukan' : 'Pengeluaran',
-                    "Akun_Kode": t.code, "Sumber_Dana": t.source, "Nominal": t.amount, "Keterangan": t.desc
-                })));
-                XLSX.utils.book_append_sheet(wb, wsTrx, "Data_Transaksi_Aman");
-                
-                const wsWarga = XLSX.utils.json_to_sheet(dbMustahik.map(m => ({
-                    "Nama_Lengkap": m.nama, "NIK": m.nik, "Kategori": m.kategori, "No_HP": m.hp, "Alamat": m.alamat
-                })));
-                XLSX.utils.book_append_sheet(wb, wsWarga, "Database_Warga");
-                
-                XLSX.writeFile(wb, `Cloud_Sync_${providerName.replace(/\s/g,'_')}_UPZIS_${currentY}.xlsx`);
-            }, 3800);
-
-            setTimeout(() => { showToast(`Verifikasi integritas file selesai.`, "info"); }, 5500);
-
-            setTimeout(() => {
-                saveLog('CLOUD SYNC', `Berhasil melakukan sinkronisasi aman (End-to-End) ke ${providerName}`);
-                showToast(`Selesai! Data berhasil diamankan di ${providerName} Cloud.`, "success");
-                
-                if(btnGdrive) btnGdrive.disabled = false;
-                if(btnOnedrive) btnOnedrive.disabled = false;
-            }, 7200);
-        }
-
-        function backupData(format) {
-            const currentY = new Date().getFullYear();
-            if (format === 'pdf') {
-                cetakBukuBesarPDF(); 
-            } else if (format === 'excel') {
-                const wb = XLSX.utils.book_new();
-                const wsTrx = XLSX.utils.json_to_sheet(transactions.map(t => ({
-                    "ID_Sistem": t.idFirebase, "Tanggal": t.date, "Jenis": t.type === 'in' ? 'Pemasukan' : 'Pengeluaran',
-                    "Akun_Kode": t.code, "Sumber_Dana": t.source, "Nominal": t.amount, "Keterangan": t.desc
-                })));
-                XLSX.utils.book_append_sheet(wb, wsTrx, "Data_Transaksi");
-                const wsWarga = XLSX.utils.json_to_sheet(dbMustahik.map(m => ({
-                    "Nama_Lengkap": m.nama, "NIK": m.nik, "Kategori": m.kategori, "No_HP": m.hp, "Alamat": m.alamat
-                })));
-                XLSX.utils.book_append_sheet(wb, wsWarga, "Data_Warga");
-                XLSX.writeFile(wb, `Backup_Keseluruhan_UPZIS_${currentY}.xlsx`);
-                showToast("Backup Excel berhasil diunduh!", "success");
-            } else if (format === 'csv') {
-                const wsTrx = XLSX.utils.json_to_sheet(transactions.map(t => ({
-                    "Tanggal": t.date, "Jenis": t.type === 'in' ? 'Pemasukan' : 'Pengeluaran',
-                    "Akun_Kode": t.code, "Sumber_Dana": t.source, "Nominal": t.amount, "Keterangan": t.desc
-                })));
-                const csv = XLSX.utils.sheet_to_csv(wsTrx);
-                const blob = new Blob([csv], {type: "text/csv;charset=utf-8;"});
-                const link = document.createElement("a");
-                link.href = URL.createObjectURL(blob);
-                link.download = `Backup_Transaksi_UPZIS_${currentY}.csv`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                showToast("Backup CSV berhasil diunduh!", "success");
-            }
-            saveLog('BACKUP DATA', `Mencadangkan data dalam format ${format.toUpperCase()}`);
-        }
-
-        async function loadAllCloudData() {
-            try {
-                if (!window.fs) throw new Error("Firebase SDK terblokir.");
-                showToast("Menghubungkan ke Saluran Real-Time Firebase...", "info");
-
-                window.fs.onSnapshot(window.fs.doc(window.db, "settings", "profile"), (docSnap) => {
-                    if (docSnap.exists()) {
-                        profileSettings = { ...profileSettings, ...docSnap.data() };
-                        initAnggota();
-                        applyProfileData();
-                    }
-                });
-
-                const qTrx = window.fs.query(window.fs.collection(window.db, "transactions"), window.fs.orderBy("date", "asc"));
-                window.fs.onSnapshot(qTrx, (snapshot) => {
-                    transactions = [];
-                    snapshot.forEach((docSnap) => { transactions.push({ idFirebase: docSnap.id, ...docSnap.data() }); });
-                    refreshUI(); 
-                    buildReport(); 
-                    buildPoster();
-                    updateStorageIndicator();
-                });
-
-                window.fs.onSnapshot(window.fs.collection(window.db, "mustahik"), (snapshot) => {
-                    dbMustahik = [];
-                    snapshot.forEach((docSnap) => { dbMustahik.push({ idFirebase: docSnap.id, ...docSnap.data() }); });
-                    renderMustahik();
-                });
-
-                const qLog = window.fs.query(window.fs.collection(window.db, "logs"), window.fs.orderBy("time", "asc"));
-                window.fs.onSnapshot(qLog, (snapshot) => {
-                    logsData = [];
-                    snapshot.forEach((docSnap) => { logsData.push({ idFirebase: docSnap.id, ...docSnap.data() }); });
-                    renderLogs();
-                });
-
-                updateFirebaseIndicator(navigator.onLine);
-                showToast("Sistem Live-Sync Aktif! Data akan diperbarui otomatis.", "success");
-
-            } catch (err) {
-                console.error("Gagal koneksi Firebase:", err);
-                updateFirebaseIndicator(false);
-                showToast("Koneksi Firebase terputus. Menggunakan mode offline.", "error");
-            }
-        }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            initAudioPlayer();
-            const savedUser = localStorage.getItem('upzis_saved_user');
-            const savedPass = localStorage.getItem('upzis_saved_pass');
-            if(savedUser && savedPass) {
-                document.getElementById('l-user').value = savedUser;
-                document.getElementById('l-pass').value = savedPass;
-                document.getElementById('remember-me').checked = true;
-            }
-            
-            window.authServices.onAuthStateChanged(window.auth, (user) => {
-                if (user) {
-                    currentUserRole = sessionStorage.getItem('upzis_role') || 'bendahara';
-                    showApp();
-                    loadAllCloudData();
-                } else {
-                    document.getElementById('app-screen').classList.add('hidden');
-                    document.getElementById('auth-screen').classList.remove('hidden');
-                }
-            });
-
-            document.getElementById('t-date').valueAsDate = new Date();
-            const now = new Date();
-            document.getElementById('filter-month').value = now.toISOString().slice(0, 7);
-        });
-
-        document.getElementById('form-login').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('l-user').value.trim().toLowerCase();
-            const pass = document.getElementById('l-pass').value;
-            const remember = document.getElementById('remember-me').checked;
-
-            try {
-                if (typeof window.authServices === 'undefined') {
-                    throw new Error("Sistem Firebase terblokir. Pastikan Anda menjalankan aplikasi ini melalui Live Server (http://).");
-                }
-
-                showToast("Memverifikasi kredensial ke server...", "info");
-                
-                await window.authServices.signInWithEmailAndPassword(window.auth, email, pass);
-                
-                let role = 'ketua'; 
-                if (email === 'fendhigandis@gmail.com') {
-                    role = 'bendahara';
-                }
-                
-                currentUserRole = role;
-                sessionStorage.setItem('upzis_role', role);
-                
-                if(remember) {
-                    localStorage.setItem('upzis_saved_user', email);
-                    localStorage.setItem('upzis_saved_pass', pass);
-                } else {
-                    localStorage.removeItem('upzis_saved_user');
-                    localStorage.removeItem('upzis_saved_pass');
-                }
-                
-                saveLog('LOGIN', `Berhasil masuk ke sistem sebagai ${role}`);
-                showToast("Berhasil masuk ke sistem!", "success");
-                
-            } catch (error) {
-                console.error("Login gagal:", error);
-                let errorMsg = error.message || "Terjadi kesalahan saat menghubungi server.";
-                
-                if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-                    errorMsg = "Akses Ditolak! Email atau kata sandi Anda salah / belum didaftarkan.";
-                } else if (error.code === 'auth/too-many-requests') {
-                    errorMsg = "Sistem diblokir sementara karena terlalu banyak percobaan gagal.";
-                } else if (error.code === 'auth/invalid-email') {
-                    errorMsg = "Format penulisan email tidak valid.";
-                } else if (error.code === 'auth/network-request-failed') {
-                    errorMsg = "Koneksi internet terputus atau akses ke server Firebase diblokir.";
-                }
-
-                showToast(errorMsg, "error");
-            }
-        });
-
-        async function logout() { 
-            try {
-                await window.authServices.signOut(window.auth);
-                sessionStorage.removeItem('upzis_role');
-                if(warningInterval) clearInterval(warningInterval);
-                showToast("Berhasil keluar dari sistem.", "info");
-            } catch (err) {
-                console.error("Gagal logout:", err);
-                showToast("Terjadi kesalahan saat proses logout.", "error");
-            }
-        }
-
-        function showApp() { 
-            document.getElementById('auth-screen').classList.add('hidden'); 
-            document.getElementById('app-screen').classList.remove('hidden'); 
-            document.getElementById('badge-role-text').innerText = currentUserRole === 'bendahara' ? 'Bendahara (Penuh)' : 'Ketua / Pengawas';
-            refreshUI(); 
-            renderMustahik(); 
-            renderLogs();
-            buildReport(); 
-            buildPoster();
-            updateStorageIndicator();
-            checkYearEnd();
-        }
-        
-        function switchTab(evt, tabId) { 
-            document.querySelectorAll('.panel').forEach(el => el.classList.add('hidden')); 
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active')); 
-            document.getElementById(tabId).classList.remove('hidden'); 
-            if(evt && evt.currentTarget) evt.currentTarget.classList.add('active'); 
-            if(window.innerWidth <= 1024) {
-                document.getElementById('app-sidebar').classList.remove('mobile-open');
-                document.getElementById('sidebar-overlay').classList.remove('active');
-            }
-            if(tabId === 'v-laporan') buildReport(); 
-            if(tabId === 'v-poster') buildPoster();
-            if(tabId === 'v-analitik') renderCharts();
-            if(tabId === 'v-pengurus') renderBagan();
-        }
-        
-        function updateCategories() { 
-            const type = document.getElementById('t-type').value; 
-            const cats = getDynamicCategories();
-            document.getElementById('t-category').innerHTML = cats[type].map(c => `<option value="${c.code}">${c.code} - ${c.name}</option>`).join(''); 
-        }
-
-        document.getElementById('form-username').addEventListener('submit', async (e) => { 
-            e.preventDefault(); 
-            if(currentUserRole !== 'bendahara') return alert("Akses terbatas untuk Bendahara!");
-            if(document.getElementById('un-pass').value === profileSettings.password) { 
-                profileSettings.username = document.getElementById('un-new').value; 
-                await window.fs.setDoc(window.fs.doc(window.db, "settings", "profile"), profileSettings);
-                saveLog('EDIT PROFIL', 'Username login diperbarui');
-                showToast("Username diubah! Silakan login ulang.", "success"); 
-                e.target.reset(); 
-                setTimeout(logout, 1500); 
-            } else { alert("Sandi salah!"); } 
-        });
-
-        document.getElementById('form-password').addEventListener('submit', async (e) => { 
-            e.preventDefault(); 
-            if(currentUserRole !== 'bendahara') return alert("Akses terbatas untuk Bendahara!");
-            if(document.getElementById('pw-old').value === profileSettings.password) { 
-                profileSettings.password = document.getElementById('pw-new').value; 
-                await window.fs.setDoc(window.fs.doc(window.db, "settings", "profile"), profileSettings);
-                saveLog('EDIT PROFIL', 'Sandi keamanan diperbarui');
-                showToast("Sandi diperbarui di Cloud!", "success"); 
-                e.target.reset(); 
-            } else { alert("Sandi lama salah!"); } 
-        });
-
-        function initAnggota() {
-            if (!profileSettings.anggota || profileSettings.anggota.length === 0) {
-                profileSettings.anggota = [];
-                if(profileSettings.ketua) profileSettings.anggota.push({ id: Date.now()+1, nama: profileSettings.ketua, jabatan: 'Ketua' });
-                if(profileSettings.bendahara) profileSettings.anggota.push({ id: Date.now()+2, nama: profileSettings.bendahara, jabatan: 'Bendahara' });
-                if(profileSettings.relawan) {
-                    profileSettings.relawan.forEach((r, i) => {
-                        profileSettings.anggota.push({ id: Date.now()+3+i, nama: r, jabatan: 'Relawan' });
-                    });
-                }
-            }
-        }
-
-        function applyProfileData() {
-            document.getElementById('p-lembaga').value = profileSettings.lembaga;
-            document.getElementById('p-periode').value = profileSettings.periode;
-            document.getElementById('nav-title').innerText = profileSettings.lembaga; 
-            document.getElementById('nav-period').innerText = profileSettings.periode;
-            
-            ['pdf-nama-lembaga','pdf-masa-khidmat','bb-pdf-nama-lembaga','bb-pdf-masa-khidmat'].forEach(k => { 
-                const el = document.getElementById(k); 
-                if(el) el.innerText = (k.includes('nama-lembaga')) ? profileSettings.lembaga.toUpperCase() : profileSettings.periode; 
-            });
-
-            const currKetua = profileSettings.anggota.find(a => (a.jabatan || '').toLowerCase().includes('ketua') && !(a.jabatan || '').toLowerCase().includes('wakil'))?.nama || profileSettings.ketua;
-            const currBendahara = profileSettings.anggota.find(a => (a.jabatan || '').toLowerCase().includes('bendahara'))?.nama || profileSettings.bendahara;
-
-            document.getElementById('pdf-ttd-ketua').innerText = currKetua;
-            document.getElementById('bb-pdf-ttd-ketua').innerText = currKetua;
-            document.getElementById('pdf-ttd-bendahara').innerText = currBendahara;
-            document.getElementById('bb-pdf-ttd-bendahara').innerText = currBendahara;
-
-            document.getElementById('badge-username').innerText = profileSettings.username.toUpperCase();
-            ['nav-logo','preview-logo','pdf-logo','auth-logo','bb-pdf-logo','kui-logo', 'poster-logo'].forEach(id => { 
-                const el = document.getElementById(id); 
-                if(el) el.src = profileSettings.logoBase64; 
-            });
-            renderAnggota();
-            updateCategories();
-        }
-
-        document.getElementById('upload-logo').addEventListener('change', function(e) { 
-            if(currentUserRole !== 'bendahara') return alert("Akses terbatas untuk Bendahara!");
-            const file = e.target.files[0]; 
-            if (file) { 
-                if (file.size > 2000000) return alert("Maksimal 2MB!"); 
-                const reader = new FileReader(); 
-                reader.onload = async function(evt) { 
-                    profileSettings.logoBase64 = evt.target.result; 
-                    document.getElementById('preview-logo').src = profileSettings.logoBase64; 
-                    await window.fs.setDoc(window.fs.doc(window.db, "settings", "profile"), profileSettings);
-                    updateStorageIndicator();
-                    saveLog('EDIT PROFIL', 'Logo lembaga diubah');
-                    showToast("Logo berhasil disimpan ke Cloud.", "success");
-                }; 
-                reader.readAsDataURL(file); 
-            } 
-        });
-
-        async function simpanProfil() { 
-            if(currentUserRole !== 'bendahara') return alert("Akses terbatas untuk Bendahara!");
-            profileSettings.lembaga = document.getElementById(`p-lembaga`).value;
-            profileSettings.periode = document.getElementById(`p-periode`).value; 
-            await window.fs.setDoc(window.fs.doc(window.db, "settings", "profile"), profileSettings);
-            applyProfileData(); 
-            updateStorageIndicator();
-            buildPoster();
-            saveLog('EDIT PROFIL', 'Data lembaga diperbarui');
-            showToast("Identitas Lembaga disimpan ke Cloud.", "success"); 
-        }
-
-        async function tambahAnggota() { 
-            if(currentUserRole !== 'bendahara') return alert("Akses terbatas untuk Bendahara!");
-            const nama = document.getElementById('input-anggota-nama').value.trim(); 
-            const jabatan = document.getElementById('input-anggota-jabatan').value.trim() || 'Relawan';
-            if(nama) { 
-                if(!profileSettings.anggota) profileSettings.anggota = [];
-                profileSettings.anggota.push({ id: Date.now(), nama: nama, jabatan: jabatan }); 
-                syncCoreFromAnggota();
-                document.getElementById('input-anggota-nama').value = ''; 
-                document.getElementById('input-anggota-jabatan').value = '';
-                await window.fs.setDoc(window.fs.doc(window.db, "settings", "profile"), profileSettings);
-                renderAnggota(); 
-                updateCategories();
-                updateStorageIndicator();
-                buildPoster();
-                saveLog('EDIT PENGURUS', `Menambahkan ${jabatan}: ${nama}`);
-                showToast("Anggota ditambahkan.", "success");
-            } 
-        }
-        
-        async function hapusAnggota(id) { 
-            if(currentUserRole !== 'bendahara') return alert("Akses terbatas untuk Bendahara!");
-            if(confirm("Hapus anggota ini?")) {
-                const trgt = profileSettings.anggota.find(a => a.id === id);
-                profileSettings.anggota = profileSettings.anggota.filter(a => a.id !== id); 
-                syncCoreFromAnggota();
-                await window.fs.setDoc(window.fs.doc(window.db, "settings", "profile"), profileSettings);
-                renderAnggota(); 
-                updateCategories();
-                updateStorageIndicator();
-                buildPoster();
-                saveLog('EDIT PENGURUS', `Menghapus anggota: ${trgt ? trgt.nama : 'Unknown'}`);
-            }
-        }
-
-        function syncCoreFromAnggota() {
-            const ketua = profileSettings.anggota.find(a => (a.jabatan || '').toLowerCase().includes('ketua') && !(a.jabatan || '').toLowerCase().includes('wakil'));
-            const bendahara = profileSettings.anggota.find(a => (a.jabatan || '').toLowerCase().includes('bendahara'));
-            if(ketua) profileSettings.ketua = ketua.nama;
-            if(bendahara) profileSettings.bendahara = bendahara.nama;
-            profileSettings.relawan = profileSettings.anggota
-                .filter(a => (a.jabatan || '').toLowerCase().includes('relawan') || (a.jabatan || '').toLowerCase().includes('anggota'))
-                .map(a => a.nama);
-        }
-        
-        function renderAnggota() { 
-            const list = profileSettings.anggota || [];
-            document.getElementById('list-anggota').innerHTML = list.map((a) => `
-                <div style="display:flex; justify-content:space-between; align-items:center; background:white; padding:12px 16px; border-radius:12px; border:1px solid var(--border-color); box-shadow:var(--shadow-sm);">
-                    <div>
-                        <div style="font-size:10px; font-weight:800; color:var(--nu-gold-dark); text-transform:uppercase;">${a.jabatan || '-'}</div>
-                        <div style="font-weight:800; font-size:14px; color:var(--text-dark);">${a.nama || '-'}</div>
-                    </div>
-                    <button type="button" class="btn-action btn-delete-sm" onclick="hapusAnggota(${a.id})"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-            `).join(''); 
-            renderBagan();
-        }
-
-        function renderBagan() {
-            const list = profileSettings.anggota || [];
-            const pimpinan = list.filter(a => (a.jabatan || '').toLowerCase().includes('ketua') && !(a.jabatan || '').toLowerCase().includes('wakil'));
-            const wakil = list.filter(a => (a.jabatan || '').toLowerCase().includes('wakil'));
-            const stafInti = list.filter(a => (a.jabatan || '').toLowerCase().includes('sekretaris') || (a.jabatan || '').toLowerCase().includes('bendahara'));
-            const divisiLain = list.filter(a => !(a.jabatan || '').toLowerCase().includes('ketua') && !(a.jabatan || '').toLowerCase().includes('wakil') && !(a.jabatan || '').toLowerCase().includes('sekretaris') && !(a.jabatan || '').toLowerCase().includes('bendahara') && !(a.jabatan || '').toLowerCase().includes('relawan') && !(a.jabatan || '').toLowerCase().includes('anggota'));
-            const relawan = list.filter(a => (a.jabatan || '').toLowerCase().includes('relawan') || (a.jabatan || '').toLowerCase().includes('anggota'));
-
-            const makeCard = (a) => `
-                <div style="background:var(--glass-gradient); border:2px solid var(--nu-gold); padding:12px 20px; border-radius:14px; box-shadow:var(--shadow-sm); text-align:center; min-width:140px;">
-                    <div style="font-size:10px; color:var(--nu-green-dark); font-weight:800; text-transform:uppercase; border-bottom:1px solid var(--border-color); padding-bottom:4px; margin-bottom:6px;">${a.jabatan || '-'}</div>
-                    <div style="font-size:13px; font-weight:700; color:var(--text-dark);">${a.nama || '-'}</div>
-                </div>
-            `;
-
-            let html = '';
-            if(pimpinan.length > 0) html += `<div style="display:flex; justify-content:center; margin-bottom:15px; flex-wrap:wrap; gap:15px;">${pimpinan.map(makeCard).join('')}</div>`;
-            if(wakil.length > 0) html += `<div style="display:flex; justify-content:center; gap:15px; margin-bottom:15px; flex-wrap:wrap;">${wakil.map(makeCard).join('')}</div>`;
-            if(stafInti.length > 0) html += `<div style="display:flex; justify-content:center; gap:15px; margin-bottom:25px; flex-wrap:wrap;">${stafInti.map(makeCard).join('')}</div>`;
-            if(divisiLain.length > 0) {
-                html += `<div style="text-align:center; margin-bottom:10px;"><span style="background:var(--nu-gold-light); color:var(--nu-gold-dark); padding:6px 14px; border-radius:20px; font-size:11px; font-weight:800; text-transform:uppercase; border:1px solid var(--nu-gold);">Divisi & Bidang Lainnya</span></div>`;
-                html += `<div style="display:flex; justify-content:center; gap:12px; margin-bottom:25px; flex-wrap:wrap;">${divisiLain.map(makeCard).join('')}</div>`;
-            }
-            if(relawan.length > 0) {
-                html += `<div style="text-align:center; margin-bottom:10px;"><span style="background:var(--nu-green-light); color:var(--nu-green-dark); padding:6px 14px; border-radius:20px; font-size:11px; font-weight:800; text-transform:uppercase; border:1px solid #bbf7d0;">Anggota & Relawan Lapangan</span></div>`;
-                html += `<div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">`;
-                html += relawan.map(a => `
-                    <div style="background:white; border:1px solid var(--border-color); padding:10px 18px; border-radius:12px; box-shadow:var(--shadow-sm); text-align:center;">
-                        <div style="font-size:10px; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:3px;">${a.jabatan || '-'}</div>
-                        <div style="font-size:12px; font-weight:700; color:var(--text-dark);">${a.nama || '-'}</div>
-                    </div>
-                `).join('');
-                html += `</div>`;
-            }
-            document.getElementById('org-chart-container').innerHTML = html || '<div style="text-align:center; color:gray; font-size:12px;">Data kepengurusan belum lengkap.</div>';
-        }
-
-        function editTrx(idFirebase) {
-            if(currentUserRole !== 'bendahara') return alert("Akses terbatas untuk Bendahara!");
-            const trx = transactions.find(t => t.idFirebase === idFirebase);
-            if(!trx) return;
-
-            document.getElementById('t-edit-id').value = trx.idFirebase;
-            document.getElementById('t-type').value = trx.type;
-            updateCategories();
-            document.getElementById('t-source').value = trx.source || 'Kas Tunai';
-            document.getElementById('t-category').value = trx.code;
-            document.getElementById('t-date').value = trx.date;
-            document.getElementById('t-amount').value = parseInt(trx.amount).toLocaleString('id-ID');
-            document.getElementById('t-desc').value = trx.desc;
-
-            document.getElementById('btn-submit-trx').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Update Transaksi';
-            document.getElementById('btn-cancel-edit').classList.remove('hidden');
-
-            switchTab(null, 'v-dashboard');
-            window.scrollTo({ top: 400, behavior: 'smooth' });
-            showToast("Mode Edit Transaksi Aktif", "info");
-        }
-
-        function cancelEditTrx() {
-            document.getElementById('form-trx').reset();
-            document.getElementById('t-edit-id').value = '';
-            document.getElementById('t-date').valueAsDate = new Date();
-            document.getElementById('btn-submit-trx').innerHTML = '<i class="fa-solid fa-check"></i> Rekam Transaksi';
-            document.getElementById('btn-cancel-edit').classList.add('hidden');
-            updateCategories();
-            showToast("Edit dibatalkan", "info");
-        }
-
-        document.getElementById('form-trx').addEventListener('submit', function(e) {
-            e.preventDefault();
-            if(currentUserRole !== 'bendahara') return alert("Akses terbatas untuk Bendahara!");
-            
-            const editId = document.getElementById('t-edit-id').value;
-            const type = document.getElementById('t-type').value;
-            const code = document.getElementById('t-category').value;
-            const amountInput = parseFloat(document.getElementById('t-amount').value.replace(/\./g, ''));
-            const dateInput = document.getElementById('t-date').value;
-            const descInput = document.getElementById('t-desc').value.trim();
-            const sourceInput = document.getElementById('t-source').value;
-
-            if (!dateInput) { showToast("Peringatan: Tanggal transaksi wajib diisi!", "error"); return; }
-            if (isNaN(amountInput) || amountInput <= 0) { showToast("Peringatan: Nominal transaksi harus lebih dari Rp 0!", "error"); return; }
-            if (!descInput) { showToast("Peringatan: Keterangan transaksi tidak boleh kosong!", "error"); return; }
-
-            if (type === 'out') {
-                let saldoTersedia = 0;
-                transactions.forEach(t => {
-                    const amt = Number(t.amount || 0);
-                    if (t.idFirebase === editId) return; 
-                    
-                    if(t.type === 'in') { 
-                        if (t.code === '120' && sourceInput === 'Kas Tunai') saldoTersedia += amt;
-                        else if (t.code === '220' && sourceInput.includes('Bank')) saldoTersedia += amt;
-                        else if (t.code !== '120' && t.code !== '220' && t.source === sourceInput) saldoTersedia += amt;
-                    }
-                    if(t.type === 'out') { 
-                        if (t.code === '120' && sourceInput.includes('Bank')) saldoTersedia -= amt;
-                        else if (t.code === '220' && sourceInput === 'Kas Tunai') saldoTersedia -= amt;
-                        else if (t.code !== '120' && t.code !== '220' && t.source === sourceInput) saldoTersedia -= amt;
-                    }
-                });
-
-                if (amountInput > saldoTersedia) {
-                    showToast(`Info: Saldo tidak cukup. Transaksi dicatat sebagai Dana Talangan (Minus).`, "info");
-                }
-            }
-
-            if (type === 'in' && !editId) {
-                const monthTrx = dateInput.slice(0, 7);
-                const isDouble = transactions.some(t => 
-                    t.type === 'in' && 
-                    t.code === code && 
-                    Number(t.amount) === amountInput && 
-                    t.date.slice(0, 7) === monthTrx
-                );
-                if (isDouble) {
-                    if (!confirm("PERINGATAN: Terdeteksi transaksi pemasukan dengan kode akun, nominal, dan bulan yang sama. Lanjutkan pencatatan ganda?")) {
-                        return;
-                    }
-                }
-            }
-
-            const proofInput = document.getElementById('t-proof').files[0];
-
-            const saveProcess = async (proofBase64 = null) => {
-                try {
-                    showToast("Menyimpan ke Cloud...", "info");
-                    if (editId) {
-                        const updateData = { type: type, source: sourceInput, code: code, date: dateInput, amount: amountInput, desc: descInput };
-                        if(proofBase64) updateData.proof = proofBase64;
-                        await window.fs.updateDoc(window.fs.doc(window.db, "transactions", editId), updateData);
-                        const idx = transactions.findIndex(t => t.idFirebase === editId);
-                        if(idx !== -1) transactions[idx] = { ...transactions[idx], ...updateData };
-
-                        cancelEditTrx();
-                        refreshUI(); buildReport(); buildPoster(); updateStorageIndicator();
-                        saveLog('EDIT TRANSAKSI', `Transaksi ID ${editId} diperbarui`);
-                        showToast("Data transaksi berhasil diperbarui!", "success");
-                    } else {
-                        const dt = { type: type, source: sourceInput, code: code, date: dateInput, amount: amountInput, desc: descInput, proof: proofBase64 };
-                        const docRef = await window.fs.addDoc(window.fs.collection(window.db, "transactions"), dt);
-                        dt.idFirebase = docRef.id;
-                        transactions.push(dt); 
-                        document.getElementById('t-amount').value = ''; 
-                        document.getElementById('t-desc').value = '';
-                        document.getElementById('t-proof').value = '';
-                        refreshUI(); buildReport(); buildPoster(); updateStorageIndicator();
-                        saveLog('TAMBAH TRANSAKSI', `Mencatat ${type==='in'?'Pemasukan':'Pengeluaran'} Rp ${formatRp(amountInput)} (${code})`);
-                        showToast("Transaksi disimpan di Cloud Database!", "success");
-                    }
-                } catch (err) {
-                    console.error("Gagal simpan transaksi:", err);
-                    showToast("Gagal menyimpan ke Cloud.", "error");
-                }
-            };
-
-            if (proofInput) { compressImage(proofInput, (compressedBase64) => saveProcess(compressedBase64)); }
-            else { saveProcess(); }
-        });
-
-        async function hapusTrx(idFirebase) { 
-            if(currentUserRole !== 'bendahara') return alert("Akses terbatas untuk Bendahara!");
-            if(confirm('Hapus transaksi ini secara permanen dari Cloud?')) { 
-                try {
-                    await window.fs.deleteDoc(window.fs.doc(window.db, "transactions", idFirebase));
-                    transactions = transactions.filter(t => t.idFirebase !== idFirebase); 
-                    refreshUI(); buildReport(); buildPoster(); updateStorageIndicator();
-                    saveLog('HAPUS TRANSAKSI', `Menghapus transaksi ID ${idFirebase}`);
-                    showToast("Transaksi berhasil dihapus dari Cloud.", "success");
-                } catch (err) {
-                    console.error("Gagal menghapus:", err);
-                    showToast("Gagal menghapus data dari Cloud.", "error");
-                }
-            } 
-        }
-
-        function refreshUI() {
-            let grandIn = 0, grandOut = 0, saldoTunai = 0, saldoBank = 0; 
-            const tbody = document.getElementById('table-body'); 
-            tbody.innerHTML = '';
-            const cats = getDynamicCategories();
-            const allCats = [...cats.in, ...cats.out];
-
-            transactions.forEach(t => {
-                const amt = Number(t.amount || 0);
-                if(t.type === 'in') { 
-                    if (t.code === '120') { 
-                        saldoTunai += amt; saldoBank -= amt;
-                    } else if (t.code === '220') {
-                        saldoBank += amt; saldoTunai -= amt;
-                    } else {
-                        grandIn += amt;
-                        t.source.includes('Bank') ? saldoBank += amt : saldoTunai += amt;
-                    }
-                }
-                if(t.type === 'out') { 
-                    if(t.code !== '120' && t.code !== '220') {
-                        grandOut += amt;
-                    }
-                    t.source.includes('Bank') ? saldoBank -= amt : saldoTunai -= amt;
-                }
-            });
-
-            const keyword = (document.getElementById('search-keyword')?.value || '').toLowerCase();
-            const startDate = document.getElementById('filter-start-date')?.value || '';
-            const endDate = document.getElementById('filter-end-date')?.value || '';
-            const filterType = document.getElementById('filter-type')?.value || '';
-
-            let globalBalance = 0;
-            const allSortedTrx = [...transactions].sort((a,b) => new Date(a.date || 0) - new Date(b.date || 0));
-            
-            const trxWithTrueBalance = allSortedTrx.map(t => {
-                const amt = Number(t.amount || 0);
-                if (t.type === 'in' && t.code !== '120' && t.code !== '220') globalBalance += amt;
-                if (t.type === 'out' && t.code !== '120' && t.code !== '220') globalBalance -= amt;
-                return { ...t, currentBalance: globalBalance };
-            });
-
-            const filteredTrx = trxWithTrueBalance.filter(t => {
-                const catObj = allCats.find(c => c.code === t.code);
-                const catName = catObj ? (catObj.name || '').toLowerCase() : '';
-                const matchKeyword = (t.desc || '').toLowerCase().includes(keyword) || catName.includes(keyword) || (t.code || '').toLowerCase().includes(keyword) || (t.source || '').toLowerCase().includes(keyword);
-                let matchDateAndType = true;
-                if (startDate && t.date < startDate) matchDateAndType = false;
-                if (endDate && t.date > endDate) matchDateAndType = false;
-                if (filterType && t.type !== filterType) matchDateAndType = false;
-                return matchKeyword && matchDateAndType;
-            });
-
-            filteredTrx.sort((a,b) => new Date(b.date || 0) - new Date(a.date || 0)).forEach(t => {
-                const catObj = allCats.find(c => c.code === t.code);
-                const catName = catObj ? catObj.name : 'Lainnya';
-                const proofHtml = t.proof ? `<a href="${t.proof}" target="_blank" class="btn-action" title="Lihat Nota"><i class="fa-solid fa-image" style="color:var(--accent-blue);"></i></a>` : '<span style="color:#cbd5e1;">-</span>';
-                const kuitansiBtn = `<button class="btn-action" onclick="openKuitansi('${t.idFirebase}')" title="Cetak Kuitansi"><i class="fa-solid fa-receipt" style="color:var(--nu-gold-dark);"></i></button>`;
-                
-                let actionButtons = `<div style="display:flex; gap:6px;">${kuitansiBtn}`;
-                if(currentUserRole === 'bendahara') {
-                    actionButtons += `<button class="btn-action" onclick="editTrx('${t.idFirebase}')" title="Edit"><i class="fa-solid fa-pen-to-square" style="color:var(--accent-blue);"></i></button>
-                                      <button class="btn-action btn-delete-sm" onclick="hapusTrx('${t.idFirebase}')"><i class="fa-solid fa-trash"></i></button>`;
-                }
-                actionButtons += `</div>`;
-
-                tbody.innerHTML += `<tr>
-                    <td>${formatTanggalIndo(t.date)}</td>
-                    <td><span class="badge ${t.source.includes('Bank') ? 'badge-bank' : ''}" style="${!t.source.includes('Bank') ? 'background:#e2e8f0; color:#334155;' : ''}">${t.source || 'Kas Tunai'}</span></td>
-                    <td><span class="${t.type === 'in' ? 'badge badge-in' : 'badge badge-out'}" style="margin-bottom:4px;">${t.code}</span><br><strong style="font-size:13px; color:var(--text-dark);">${catName}</strong><br><small style="color:var(--text-muted); font-size:11px;">${t.desc || '-'}</small></td>
-                    <td style="color:#15803d; font-weight:800;">${t.type === 'in' ? formatRp(t.amount) : '-'}</td>
-                    <td style="color:#b91c1c; font-weight:800;">${t.type === 'out' ? formatRp(t.amount) : '-'}</td>
-                    <td style="color:var(--nu-gold-dark); font-weight:800;">${formatRp(t.currentBalance)}</td>
-                    <td style="text-align:center;">${proofHtml}</td>
-                    <td>${actionButtons}</td>
-                </tr>`;
-            });
-
-            document.getElementById('sum-tunai').innerText = formatRp(saldoTunai); 
-            document.getElementById('sum-bank').innerText = formatRp(saldoBank); 
-            document.getElementById('sum-masuk').innerText = formatRp(grandIn); 
-            document.getElementById('sum-keluar').innerText = formatRp(grandOut);
-        }
-
-        function clearFilters() {
-            if(document.getElementById('search-keyword')) document.getElementById('search-keyword').value = '';
-            if(document.getElementById('filter-start-date')) document.getElementById('filter-start-date').value = '';
-            if(document.getElementById('filter-end-date')) document.getElementById('filter-end-date').value = '';
-            if(document.getElementById('filter-type')) document.getElementById('filter-type').value = '';
-            refreshUI();
-            showToast("Filter pencarian direset.", "info");
-        }
-
-        function resetPosterFilter() {
-            document.getElementById('poster-start').value = '';
-            document.getElementById('poster-end').value = '';
-            buildPoster();
-            showToast("Filter poster direset.", "info");
-        }
-
-        function buildPoster() {
-            const start = document.getElementById('poster-start').value;
-            const end = document.getElementById('poster-end').value;
-            let tIn = 0;
-            let perRelawan = {};
-            if(profileSettings.relawan && profileSettings.relawan.length > 0) {
-                profileSettings.relawan.forEach((rel, idx) => { perRelawan[String(111 + idx)] = { name: rel, amount: 0 }; });
-            }
-            perRelawan['other'] = { name: 'Pemasukan Donasi Lainnya', amount: 0 };
-
-            transactions.forEach(t => {
-                let match = true;
-                if(start && t.date < start) match = false;
-                if(end && t.date > end) match = false;
-                if(match && t.type === 'in' && t.code !== '101' && t.code !== '120' && t.code !== '220') {
-                    const amt = Number(t.amount || 0);
-                    tIn += amt;
-                    if(perRelawan[t.code]) { perRelawan[t.code].amount += amt; }
-                    else { perRelawan['other'].amount += amt; }
-                }
-            });
-
-            document.getElementById('poster-in').innerText = formatRp(tIn);
-            let periodText = "Seluruh Periode";
-            if(start && end) periodText = `Periode: ${formatTanggalIndo(start)} s/d ${formatTanggalIndo(end)}`;
-            document.getElementById('poster-periode-text').innerText = periodText;
-            document.getElementById('poster-lembaga').innerText = profileSettings.lembaga.toUpperCase();
-
-            let breakdownHtml = '';
-            let chartLabels = [];
-            let chartData = [];
-            let chartColors = ['#d4af37', '#0284c7', '#10b981', '#6366f1', '#f59e0b', '#ec4899', '#8b5cf6', '#14b8a6', '#f43f5e'];
-
-            Object.keys(perRelawan).forEach((key) => {
-                if(perRelawan[key].amount > 0) {
-                    breakdownHtml += `<div style="display:flex; justify-content:space-between; border-bottom:1px dashed rgba(255,255,255,0.15); padding-bottom:6px;"><span style="color:white; font-weight:600;">${perRelawan[key].name}</span><span style="font-weight:800; color:var(--nu-gold-light);">${formatRp(perRelawan[key].amount)}</span></div>`;
-                    chartLabels.push(perRelawan[key].name);
-                    chartData.push(perRelawan[key].amount);
-                }
-            });
-            if(breakdownHtml === '') breakdownHtml = '<div style="text-align:center; padding:10px; color:white; opacity:0.7;">Belum ada data infak pada periode ini.</div>';
-            document.getElementById('poster-breakdown').innerHTML = breakdownHtml;
-
-            if(window.posterChartInstance) window.posterChartInstance.destroy();
-            const ctx = document.getElementById('posterChart').getContext('2d');
-            window.posterChartInstance = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: chartLabels,
-                    datasets: [{ data: chartData, backgroundColor: chartData.map((_, i) => chartColors[i % chartColors.length]), borderWidth: 2, borderColor: '#ffffff' }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, animation: false, plugins: { legend: { display: false } } }
-            });
-        }
-
-        function cetakPosterPDF() {
-            buildPoster(); 
-            const element = document.getElementById('poster-print-area');
-            const opt = { margin: 5, filename: `Poster_Transparansi_UPZIS_${Date.now()}.pdf`, image: { type: 'jpeg', quality: 1.0 }, html2canvas: { scale: 3, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
-            showToast("Menyiapkan Poster Laporan Transparansi...", "info");
-            html2pdf().set(opt).from(element).save();
-        }
-
-        function cetakBukuBesarPDF() {
-            const startDate = document.getElementById('filter-start-date')?.value || '';
-            const endDate = document.getElementById('filter-end-date')?.value || '';
-            const filterType = document.getElementById('filter-type')?.value || '';
-            const keyword = (document.getElementById('search-keyword')?.value || '').toLowerCase();
-            const cats = getDynamicCategories();
-            const allCats = [...cats.in, ...cats.out];
-
-            let globalBalancePDF = 0;
-            const allSortedTrx = [...transactions].sort((a,b) => new Date(a.date || 0) - new Date(b.date || 0));
-            
-            const trxWithTrueBalancePDF = allSortedTrx.map(t => {
-                const amt = Number(t.amount || 0);
-                if (t.type === 'in' && t.code !== '120' && t.code !== '220') globalBalancePDF += amt;
-                if (t.type === 'out' && t.code !== '120' && t.code !== '220') globalBalancePDF -= amt;
-                return { ...t, currentBalance: globalBalancePDF };
-            });
-
-            let initialRunningBalance = 0;
-            if(startDate) {
-                const trxBeforeStart = trxWithTrueBalancePDF.filter(t => t.date < startDate);
-                if(trxBeforeStart.length > 0) {
-                    initialRunningBalance = trxBeforeStart[trxBeforeStart.length - 1].currentBalance;
-                }
-            }
-
-            const filteredTrx = trxWithTrueBalancePDF.filter(t => {
-                const catObj = allCats.find(c => c.code === t.code);
-                const catName = catObj ? (catObj.name || '').toLowerCase() : '';
-                const matchKeyword = (t.desc || '').toLowerCase().includes(keyword) || catName.includes(keyword) || (t.code || '').toLowerCase().includes(keyword) || (t.source || '').toLowerCase().includes(keyword);
-                let matchDateAndType = true;
-                if (startDate && t.date < startDate) matchDateAndType = false;
-                if (endDate && t.date > endDate) matchDateAndType = false;
-                if (filterType && t.type !== filterType) matchDateAndType = false;
-                return matchKeyword && matchDateAndType;
-            });
-
-            if(filteredTrx.length === 0) {
-                showToast("Tidak ada transaksi untuk dicetak pada filter saat ini.", "error");
-                return;
-            }
-
-            document.getElementById('bb-lap-periode').innerText = startDate ? `Periode: Sejak ${formatTanggalIndo(startDate)}` : "Seluruh Riwayat Transaksi";
-            document.getElementById('bb-lap-tanggal-cetak').innerText = `Karangdowo, ${formatTanggalIndo(new Date().toISOString().slice(0, 10))}`;
-
-            let rowsHtml = '';
-            let totalDeb = 0, totalKre = 0;
-
-            if(startDate) {
-                rowsHtml += `<tr style="background:#f8fafc; font-weight:bold;">
-                    <td colspan="5" style="text-align:right;">SALDO AWAL KAS (Akumulasi Sebelum ${formatTanggalIndo(startDate)}):</td>
-                    <td style="text-align:right; color:var(--nu-gold-dark);">${formatRp(initialRunningBalance)}</td>
-                </tr>`;
-            }
-
-            [...filteredTrx].sort((a,b) => new Date(a.date || 0) - new Date(b.date || 0)).forEach(t => {
-                const catObj = allCats.find(c => c.code === t.code);
-                const catName = catObj ? catObj.name : 'Lainnya';
-                const amt = Number(t.amount || 0);
-                
-                if(t.type === 'in' && t.code !== '120' && t.code !== '220') totalDeb += amt; 
-                if(t.type === 'out' && t.code !== '120' && t.code !== '220') totalKre += amt; 
-
-                rowsHtml += `<tr>
-                    <td style="text-align:center;">${formatTanggalIndo(t.date)}</td>
-                    <td>${t.source || 'Kas Tunai'}</td>
-                    <td><strong>[${t.code}] ${catName}</strong><br><small style="color:#475569;">${t.desc || '-'}</small></td>
-                    <td style="text-align:right;">${t.type === 'in' ? formatRp(amt) : '-'}</td>
-                    <td style="text-align:right;">${t.type === 'out' ? formatRp(amt) : '-'}</td>
-                    <td style="text-align:right; font-weight:bold;">${formatRp(t.currentBalance)}</td>
-                </tr>`;
-            });
-
-            const finalBalanceToPrint = filteredTrx[filteredTrx.length - 1].currentBalance;
-
-            rowsHtml += `<tr style="background:#f1f5f9; font-weight:bold;">
-                <td colspan="3" style="text-align:right;">TOTAL MUTASI & SALDO AKHIR:</td>
-                <td style="text-align:right; color:#15803d;">${formatRp(totalDeb)}</td>
-                <td style="text-align:right; color:#b91c1c;">${formatRp(totalKre)}</td>
-                <td style="text-align:right; color:var(--nu-gold-dark);">${formatRp(finalBalanceToPrint)}</td>
-            </tr>`;
-
-            document.getElementById('bb-table-rows').innerHTML = rowsHtml;
-            const element = document.getElementById('buku-besar-area');
-            const wrapper = document.getElementById('hidden-buku-besar-print');
-            wrapper.classList.remove('hidden');
-
-            const opt = {
-                margin: 10, filename: `Buku_Besar_UPZIS_${Date.now()}.pdf`, image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true, windowWidth: 1100 },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
-                pagebreak: { mode: ['css', 'legacy'], avoid: ['tr', '.signature-area', '.report-header'] } 
-            };
-
-            showToast("Menyiapkan dokumen PDF Buku Besar A4 Landscape...", "info");
-            html2pdf().set(opt).from(element).save().then(() => {
-                wrapper.classList.add('hidden');
-                showToast("Buku Besar berhasil diunduh dalam format PDF A4 Landscape!", "success");
-            }).catch(err => {
-                wrapper.classList.add('hidden');
-                console.error("Gagal cetak Buku Besar PDF:", err);
-                showToast("Gagal mencetak Buku Besar.", "error");
-            });
-        }
-
-        function openKuitansi(idFirebase) {
-            const trx = transactions.find(t => t.idFirebase === idFirebase);
-            if(!trx) return;
-            const cats = getDynamicCategories();
-            const allCats = [...cats.in, ...cats.out];
-            const catObj = allCats.find(c => c.code === trx.code);
-
-            document.getElementById('kui-logo').src = profileSettings.logoBase64;
-            document.getElementById('kui-lembaga').innerText = profileSettings.lembaga.toUpperCase();
-            document.getElementById('kui-periode').innerText = `Masa Khidmat: ${profileSettings.periode}`;
-            document.getElementById('kui-no').innerText = `NO: KUI/${trx.idFirebase.slice(0, 8)}`;
-            document.getElementById('kui-tipe').innerText = trx.type === 'in' ? 'PEMASUKAN (DONASI / SETORAN)' : 'PENYALURAN (BANTUAN / OPERASIONAL)';
-            document.getElementById('kui-nominal').innerText = formatRp(trx.amount);
-            document.getElementById('kui-ket').innerText = `[${trx.code} - ${catObj ? catObj.name : ''}] ${trx.desc || '-'}`;
-            document.getElementById('kui-sumber').innerText = trx.source;
-            document.getElementById('kui-tgl').innerText = `Karangdowo, ${formatTanggalIndo(trx.date)}`;
-            document.getElementById('kui-ttd').innerText = profileSettings.anggota.find(a => (a.jabatan || '').toLowerCase().includes('bendahara'))?.nama || profileSettings.bendahara;
-            document.getElementById('modal-kuitansi').classList.remove('hidden');
-        }
-
-        function closeKuitansi() { document.getElementById('modal-kuitansi').classList.add('hidden'); }
-        function cetakKuitansiPDF() {
-            const element = document.getElementById('kuitansi-print-area');
-            html2pdf().set({ margin: 10, filename: `Kuitansi_LAZISNU_${Date.now()}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a5', orientation: 'landscape' } }).from(element).save();
-        }
-
-        // --- PENAMBAHAN FITUR KIRIM WA ---
-        function kirimKuitansiWA() {
-            const nominal = document.getElementById('kui-nominal').innerText;
-            const ket = document.getElementById('kui-ket').innerText;
-            const tgl = document.getElementById('kui-tgl').innerText;
-            const no = document.getElementById('kui-no').innerText;
-            const lembaga = document.getElementById('kui-lembaga').innerText;
-            
-            const msg = `*KUITANSI RESMI ${lembaga}*\n\n${no}\nTanggal: ${tgl}\n\nTerima kasih atas partisipasi dan kepercayaan Anda.\n\n*Telah diterima/disalurkan:* ${nominal}\n*Keterangan:* ${ket}\n\nSemoga menjadi amal yang berkah dan diridhai Allah SWT. Aamiin.\n\n_Sistem Bendahara Terpadu_`;
-            
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
-        }
-
-        function renderCharts() {
-            let totalIn = 0, totalOut = 0, outCategories = {}, monthlyData = {};
-            transactions.forEach(t => {
-                const amt = Number(t.amount || 0);
-                const monthKey = t.date ? t.date.slice(0, 7) : '2026-01';
-                if(!monthlyData[monthKey]) monthlyData[monthKey] = { in: 0, out: 0 };
-                if(t.type === 'in') { 
-                    if(t.code !== '120' && t.code !== '220') totalIn += amt; 
-                    monthlyData[monthKey].in += amt; 
-                }
-                if(t.type === 'out') { 
-                    if(t.code !== '120' && t.code !== '220') {
-                        totalOut += amt; 
-                        outCategories[t.code] = (outCategories[t.code] || 0) + amt;
-                    }
-                    monthlyData[monthKey].out += amt; 
-                }
-            });
-
-            if(chart1) chart1.destroy();
-            if(chart2) chart2.destroy();
-            if(chart3) chart3.destroy();
-
-            const sortedMonths = Object.keys(monthlyData).sort();
-            chart3 = new Chart(document.getElementById('chartTrenBulanan').getContext('2d'), {
-                type: 'line',
-                data: {
-                    labels: sortedMonths.length > 0 ? sortedMonths : ['2026-01'],
-                    datasets: [
-                        { label: 'Pemasukan (Rp)', data: sortedMonths.map(m => monthlyData[m].in), borderColor: '#005a2b', backgroundColor: 'rgba(0, 90, 43, 0.1)', fill: true, tension: 0.3 },
-                        { label: 'Penyaluran (Rp)', data: sortedMonths.map(m => monthlyData[m].out), borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.1)', fill: true, tension: 0.3 }
-                    ]
-                },
-                options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
-            });
-
-            chart1 = new Chart(document.getElementById('chartArusKas').getContext('2d'), {
-                type: 'bar',
-                data: { labels: ['Pemasukan', 'Penyaluran'], datasets: [{ data: [totalIn, totalOut], backgroundColor: ['#005a2b', '#ef4444'] }] },
-                options: { responsive: true, plugins: { legend: { display: false } } }
-            });
-
-            chart2 = new Chart(document.getElementById('chartPenyaluran').getContext('2d'), {
-                type: 'doughnut',
-                data: { labels: Object.keys(outCategories).map(k => `Akun ${k}`), datasets: [{ data: Object.values(outCategories), backgroundColor: ['#d4af37', '#0284c7', '#ef4444', '#10b981', '#6366f1'] }] },
-                options: { responsive: true }
-            });
-        }
-
-        document.getElementById('form-mustahik').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if(currentUserRole !== 'bendahara') return alert("Akses terbatas untuk Bendahara!");
-            const m = { nama: document.getElementById('m-nama').value, nik: document.getElementById('m-nik').value || '-', kategori: document.getElementById('m-kategori').value, hp: document.getElementById('m-hp').value || '-', alamat: document.getElementById('m-alamat').value || '-' };
-            try {
-                showToast("Menyimpan ke Cloud...", "info");
-                const docRef = await window.fs.addDoc(window.fs.collection(window.db, "mustahik"), m);
-                m.idFirebase = docRef.id;
-                dbMustahik.push(m); 
-                e.target.reset(); 
-                renderMustahik(); 
-                updateStorageIndicator();
-                saveLog('TAMBAH WARGA', `Mendaftarkan warga/mustahik: ${m.nama}`);
-                showToast("Data Warga disimpan di Cloud.", "success");
-            } catch (err) {
-                console.error("Gagal simpan warga:", err);
-                showToast("Gagal menyimpan data warga.", "error");
-            }
-        });
-
-        async function hapusMustahik(idFirebase) { 
-            if(currentUserRole !== 'bendahara') return alert("Akses terbatas untuk Bendahara!");
-            if(confirm('Hapus data warga ini dari Cloud?')) { 
-                try {
-                    await window.fs.deleteDoc(window.fs.doc(window.db, "mustahik", idFirebase));
-                    dbMustahik = dbMustahik.filter(m => m.idFirebase !== idFirebase); 
-                    renderMustahik(); updateStorageIndicator();
-                    saveLog('HAPUS WARGA', `Menghapus data mustahik ID ${idFirebase}`);
-                    showToast("Data warga dihapus dari Cloud.", "success");
-                } catch (err) {
-                    console.error("Gagal hapus warga:", err);
-                    showToast("Gagal menghapus data warga.", "error");
-                }
-            } 
-        }
-
-        function renderMustahik() { 
-            document.getElementById('table-mustahik').innerHTML = dbMustahik.map(m => `<tr><td><strong style="font-size:13px;">${m.nama}</strong><br><small style="color:gray; font-weight:600;">NIK: ${m.nik}</small></td><td><span class="badge" style="background:#f1f5f9; border:1px solid #cbd5e1; color:#334155;">${m.kategori}</span></td><td>${m.hp !== '-' ? `<i class="fa-brands fa-whatsapp" style="color:var(--wa-color);"></i> <strong>${m.hp}</strong><br>` : ''}<small style="color:var(--text-muted);">${m.alamat || '-'}</small></td><td>${currentUserRole === 'bendahara' ? `<button class="btn-action btn-delete-sm" onclick="hapusMustahik('${m.idFirebase}')"><i class="fa-solid fa-trash"></i></button>` : '<span style="color:gray; font-size:11px;">Read-Only</span>'}</td></tr>`).join(''); 
-        }
-
-        function buildReport() {
-            let filterStr = document.getElementById('filter-month')?.value;
-            if(!filterStr) {
-                filterStr = new Date().toISOString().slice(0, 7);
-                if(document.getElementById('filter-month')) document.getElementById('filter-month').value = filterStr;
-            }
-
-            const yearVal = filterStr.split('-')[0];
-            const monthVal = parseInt(filterStr.split('-')[1], 10) - 1;
-            const monthDateObj = new Date(yearVal, monthVal, 1);
-
-            document.getElementById('lap-periode').innerText = `Bulan Pelaporan: ${monthDateObj.toLocaleString('id-ID', { month: 'long', year: 'numeric' })}`;
-            document.getElementById('lap-tanggal-cetak').innerText = `Karangdowo, ${formatTanggalIndo(new Date().toISOString().slice(0, 10))}`;
-            
-            const cats = getDynamicCategories();
-            let sums = { in: {}, out: {} }, fMasuk = 0, fKeluar = 0, saldoAwalBulan = 0, saldoTunai = 0, saldoBank = 0;
-            
-            cats.in.forEach(c => sums.in[c.code] = 0); 
-            cats.out.forEach(c => sums.out[c.code] = 0);
-            
-            transactions.forEach(t => { 
-                if(t && t.date) {
-                    const monthTrx = t.date.slice(0, 7);
-                    const amt = Number(t.amount || 0);
-                    
-                    if(monthTrx < filterStr) {
-                        if(t.type === 'in') {
-                            if(t.code === '120') { saldoTunai += amt; saldoBank -= amt; }
-                            else if(t.code === '220') { saldoBank += amt; saldoTunai -= amt; }
-                            else { saldoAwalBulan += amt; }
-                        }
-                        if(t.type === 'out') { 
-                            saldoAwalBulan -= amt; 
+                        // Kunci Khusus Admin Master Akang
+                        if(user.email === 'fendhigandis@gmail.com') {
+                            asalRanting = "Karangdowo";
+                            role = "bendahara";
+                        } else {
+                            asalRanting = "Karangdowo";
+                            role = "ketua";
                         }
                     }
                     
-                    if(monthTrx <= filterStr) { 
-                        if(t.type === 'in') { 
-                            if(t.code === '120') { saldoTunai += amt; saldoBank -= amt; }
-                            else if(t.code === '220') { saldoBank += amt; saldoTunai -= amt; }
-                            else { t.source.includes('Bank') ? saldoBank += amt : saldoTunai += amt; } 
-                        } 
-                        if(t.type === 'out') { 
-                            t.source.includes('Bank') ? saldoBank -= amt : saldoTunai -= amt; 
-                        } 
+                    // Update Tampilan UI Sesuai Ranting
+                    document.getElementById('header-title').innerText = "SISTEM BENDAHARA - UPZIS " + asalRanting.toUpperCase();
+                    document.getElementById('print-ranting-title').innerText = "UPZIS RANTING " + asalRanting.toUpperCase();
+                    
+                    document.getElementById('user-role-display').innerText = role.toUpperCase();
+                    document.getElementById('login-page').style.display = 'none';
+                    
+                    // Buka Fitur Jika Bendahara
+                    if(role === 'bendahara') {
+                        document.getElementById('form-input-area').style.display = 'block';
+                        const kolomAksi = document.querySelectorAll('.aksi-kolom');
+                        kolomAksi.forEach(el => el.style.display = 'table-cell');
                     }
-
-                    if(monthTrx === filterStr) {
-                        if(t.type === 'in') { 
-                            if(sums.in[t.code] !== undefined) sums.in[t.code] += amt; 
-                            else sums.in['199'] = (sums.in['199'] || 0) + amt;
-                            
-                            if(t.code !== '120' && t.code !== '220') {
-                                fMasuk += amt; 
-                            }
-                        } 
-                        if(t.type === 'out') { 
-                            if(sums.out[t.code] !== undefined) sums.out[t.code] += amt; 
-                            else sums.out['299'] = (sums.out['299'] || 0) + amt;
-                            fKeluar += amt; 
-                        } 
-                    }
-                }
-            });
-
-            document.getElementById('lap-tbl-masuk').innerHTML = cats.in.map(c => `<tr><td style="text-align:center;">${c.code}</td><td>${c.name}</td><td style="text-align:right;">${formatRp(sums.in[c.code] || 0)}</td></tr>`).join('');
-            document.getElementById('lap-tbl-keluar').innerHTML = cats.out.map(c => `<tr><td style="text-align:center;">${c.code}</td><td>${c.name}</td><td style="text-align:right;">${formatRp(sums.out[c.code] || 0)}</td></tr>`).join('');
-            
-            document.getElementById('lap-saldo-awal').innerText = formatRp(saldoAwalBulan);
-            document.getElementById('lap-tot-masuk').innerText = formatRp(fMasuk); 
-            document.getElementById('lap-tot-keluar').innerText = `(${formatRp(fKeluar)})`; 
-            document.getElementById('lap-saldo-tunai').innerText = formatRp(saldoTunai); 
-            document.getElementById('lap-saldo-bank').innerText = formatRp(saldoBank); 
-            document.getElementById('lap-saldo-akhir').innerText = formatRp(saldoTunai + saldoBank);
-        }
-
-        function cetakPDF() {
-            buildReport();
-            const element = document.getElementById('print-area');
-            const panelLaporan = document.getElementById('v-laporan');
-            const monthVal = document.getElementById('filter-month').value || 'Laporan';
-            const wasHidden = panelLaporan.classList.contains('hidden');
-            if (wasHidden) panelLaporan.classList.remove('hidden');
-
-            const opt = {
-                margin: [8, 8, 8, 8], filename: `Laporan_Keuangan_UPZIS_${monthVal}.pdf`, image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true, logging: false },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
-                pagebreak: { mode: ['css', 'legacy'], avoid: ['tr', '.signature-area', '.report-header'] } 
-            };
-
-            showToast("Memproses PDF Laporan Keuangan...", "info");
-            setTimeout(() => {
-                html2pdf().set(opt).from(element).save().then(() => {
-                    if (wasHidden) panelLaporan.classList.add('hidden');
-                    showToast("Laporan PDF berhasil diunduh!", "success");
-                }).catch(err => {
-                    if (wasHidden) panelLaporan.classList.add('hidden');
-                    showToast("Gagal mengunduh PDF.", "error");
+                    
+                    muatDataRanting();
                 });
-            }, 150);
+            } else {
+                document.getElementById('login-page').style.display = 'flex';
+            }
+        });
+
+        // Fungsi Simpan (Terisolasi per Ranting)
+        function simpanTransaksi() {
+            const ket = document.getElementById('ket-transaksi').value;
+            const nominal = parseFloat(document.getElementById('nominal-transaksi').value);
+            const tipe = document.getElementById('tipe-transaksi').value;
+            const tanggal = new Date().toLocaleDateString('id-ID');
+
+            if(!ket || isNaN(nominal)) { alert("Isi keterangan dan nominal!"); return; }
+
+            const dataBaru = { tanggal: tanggal, keterangan: ket, tipe: tipe, nominal: nominal };
+
+            firebase.database().ref('ranting/' + asalRanting + '/transaksi').push(dataBaru)
+            .then(() => {
+                document.getElementById('ket-transaksi').value = '';
+                document.getElementById('nominal-transaksi').value = '';
+            })
+            .catch((error) => alert("Gagal: " + error.message));
         }
 
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then((reg) => console.log('Sistem PWA (Aplikasi HP) siap.', reg))
-                    .catch((err) => console.log('Sistem PWA gagal dimuat.', err));
+        // Fungsi Muat Data & Hitung Saldo
+        function muatDataRanting() {
+            firebase.database().ref('ranting/' + asalRanting + '/transaksi').on('value', (snapshot) => {
+                const tabelBody = document.getElementById('tabel-transaksi');
+                tabelBody.innerHTML = '';
+                let totalSaldo = 0;
+
+                snapshot.forEach((child) => {
+                    const id = child.key;
+                    const item = child.val();
+                    
+                    if(item.tipe === 'masuk') totalSaldo += Number(item.nominal);
+                    else totalSaldo -= Number(item.nominal);
+
+                    // Buat baris tabel
+                    let tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${item.tanggal}</td>
+                        <td>${item.keterangan}</td>
+                        <td>${item.tipe.toUpperCase()}</td>
+                        <td>Rp ${Number(item.nominal).toLocaleString('id-ID')}</td>
+                    `;
+                    
+                    // Tombol Hapus (Hanya muncul untuk Bendahara)
+                    if(role === 'bendahara') {
+                        let tdAksi = document.createElement('td');
+                        tdAksi.className = "aksi-kolom no-print";
+                        tdAksi.innerHTML = `<button class="btn-danger" style="padding:5px 10px; font-size:12px;" onclick="hapusData('${id}')">Hapus</button>`;
+                        tr.appendChild(tdAksi);
+                    }
+                    tabelBody.appendChild(tr);
+                });
+
+                document.getElementById('display-saldo').innerText = "Rp " + totalSaldo.toLocaleString('id-ID');
+                firebase.database().ref('ranting/' + asalRanting + '/saldo').set(totalSaldo);
             });
+        }
+
+        // Fungsi Hapus Data
+        function hapusData(id) {
+            if(confirm("Yakin ingin menghapus transaksi ini?")) {
+                firebase.database().ref('ranting/' + asalRanting + '/transaksi/' + id).remove();
+            }
+        }
+
+        // Fungsi Cetak
+        function cetakLaporan() {
+            window.print();
         }
     </script>
 </body>
