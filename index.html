@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sistem Bendahara Premium - UPZIS RANTING KARANGDOWO</title>
+    <title>Sistem Bendahara Premium - UPZIS RANTING</title>
     
     <!-- PWA Requirements -->
     <link rel="manifest" href="manifest.json">
@@ -106,6 +106,7 @@
         .toast { background: rgba(1, 42, 20, 0.98); color: white; padding: 16px 24px; border-radius: 16px; box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 14px; font-size: 13px; font-weight: 600; backdrop-filter: blur(12px); border-left: 5px solid var(--nu-gold); animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         @keyframes slideIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(120%); opacity: 0; } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
         .top-bar {
             background: linear-gradient(90deg, #000000, #012a14); 
@@ -125,7 +126,7 @@
         .top-bar-right { display: flex; align-items: center; gap: 15px; }
 
         #auth-screen {
-            background: linear-gradient(135deg, rgba(1, 42, 20, 0.95), rgba(0, 90, 43, 0.9)), url('https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg') center/cover no-repeat;
+            background: linear-gradient(135deg, rgba(1, 42, 20, 0.95), rgba(0, 90, 43, 0.9)), url('logo-nu.png') center/cover no-repeat;
             min-height: 100vh; 
             display: flex; 
             align-items: center; 
@@ -148,13 +149,13 @@
         }
         .auth-header { padding: 40px 30px 15px; text-align: center; }
         .auth-header img { 
-            height: 80px; width: 110px; object-fit: contain; margin-bottom: 15px; 
+            height: 90px; width: 120px; object-fit: contain; margin-bottom: 15px; 
             background: var(--glass-gradient); padding: 10px; border-radius: 18px; 
             box-shadow: var(--shadow-gold); border: 2px solid var(--nu-gold);
             animation: floatLogo 4s ease-in-out infinite;
         }
         @keyframes floatLogo { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-        .auth-header h2 { background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-family: 'Cinzel', serif; font-size: 24px; margin-bottom: 6px; font-weight: 800; }
+        .auth-header h2 { background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-family: 'Cinzel', serif; font-size: 22px; margin-bottom: 6px; font-weight: 800; line-height: 1.3;}
         .auth-header p { color: #cbd5e1; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; }
         .auth-body { padding: 15px 30px 35px; }
         .auth-body label { color: #f8fafc; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
@@ -576,7 +577,7 @@
         }
         .poster-overlay {
             position: absolute; inset: 0; opacity: 0.04;
-            background: url('https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg') center/80% no-repeat;
+            background: url('logo-nu.png') center/80% no-repeat;
             z-index: 1; pointer-events: none;
         }
         .poster-content { position: relative; z-index: 2; }
@@ -596,7 +597,7 @@
             .poster-container { box-shadow: none !important; border: none !important; }
         }
 
-        .report-page::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 75%; height: 75%; background: url('https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg') center/contain no-repeat; opacity: 0.025; pointer-events: none; z-index: 0; }
+        .report-page::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 75%; height: 75%; background: url('logo-nu.png') center/contain no-repeat; opacity: 0.025; pointer-events: none; z-index: 0; }
         .report-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2.5px double #000; padding-bottom: 6px; margin-bottom: 10px; position: relative; z-index: 1; }
         .report-title-center { text-align: center; flex: 1; padding: 0 6px; }
         .report-title-center h2 { margin: 0; font-size: 12pt; color: #000; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px; }
@@ -616,7 +617,7 @@
     <div class="top-bar no-print" id="top-widget">
         <div class="top-bar-left">
             <i class="fa-solid fa-layer-group" style="color:var(--nu-gold);"></i> 
-            <span id="desktop-date">SISTEM BENDAHARA TERPADU - UPZIS RANTING KARANGDOWO</span>
+            <span id="desktop-date">SISTEM BENDAHARA TERPADU - UPZIS RANTING</span>
         </div>
         <div class="top-bar-right" id="realtime-clock"></div>
     </div>
@@ -629,9 +630,9 @@
 
         <div class="auth-container">
             <div class="auth-header">
-                <img id="auth-logo" src="https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg" alt="NU Logo">
-                <h2>Sistem Bendahara</h2>
-                <p>Otorisasi Keamanan UPZIS</p>
+                <img id="auth-logo" src="logo-nu.png" alt="NU Logo">
+                <h2 style="font-size: 20px;">SISTEM BENDAHARA TERPADU<br>LAZISNU</h2>
+                <p style="margin-top:8px;">Otorisasi Keamanan UPZIS</p>
             </div>
             
             <div class="auth-body">
@@ -682,9 +683,9 @@
         
         <div class="sidebar" id="app-sidebar">
             <div class="sidebar-header">
-                <img id="nav-logo" src="https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg" alt="Logo">
+                <img id="nav-logo" src="logo-nu.png" alt="Logo">
                 <div>
-                    <div class="sidebar-brand-title" id="nav-title">UPZIS Karangdowo</div>
+                    <div class="sidebar-brand-title" id="nav-title">UPZIS Ranting</div>
                     <div class="sidebar-brand-sub">Periode: <span id="nav-period">2024-2029</span></div>
                 </div>
             </div>
@@ -734,7 +735,7 @@
                     </div>
                 </div>
                 <div class="nav-right-actions">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg" alt="Logo NU" style="height: 35px; margin-right: 8px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">
+                    <img src="logo-nu.png" alt="Logo NU" style="height: 35px; margin-right: 8px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">
                     <button class="btn-logout" onclick="logout()" title="Keluar Sistem"><i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar</button>
                 </div>
             </div>
@@ -879,12 +880,12 @@
                     </div>
                 </div>
 
-                <!-- KONTEN SOSIALISASI (BARU) -->
+                <!-- KONTEN SOSIALISASI (BARU - SMART CANVAS) -->
                 <div id="v-konten" class="panel hidden">
-                    <div class="panel-header"><i class="fa-solid fa-photo-film"></i> Konten Sosialisasi Otomatis</div>
+                    <div class="panel-header"><i class="fa-solid fa-photo-film"></i> Konten Sosialisasi Harian</div>
                     <div style="background: var(--bg-main); padding: 25px; border-radius: 20px; border: 1px solid var(--border-color); margin-bottom: 25px;">
-                        <h4 style="margin-bottom: 15px; font-weight: 800; font-size: 14px;"><i class="fa-solid fa-calendar-week" style="color:var(--nu-gold-dark);"></i> Konten Minggu Ini (Berubah Otomatis)</h4>
-                        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">Gunakan materi di bawah ini untuk kampanye ZIS di grup WhatsApp atau media sosial ranting Anda.</p>
+                        <h4 style="margin-bottom: 15px; font-weight: 800; font-size: 14px;"><i class="fa-solid fa-calendar-day" style="color:var(--nu-gold-dark);"></i> Kampanye Hari Ini (Otomatis Berganti Tiap 24 Jam)</h4>
+                        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">Silakan jadikan <i>Smart Canvas</i> di bawah ini sebagai bahan kampanye ZIS di grup WhatsApp atau media sosial ranting Anda.</p>
                         
                         <div class="grid-2-col" id="konten-mingguan-container">
                             <!-- Injected by JS -->
@@ -987,7 +988,7 @@
                             <div class="poster-overlay"></div>
                             <div class="poster-content">
                                 <div style="text-align:center; margin-bottom: 20px;">
-                                    <img id="poster-logo" src="" alt="Logo" style="height:80px; background:white; padding:10px; border-radius:18px; margin-bottom:10px; box-shadow:var(--shadow-md);">
+                                    <img id="poster-logo" src="logo-nu.png" alt="Logo" style="height:80px; background:white; padding:10px; border-radius:18px; margin-bottom:10px; box-shadow:var(--shadow-md);">
                                     <h2 style="font-family:'Cinzel', serif; font-size:24px; font-weight:800; margin:0; color:var(--nu-gold);">LAPORAN PENERIMAAN INFAK & SEDEKAH</h2>
                                     <h3 id="poster-lembaga" style="font-size:16px; margin:6px 0 0 0; letter-spacing:1px; color:white;">UPZIS RANTING KARANGDOWO</h3>
                                     <p id="poster-periode-text" style="font-size:12px; font-weight:600; color:#e2e8f0; margin-top:6px;"></p>
@@ -1033,14 +1034,14 @@
                         <div class="report-page" id="print-area">
                             <div>
                                 <div class="report-header">
-                                    <img id="pdf-logo" src="" alt="Logo UPZIS" style="width: 110px !important; height: 110px !important; object-fit: contain;">
+                                    <img id="pdf-logo" src="logo-nu.png" alt="Logo UPZIS" style="width: 110px !important; height: 110px !important; object-fit: contain;">
                                     <div class="report-title-center">
                                         <h2>LAPORAN PENERIMAAN & PENYALURAN KAS</h2>
                                         <h3 style="font-weight: bold; margin-top: 2px; font-size: 10pt;" id="pdf-nama-lembaga">UPZIS RANTING KARANGDOWO</h3>
                                         <p style="margin: 1px 0 0 0; font-size: 8pt; font-weight: bold;">Masa Khidmat: <span id="pdf-masa-khidmat">2024-2029</span></p>
                                         <p id="lap-periode" style="margin: 1px 0 0 0; font-size: 7.5pt; font-style: italic;">Periode Pelaporan: -</p>
                                     </div>
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg" alt="Logo NU" style="width: 90px !important; height: 90px !important; object-fit: contain;">
+                                    <img src="logo-nu.png" alt="Logo NU" style="width: 90px !important; height: 90px !important; object-fit: contain;">
                                 </div>
 
                                 <div class="report-section-title">I. Rincian Penerimaan Dana</div>
@@ -1175,7 +1176,10 @@
 
                 <!-- PENGURUS -->
                 <div id="v-pengurus" class="panel hidden">
-                    <div class="panel-header"><i class="fa-solid fa-building-user"></i> Profil Lembaga & Pengelolaan Anggota</div>
+                    <div class="panel-header" style="display:flex; justify-content:space-between; align-items:center;">
+                        <div><i class="fa-solid fa-building-user"></i> Profil Lembaga & Pengelolaan Anggota</div>
+                        <img src="logo-nu.png" alt="Logo NU Paten" style="height:45px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">
+                    </div>
                     
                     <div class="grid-2-col">
                         <div>
@@ -1197,7 +1201,7 @@
                             <div style="background: var(--bg-main); padding: 30px; border-radius: 20px; border: 1px solid var(--border-color);">
                                 <h4 style="margin: 0 0 15px 0; font-weight: 800; font-size: 15px; display: flex; align-items: center; gap: 10px;"><i class="fa-solid fa-image" style="color:var(--nu-gold-dark);"></i> Logo Lembaga</h4>
                                 <div style="display: flex; align-items: center; gap: 20px;">
-                                    <img id="preview-logo" src="" alt="Logo" style="width: 100px; height: 100px; object-fit: contain; border-radius: 14px; background: white; padding: 8px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);">
+                                    <img id="preview-logo" src="logo-nu.png" alt="Logo" style="width: 100px; height: 100px; object-fit: contain; border-radius: 14px; background: white; padding: 8px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);">
                                     <input type="file" id="upload-logo" accept="image/*" style="font-size: 13px; width: 100%; cursor: pointer; background: white; padding: 12px; border-radius: 12px; border: 1px dashed var(--nu-gold);">
                                 </div>
                             </div>
@@ -1354,7 +1358,7 @@
         <div style="background: white; border-radius: 20px; padding: 25px; max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto;">
             <div id="kuitansi-print-area" class="kuitansi-box">
                 <div class="kuitansi-header">
-                    <img id="kui-logo" src="" alt="Logo UPZIS" style="width: 80px !important; height: 80px !important; object-fit: contain; margin-right: 15px;">
+                    <img id="kui-logo" src="logo-nu.png" alt="Logo UPZIS" style="width: 80px !important; height: 80px !important; object-fit: contain; margin-right: 15px;">
                     <div style="flex:1;">
                         <h3 style="margin:0; font-size: 14pt; color: var(--nu-green-dark);" id="kui-lembaga">UPZIS RANTING KARANGDOWO</h3>
                         <p style="margin:0; font-size: 9pt;" id="kui-periode">Masa Khidmat: -</p>
@@ -1363,7 +1367,7 @@
                         <h2 style="margin:0; font-size: 16pt; color: var(--nu-gold-dark); text-transform: uppercase;">KUITANSI</h2>
                         <small id="kui-no" style="font-size: 8pt; color: gray;">NO: -</small>
                     </div>
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg" alt="Logo NU" style="width: 75px !important; height: 75px !important; object-fit: contain;">
+                    <img src="logo-nu.png" alt="Logo NU" style="width: 75px !important; height: 75px !important; object-fit: contain;">
                 </div>
                 <table style="width: 100%; border-collapse: collapse; font-size: 10pt; min-width: 0;">
                     <tr><td style="padding: 6px 0; width: 30%; font-weight: bold;">Telah Diterima / Disalurkan:</td><td id="kui-tipe" style="padding: 6px 0;">-</td></tr>
@@ -1395,14 +1399,14 @@
     <div id="hidden-buku-besar-print" class="hidden">
         <div class="report-page" id="buku-besar-area" style="padding: 10mm;">
             <div class="report-header">
-                <img id="bb-pdf-logo" src="" alt="Logo UPZIS" style="width: 110px !important; height: 110px !important; object-fit: contain;">
+                <img id="bb-pdf-logo" src="logo-nu.png" alt="Logo UPZIS" style="width: 110px !important; height: 110px !important; object-fit: contain;">
                 <div class="report-title-center">
                     <h2>BUKU BESAR MUTASI KAS</h2>
                     <h3 style="font-weight: bold; margin-top: 2px; font-size: 10pt;" id="bb-pdf-nama-lembaga">UPZIS RANTING KARANGDOWO</h3>
                     <p style="margin: 1px 0 0 0; font-size: 8pt; font-weight: bold;">Masa Khidmat: <span id="bb-pdf-masa-khidmat">2024-2029</span></p>
                     <p id="bb-lap-periode" style="margin: 1px 0 0 0; font-size: 7.5pt; font-style: italic;">Rincian Transaksi: -</p>
                 </div>
-                <img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg" alt="Logo NU" style="width: 90px !important; height: 90px !important; object-fit: contain;">
+                <img src="logo-nu.png" alt="Logo NU" style="width: 90px !important; height: 90px !important; object-fit: contain;">
             </div>
 
             <table class="report-table" style="margin-top: 15px;">
@@ -1649,13 +1653,14 @@
             return window.fs.doc(window.db, "ranting", asalRanting.toLowerCase(), colName, docId);
         }
 
+        // SETTING BAWAAN KOSONG AGAR RANTING BISA MENGISI SENDIRI
         let profileSettings = {
-            lembaga: 'UPZIS Ranting Karangdowo', periode: '2024-2029', 
-            ketua: 'H. Fulan, S.Ag', bendahara: 'Muhamad Efendhi, S. Ak', 
+            lembaga: '', periode: '', 
+            ketua: '', bendahara: '', 
             username: 'bendahara', password: 'admin', 
-            relawan: ['Mustaqim', 'Ana / Jariyah', 'Fatimah', 'Novi', 'Yusuf', "Rofi'ah", 'Watik / Har / Bu Parno', 'Geger / Ujang'], 
+            relawan: [], 
             anggota: [],
-            logoBase64: 'https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg',
+            logoBase64: 'logo-nu.png', // Default langsung cepat memuat
             activeYear: new Date().getFullYear()
         };
 
@@ -2114,7 +2119,6 @@
                     try {
                         let userDoc = await window.fs.getDoc(window.fs.doc(window.db, "users", user.uid));
                         
-                        // Menunggu (Jeda) jika akun baru saja didaftarkan agar data tidak nyasar
                         if(!userDoc.exists() && localStorage.getItem('temp_ranting')) {
                             await new Promise(r => setTimeout(r, 1500)); 
                             userDoc = await window.fs.getDoc(window.fs.doc(window.db, "users", user.uid));
@@ -2125,12 +2129,10 @@
                             currentUserRole = userDoc.data().role || "bendahara";
                             localStorage.removeItem('temp_ranting'); 
                         } else {
-                            // Trik Penyelamat: Jika email utama Akang, otomatis masuk ke Karangdowo
                             if (user.email === 'fendhigandis@gmail.com') {
                                 asalRanting = "Karangdowo";
                                 currentUserRole = 'bendahara';
                             } else {
-                                // Pilihan Terakhir agar Ranting Baru tidak lari ke Karangdowo
                                 asalRanting = localStorage.getItem('temp_ranting') || "Karangdowo";
                                 currentUserRole = 'bendahara';
                             }
@@ -2174,7 +2176,6 @@
                 showToast(isRegisterMode ? "Mendaftarkan ranting ke server..." : "Memverifikasi kredensial ke server...", "info");
                 
                 if (isRegisterMode) {
-                    // Menyimpan Nama Ranting di Memori HP Sementara agar tidak nyasar ke Karangdowo
                     localStorage.setItem('temp_ranting', rantingName);
                     
                     const userCredential = await window.authServices.createUserWithEmailAndPassword(window.auth, email, pass);
@@ -2228,71 +2229,62 @@
             }
         }
 
-        // --- RUMUS KONTEN SOSIALISASI MINGGUAN (OTOMATIS 7 HARI) ---
+        // --- RUMUS KONTEN SOSIALISASI HARIAN (OTOMATIS 1 HARI) ---
         function renderKontenMingguan() {
-            // Daftar gambar dan video (Dapat Akang sesuaikan sendiri link gambarnya)
             const kontenList = [
-                {
-                    tipe: 'image',
-                    url: 'https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg',
-                    judul: 'Pentingnya Zakat Fitrah',
-                    teks: 'Mari tunaikan Zakat Fitrah melalui UPZIS terdekat untuk mensucikan jiwa dan berbagi kebahagiaan bagi sesama yang membutuhkan.'
-                },
-                {
-                    tipe: 'video', 
-                    url: 'https://www.w3schools.com/html/mov_bbb.mp4', // Link Video Pendek Contoh
-                    judul: 'Gerakan Infaq Subuh Berkah',
-                    teks: 'Awali harimu dengan bersedekah di waktu subuh. Sedekah subuh mendatangkan keberkahan luar biasa dan didoakan langsung oleh Malaikat.'
-                },
-                {
-                    tipe: 'image',
-                    url: 'https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg',
-                    judul: 'Beasiswa Pendidikan Santri',
-                    teks: 'Alhamdulillah, infaq dan shadaqah Anda telah disalurkan untuk pendidikan para santri dhuafa penghafal Qur\'an. Mari lanjutkan kebaikan ini!'
-                },
-                {
-                    tipe: 'image',
-                    url: 'https://upload.wikimedia.org/wikipedia/commons/2/24/Nahdlatul_Ulama_Logo.svg',
-                    judul: 'Zakat Mal Pembersih Harta',
-                    teks: 'Telah mencapai nisab satu tahun? Bersihkan harta Anda dengan menunaikan Zakat Mal 2.5% agar harta yang tersisa menjadi berkah.'
-                }
+                { judul: 'Keutamaan Sedekah Subuh', teks: 'Mari awali hari dengan sedekah subuh. Malaikat turun mendoakan hamba yang bersedekah di pagi hari.' },
+                { judul: 'Berbagi untuk Yatim & Dhuafa', teks: 'Sebagian harta kita adalah hak mereka. Salurkan infaq Anda untuk menyantuni anak yatim dan dhuafa di lingkungan kita.' },
+                { judul: 'Zakat Mal Pembersih Harta', teks: 'Sucikan harta yang telah mencapai nisab dengan Zakat Mal. Harta yang suci membawa keberkahan bagi keluarga.' },
+                { judul: 'Infaq Pendidikan Santri', teks: 'Dukung perjuangan para santri penghafal Qur\'an. Infaq Anda menjadi amal jariyah yang pahalanya terus mengalir.' },
+                { judul: 'Jumat Berkah', teks: 'Lipat gandakan pahala di hari Jumat. Sedekah di hari Jumat bagaikan sedekah di bulan Ramadhan.' },
+                { judul: 'Sedekah Penolak Bala', teks: 'Bersegeralah bersedekah, sebab bala bencana tidak pernah bisa mendahului sedekah. (HR. Thabrani)' },
+                { judul: 'Infaq Kesehatan Umat', teks: 'Bantu saudara kita yang sedang diuji dengan penyakit. Infaq Anda sangat berarti untuk kesembuhan mereka.' }
             ];
             
-            // Rumus Menghitung Siklus Minggu dari Tahun 1970
-            const weekIndex = Math.floor(Date.now() / (1000 * 60 * 60 * 24 * 7));
-            const currentKontenIndex = weekIndex % kontenList.length; // Otomatis berputar setelah habis
+            const dayIndex = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
+            const currentKontenIndex = dayIndex % kontenList.length; 
             const kontenAktif = kontenList[currentKontenIndex];
             
             const container = document.getElementById('konten-mingguan-container');
             if(!container) return;
             
-            let mediaHtml = '';
-            if(kontenAktif.tipe === 'image') {
-                mediaHtml = `<img src="${kontenAktif.url}" alt="Konten" style="width:100%; height:220px; object-fit:contain; background:white; border-radius:12px; margin-bottom:15px; border:1px solid var(--border-color); box-shadow:var(--shadow-sm);">`;
-            } else {
-                mediaHtml = `<video controls style="width:100%; height:220px; background:black; border-radius:12px; margin-bottom:15px; box-shadow:var(--shadow-sm);"><source src="${kontenAktif.url}" type="video/mp4"></video>`;
-            }
-            
             const waText = encodeURIComponent(`*${kontenAktif.judul}*\n\n${kontenAktif.teks}\n\nMari salurkan ZIS Anda melalui UPZIS Ranting ${asalRanting.toUpperCase()}.\n_Sistem Bendahara Terpadu_`);
             
             container.innerHTML = `
                 <div style="background: white; padding: 20px; border-radius: 16px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);">
-                    ${mediaHtml}
-                    <h3 style="font-size: 15px; font-weight: 800; color: var(--nu-green-dark); margin-bottom: 8px;">${kontenAktif.judul}</h3>
-                    <p style="font-size: 12px; color: var(--text-dark); line-height: 1.6; margin-bottom: 15px; font-weight: 500;">${kontenAktif.teks}</p>
+                    <!-- ANIMATED VIDEO CANVAS -->
+                    <div style="position:relative; width:100%; height:280px; background: linear-gradient(135deg, var(--nu-green-dark), #000); border-radius:12px; overflow:hidden; box-shadow:var(--shadow-md); display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:20px; color:white; border: 2px solid var(--nu-gold); margin-bottom:15px; animation: fadeIn 1s ease-out;">
+                        <div style="position:absolute; top:15px; left:15px; display:flex; align-items:center; gap:8px;">
+                            <img src="${profileSettings.logoBase64}" style="height:35px; width:35px; object-fit:contain; background:white; padding:4px; border-radius:8px;">
+                            <div style="text-align:left; line-height:1.2;">
+                                <div style="font-size:10px; color:var(--nu-gold); font-weight:800;">LAZISNU</div>
+                                <div style="font-size:12px; font-weight:800; text-transform:uppercase;">RANTING ${asalRanting}</div>
+                            </div>
+                        </div>
+                        
+                        <div style="animation: pulseLedGreen 2s infinite; font-size:40px; margin-bottom:15px; color:var(--nu-gold);"><i class="fa-solid fa-hand-holding-heart"></i></div>
+                        
+                        <h3 style="font-size:20px; font-weight:800; color:var(--nu-gold-light); font-family:'Cinzel', serif; margin-bottom:10px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${kontenAktif.judul}</h3>
+                        <p style="font-size:13px; line-height:1.6; font-weight:500; max-width:90%;">${kontenAktif.teks}</p>
+                        
+                        <div style="position:absolute; bottom:15px; width:100%; text-align:center; font-size:10px; color:rgba(255,255,255,0.6); text-transform:uppercase; letter-spacing:1px;">
+                            Konten Harian - Terbit: ${new Date().toLocaleDateString('id-ID')}
+                        </div>
+                    </div>
+                    
                     <div style="display:flex; gap:10px;">
-                        <a href="${kontenAktif.url}" download target="_blank" class="btn btn-outline" style="flex:1; padding:10px; font-size:12px; text-decoration:none; text-align:center;"><i class="fa-solid fa-download"></i> Unduh File</a>
+                        <button onclick="alert('Silakan gunakan fitur Screenshot / Tangkapan Layar pada HP Anda untuk menyimpan gambar di atas.')" class="btn btn-outline" style="flex:1; padding:10px; font-size:12px; text-align:center;"><i class="fa-solid fa-camera"></i> Screenshot Konten</button>
                         <a href="https://api.whatsapp.com/send?text=${waText}" target="_blank" class="btn btn-primary" style="flex:1; padding:10px; font-size:12px; background:var(--wa-color); border:none; text-decoration:none; text-align:center;"><i class="fa-brands fa-whatsapp"></i> Bagikan WA</a>
                     </div>
                 </div>
                 <div style="display:flex; flex-direction:column; justify-content:center;">
                     <div style="background:var(--nu-green-light); padding:20px; border-radius:16px; border:1px solid var(--nu-green);">
-                        <h4 style="color:var(--nu-green-dark); margin-bottom:12px; font-size:14px; font-weight:800;"><i class="fa-solid fa-lightbulb"></i> Tips Kampanye Cerdas</h4>
+                        <h4 style="color:var(--nu-green-dark); margin-bottom:12px; font-size:14px; font-weight:800;"><i class="fa-solid fa-lightbulb"></i> Info Smart Canvas</h4>
                         <ul style="font-size:12px; color:var(--text-dark); padding-left:15px; line-height:1.8; font-weight:500;">
-                            <li>Klik tombol <b>Unduh File</b> untuk menyimpan gambar/video ke Galeri HP Anda.</li>
-                            <li>Tekan tombol <b>Bagikan WA</b> untuk menyalin teks ajakan kampanye secara otomatis ke aplikasi WhatsApp.</li>
-                            <li>Sangat cocok untuk dijadikan sebagai <i>Status / Story WhatsApp</i> secara rutin.</li>
-                            <li>Konten beserta kalimat ajakan di samping akan <b>berubah secara otomatis setiap 7 hari sekali</b> agar warga dan donatur tidak merasa bosan dengan gambar yang itu-itu saja!</li>
+                            <li>Kotak di samping adalah <b>Smart Canvas</b> (pengganti video berat). Ini super ringan dan tidak membuat kuota internet boros karena langsung dimuat dari sistem.</li>
+                            <li>Sistem otomatis memasukkan <b>Nama Ranting Anda (${asalRanting})</b> dan <b>Logo Anda</b> ke dalam desain animasi tersebut secara real-time.</li>
+                            <li>Desain dan teks ajakan sedekah akan <b>berganti otomatis setiap 1 hari (24 Jam)</b>.</li>
+                            <li>Sangat cocok untuk dijadikan sebagai <i>Status WhatsApp</i> rutin. Silakan <i>Screenshot</i> (Tangkap Layar) kotak tersebut untuk dijadikan gambar, lalu klik tombol <b>Bagikan WA</b> untuk menyalin teks deskripsinya.</li>
                         </ul>
                     </div>
                 </div>
@@ -2308,9 +2300,12 @@
             renderLogs();
             buildReport(); 
             buildPoster();
-            renderKontenMingguan(); // Memanggil fitur baru
+            renderKontenMingguan(); 
             updateStorageIndicator();
             checkYearEnd();
+            
+            // Redirect otomatis ke dashboard setiap berhasil masuk
+            switchTab(null, 'v-dashboard');
         }
         
         function switchTab(evt, tabId) { 
@@ -2326,7 +2321,7 @@
             if(tabId === 'v-poster') buildPoster();
             if(tabId === 'v-analitik') renderCharts();
             if(tabId === 'v-pengurus') renderBagan();
-            if(tabId === 'v-konten') renderKontenMingguan(); // Reload gambar jika tab diklik
+            if(tabId === 'v-konten') renderKontenMingguan(); 
         }
         
         function updateCategories() { 
@@ -2362,14 +2357,7 @@
 
         function initAnggota() {
             if (!profileSettings.anggota || profileSettings.anggota.length === 0) {
-                profileSettings.anggota = [];
-                if(profileSettings.ketua) profileSettings.anggota.push({ id: Date.now()+1, nama: profileSettings.ketua, jabatan: 'Ketua' });
-                if(profileSettings.bendahara) profileSettings.anggota.push({ id: Date.now()+2, nama: profileSettings.bendahara, jabatan: 'Bendahara' });
-                if(profileSettings.relawan) {
-                    profileSettings.relawan.forEach((r, i) => {
-                        profileSettings.anggota.push({ id: Date.now()+3+i, nama: r, jabatan: 'Relawan' });
-                    });
-                }
+                profileSettings.anggota = []; // Dikosongkan agar setiap ranting bisa mengisi sendiri
             }
         }
 
@@ -2530,7 +2518,7 @@
                 `).join('');
                 html += `</div>`;
             }
-            document.getElementById('org-chart-container').innerHTML = html || '<div style="text-align:center; color:gray; font-size:12px;">Data kepengurusan belum lengkap.</div>';
+            document.getElementById('org-chart-container').innerHTML = html || '<div style="text-align:center; color:gray; font-size:12px;">Data kepengurusan belum lengkap. Silakan isi di menu Profil Lembaga.</div>';
         }
 
         function editTrx(idFirebase) {
