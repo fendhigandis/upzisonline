@@ -1,9 +1,7 @@
 // ==========================================
-// PENGATURAN SERVICE WORKER (CACHE) v3
+// PENGATURAN SERVICE WORKER (PWA) PROFESIONAL
 // ==========================================
-
-// Dinaikkan menjadi v3 untuk memaksa browser membuang cache lama
-const CACHE_NAME = 'upzis-kas-cache-v3';
+const CACHE_NAME = 'upzis-kas-pro-v4';
 
 const ASSETS_TO_CACHE = [
     './',
@@ -16,9 +14,11 @@ const ASSETS_TO_CACHE = [
     'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js',
     'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
     'https://cdn.jsdelivr.net/npm/chart.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
+    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
+    'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&display=swap'
 ];
 
+// 1. Install Event: Menyimpan aset ke cache
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
@@ -28,6 +28,7 @@ self.addEventListener('install', (event) => {
     self.skipWaiting();
 });
 
+// 2. Activate Event: Menghapus cache versi lama yang sudah tidak dipakai
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((cacheNames) => {
@@ -43,13 +44,13 @@ self.addEventListener('activate', (event) => {
     self.clients.claim();
 });
 
+// 3. Fetch Event: Strategi Cache-First untuk aset statis, abaikan request Firebase API
 self.addEventListener('fetch', (event) => {
-    if (event.request.method !== 'GET') {
-        return; 
-    }
+    if (event.request.method !== 'GET') return;
 
     const requestUrl = event.request.url;
 
+    // Biarkan permintaan ke server Firebase berjalan langsung lewat jaringan (network)
     if (requestUrl.includes('firestore.googleapis.com') || 
         requestUrl.includes('identitytoolkit.googleapis.com') ||
         requestUrl.includes('securetoken.googleapis.com') ||
@@ -62,17 +63,17 @@ self.addEventListener('fetch', (event) => {
             if (cachedResponse) {
                 return cachedResponse;
             }
-
             return fetch(event.request).then((networkResponse) => {
                 return caches.open(CACHE_NAME).then((cache) => {
-                    if (!requestUrl.startsWith('chrome-extension')) {
+                    if (!requestUrl.startsWith('chrome-extension') && networkResponse.status === 200) {
                         cache.put(event.request, networkResponse.clone());
                     }
                     return networkResponse;
                 });
             });
         }).catch(() => {
-            console.log('[Service Worker] Offline mode.');
+            // Fallback jika benar-benar offline total
+            console.log('[PWA] Mode offline aktif.');
         })
     );
 });
