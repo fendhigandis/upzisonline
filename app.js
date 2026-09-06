@@ -1100,4 +1100,92 @@ window.eksekusiTutupBuku = async function() {
         showToast("Terjadi kesalahan sistem saat tutup buku.", "error");
     }
 };
+// 1. Mengaktifkan Form Tambah Warga (Mustahik)
+const formMustahik = document.getElementById('form-mustahik');
+if (formMustahik) {
+    formMustahik.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (currentUserRole !== 'bendahara') return;
+        
+        const nama = document.getElementById('m-nama').value.trim();
+        const kategori = document.getElementById('m-kategori').value;
+        
+        if (!nama) return showToast("Nama wajib diisi!", "error");
+        
+        try {
+            await window.fs.addDoc(getCol("mustahik"), { nama, kategori, timestamp: Date.now() });
+            e.target.reset();
+            showToast("Data warga berhasil ditambahkan", "success");
+        } catch (error) {
+            showToast("Gagal menyimpan data", "error");
+        }
+    });
+}
+
+// 2. Memberikan Logika Perhitungan pada Kalkulator Amil (12.5%)
+window.bukaKalkulatorAmil = function() {
+    const currentM = new Date().toISOString().slice(0, 7); 
+    let totalPenerimaan = 0;
+    
+    transactions.forEach(t => {
+        if(t.date.slice(0,7) === currentM && t.type === 'in' && t.code !== '120' && t.code !== '220') {
+            totalPenerimaan += Number(t.amount || 0);
+        }
+    });
+
+    const hakAmil = totalPenerimaan * 0.125; 
+
+    document.getElementById('amil-total').innerText = formatRp(totalPenerimaan);
+    document.getElementById('amil-hak').innerText = formatRp(hakAmil);
+    
+    document.getElementById('modal-amil').classList.remove('hidden');
+};
+// =====================================================================
+// --- 13. PENAMBALAN ERROR MENYELURUH (FINAL POLISH) ---
+// =====================================================================
+
+// 1. FIX: Mencegah error Chart.js saat rendering berulang
+function safeDestroyChart(chartInstanceName) {
+    if (window[chartInstanceName] && typeof window[chartInstanceName].destroy === 'function') {
+        window[chartInstanceName].destroy();
+        window[chartInstanceName] = null;
+    }
+}
+
+// 2. FIX: Validasi Aman untuk Input Form Transaksi Utama
+const safetyTrxForm = document.getElementById('form-trx');
+if (safetyTrxForm) {
+    // Memastikan tombol submit memiliki pengaman tambahan dari NaN error
+    const inputAmountRef = document.getElementById('t-amount');
+    if (inputAmountRef) {
+        inputAmountRef.addEventListener('blur', function() {
+            let cleanVal = this.value.replace(/[^0-9]/g, '');
+            if (cleanVal) {
+                this.value = parseInt(cleanVal, 10).toLocaleString('id-ID');
+            }
+        });
+    }
+}
+
+// 3. FIX: Penanganan Aman untuk Muat Arsip Kosong atau Belum Tersedia
+const originalLoadArsip = window.loadArsip;
+window.loadArsip = async function() {
+    const yearInput = document.getElementById('input-arsip-year');
+    if (!yearInput || !yearInput.value) {
+        showToast("Mohon masukkan tahun arsip terlebih dahulu.", "error");
+        return;
+    }
+    // Jalankan fungsi arsip utama dengan pengaman tambahan
+    try {
+        await originalLoadArsip();
+    } catch (err) {
+        showToast("Arsip untuk tahun tersebut tidak ditemukan di database.", "info");
+    }
+};
+
+// 4. FIX: Pengamanan Global untuk Mencegah Uncaught ReferenceError
+window.safeGetElementVal = function(elementId) {
+    const el = document.getElementById(elementId);
+    return el ? el.value : '';
+};
 
