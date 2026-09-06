@@ -934,4 +934,82 @@ window.editTrx = function(id) {
         document.getElementById('v-dashboard').scrollIntoView({behavior: 'smooth'});
     }, 50);
 }
+// =====================================================================
+// --- 12. FINALISASI 100% (BUG SCOPE, UI SYNC, & PRINTER) ---
+// =====================================================================
+
+// 1. FIX: Ekspos formatRp ke window agar Kalkulator Zakat di HTML berfungsi
+window.formatRp = num => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
+
+// 2. FIX: Injeksi Tombol Kalkulator Amil ke dalam UI
+const kalkulatorPanel = document.querySelector('#v-kalkulator .form-grid');
+if (kalkulatorPanel && !document.getElementById('btn-trigger-amil')) {
+    const amilCard = document.createElement('div');
+    amilCard.style = "background:var(--bg-main); padding:20px; border-radius:15px; border:1px solid var(--border-color); display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;";
+    amilCard.innerHTML = `
+        <h4 style="margin-bottom:10px;"><i class="fa-solid fa-scale-balanced" style="color:var(--nu-gold-dark);"></i> Hitung Hak Amil</h4>
+        <p style="font-size:12px; color:gray; margin-bottom:15px;">Kalkulasi 12.5% dari total penerimaan bulan ini secara otomatis.</p>
+        <button id="btn-trigger-amil" class="btn btn-primary" onclick="bukaKalkulatorAmil()" style="width:100%;">Buka Kalkulator Amil</button>
+    `;
+    kalkulatorPanel.appendChild(amilCard);
+}
+
+// 3. FIX: Sinkronisasi Identitas Sidebar saat Login
+window.authServices.onAuthStateChanged(window.auth, async user => {
+    if(user) {
+        try { 
+            let d = await window.fs.getDoc(window.fs.doc(window.db, "users", user.uid)); 
+            if(d.exists()){ 
+                asalRanting = d.data().ranting || ""; 
+                currentUserRole = d.data().role || "bendahara"; 
+                
+                // Update UI Sidebar
+                if(document.getElementById('badge-username')) document.getElementById('badge-username').innerText = user.email.split('@')[0];
+                if(document.getElementById('badge-role-text')) document.getElementById('badge-role-text').innerText = currentUserRole.toUpperCase();
+                if(document.getElementById('nav-period')) document.getElementById('nav-period').innerText = profileSettings.periode || "2024-2029";
+            } 
+        } catch(e){}
+        document.getElementById('auth-screen').classList.add('hidden'); 
+        document.getElementById('app-screen').classList.remove('hidden');
+        loadAllCloudData(); applyRBAC();
+    }
+});
+
+// 4. FIX: Sinkronisasi Ikon & Teks Mode Gelap
+window.toggleThemeMode = () => { 
+    document.body.classList.toggle('dark-mode'); 
+    const isDark = document.body.classList.contains('dark-mode');
+    
+    if (document.getElementById('theme-icon')) {
+        document.getElementById('theme-icon').className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+    }
+    if (document.getElementById('theme-text')) {
+        document.getElementById('theme-text').innerText = isDark ? 'Light' : 'Dark';
+    }
+};
+
+// 5. FIX: Menulis Data Teks ke Printer Bluetooth (Thermal ESC/POS)
+window.cetakStrukBluetooth = async () => { 
+    try { 
+        const device = await navigator.bluetooth.requestDevice({ 
+            filters: [{services: ['000018f0-0000-1000-8000-00805f9b34fb']}] 
+        }); 
+        const server = await device.gatt.connect(); 
+        const service = await server.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb');
+        const characteristic = await service.getCharacteristic('00002af1-0000-1000-8000-00805f9b34fb');
+        
+        showToast("Printer Terhubung! Mencetak...", "info"); 
+        
+        const nominal = document.getElementById('kui-nominal')?.innerText || '0';
+        const ket = document.getElementById('kui-ket')?.innerText || '-';
+        
+        const strukText = `\n=== UPZIS RANTING ===\nKUITANSI TRANSAKSI\n--------------------\nNominal: ${nominal}\nKet: ${ket}\n--------------------\nTerima Kasih.\n\n\n`;
+        const data = new TextEncoder().encode(strukText);
+        
+        await characteristic.writeValue(data);
+        showToast("Struk berhasil dicetak!", "success");
+    } catch(err) { 
+        showToast("Batal koneksi printer atau perangkat tidak didukung.", "error"); 
+    } 
+};
 
