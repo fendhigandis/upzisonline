@@ -14,14 +14,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="style.css?v=enterprise_v11">
-    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-    <script>eruda.init();</script>
+    <link rel="stylesheet" href="style.css?v=enterprise_v12">
 </head>
 <body>
 
     <div id="auth-screen">
-        <audio id="bg-music" loop preload="auto" style="display:none;"><source src="https://actions.google.com/sounds/v1/ambiences/islamic_meditation_flute.ogg" type="audio/ogg"></audio>
         <div class="auth-container">
             <div class="auth-header">
                 <img id="auth-logo" src="icon-192.png" alt="NU Logo">
@@ -51,7 +48,8 @@
                 <button class="tab-btn" onclick="switchTab(event, 'v-histori')"><i class="fa-solid fa-book"></i> Buku Besar</button>
                 <button class="tab-btn" onclick="switchTab(event, 'v-arsip')"><i class="fa-solid fa-box-archive"></i> Arsip Tahunan</button>
                 
-                <div class="menu-section-label">Fitur Ekstra (Baru)</div>
+                <div class="menu-section-label">Manajemen Khusus</div>
+                <button class="tab-btn" onclick="switchTab(event, 'v-proker')"><i class="fa-solid fa-bullseye"></i> Target & Proker</button>
                 <button class="tab-btn" onclick="switchTab(event, 'v-kalkulator')"><i class="fa-solid fa-calculator"></i> Kalkulator Zakat</button>
                 <button class="tab-btn" onclick="switchTab(event, 'v-inventaris')"><i class="fa-solid fa-boxes-stacked"></i> Inventaris Aset</button>
                 <button class="tab-btn" onclick="switchTab(event, 'v-leaderboard')"><i class="fa-solid fa-medal"></i> Leaderboard Relawan</button>
@@ -61,7 +59,7 @@
                 <button class="tab-btn" onclick="switchTab(event, 'v-poster')"><i class="fa-solid fa-file-image"></i> Poster Laporan</button>
                 <button class="tab-btn" onclick="switchTab(event, 'v-laporan')"><i class="fa-solid fa-file-invoice"></i> Laporan PDF</button>
                 
-                <div class="menu-section-label">Manajemen</div>
+                <div class="menu-section-label">Administrasi</div>
                 <button class="tab-btn" onclick="switchTab(event, 'v-mustahik')"><i class="fa-solid fa-users"></i> Warga & Relawan</button>
                 <button class="tab-btn" onclick="switchTab(event, 'v-pengurus')"><i class="fa-solid fa-building-user"></i> Pengurus</button>
                 <button class="tab-btn" onclick="switchTab(event, 'v-agenda')"><i class="fa-solid fa-calendar-days"></i> Agenda Rapat</button>
@@ -90,15 +88,27 @@
                 </div>
             </div>
 
-            <div id="year-end-warning" class="hidden no-print" style="background:#fef2f2; border:2px solid #ef4444; color:#b91c1c; padding:15px 30px; border-radius:14px; margin:30px 30px 0 30px; font-weight:bold; display:flex; align-items:center; gap:15px;"><i class="fa-solid fa-triangle-exclamation blink-warning" style="font-size:28px;"></i> <div><span style="font-size:14px;">PERINGATAN AKHIR TAHUN: Sisa waktu kurang dari 30 hari!</span><br><span style="font-size:12px; font-weight:500;">Segera cadangkan data Anda.</span></div></div>
-
             <div class="container">
-                <!-- DASHBOARD -->
                 <div id="v-dashboard" class="panel">
                     <div class="smart-cloud-mini-bar no-print" style="display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:20px; background:var(--bg-main); padding:15px; border-radius:16px; border:1px solid var(--border-color);"><div style="display:flex; align-items:center; gap:15px;"><div class="led-light led-green" id="firebase-led" style="width:12px; height:12px; border-radius:50%; background:#4ade80;"></div><div><div style="font-weight:800;">Real-Time <span id="sync-badge" class="badge badge-in">ONLINE</span></div></div></div><button class="btn btn-outline" onclick="loadAllCloudData()"><i class="fa-solid fa-rotate"></i> Sync Live</button></div>
                     <div class="summary-grid"><div class="card"><div class="card-icon"><i class="fa-solid fa-wallet"></i></div><h3>Kas Tunai</h3><p id="sum-tunai">Rp 0</p></div><div class="card"><div class="card-icon"><i class="fa-solid fa-building-columns"></i></div><h3>Bank BRI</h3><p id="sum-bank">Rp 0</p></div><div class="card"><div class="card-icon"><i class="fa-solid fa-arrow-trend-up"></i></div><h3>Penerimaan</h3><p id="sum-masuk" style="color:#15803d;">Rp 0</p></div><div class="card"><div class="card-icon"><i class="fa-solid fa-arrow-trend-down"></i></div><h3>Penyaluran</h3><p id="sum-keluar" style="color:#b91c1c;">Rp 0</p></div></div>
                     <div class="panel-header" style="margin-top:40px; border-top:1px solid var(--border-color); padding-top:30px;"><i class="fa-solid fa-pen-nib"></i> Entri Jurnal</div>
-                    <form id="form-trx"><input type="hidden" id="t-edit-id"><div class="form-grid"><div class="form-group"><label>Mutasi</label><select id="t-type" onchange="updateCategories()"><option value="in">Pemasukan (Debit)</option><option value="out">Pengeluaran (Kredit)</option></select></div><div class="form-group"><label>Sumber</label><select id="t-source" required><option value="Kas Tunai">Kas Tunai</option><option value="Rekening Bank BRI">Bank BRI</option></select></div><div class="form-group"><label>Akun</label><select id="t-category" required></select></div><div class="form-group"><label>Tanggal</label><input type="date" id="t-date" required></div><div class="form-group"><label>Nominal</label><input type="text" id="t-amount" required></div><div class="form-group"><label>Nota (Opsional)</label><input type="file" id="t-proof" accept="image/*"></div><div class="form-group" style="grid-column: 1 / -1;"><label>Keterangan Lengkap</label><input type="text" id="t-desc" required></div></div><div style="text-align:right; margin-top:20px; display:flex; justify-content:flex-end; gap:10px;"><button type="button" id="btn-cancel-edit" class="btn btn-outline hidden" onclick="cancelEditTrx()">Batal</button><button type="submit" id="btn-submit-trx" class="btn btn-primary"><i class="fa-solid fa-check"></i> Rekam Transaksi</button></div></form>
+                    <form id="form-trx">
+                        <input type="hidden" id="t-edit-id">
+                        <div class="form-grid">
+                            <div class="form-group"><label>Mutasi</label><select id="t-type" onchange="updateCategories()"><option value="in">Pemasukan (Debit)</option><option value="out">Pengeluaran (Kredit)</option></select></div>
+                            <div class="form-group"><label>Sumber</label><select id="t-source" required><option value="Kas Tunai">Kas Tunai</option><option value="Rekening Bank BRI">Bank BRI</option></select></div>
+                            <div class="form-group"><label>Akun</label><select id="t-category" required></select></div>
+                            <div class="form-group"><label>Tanggal</label><input type="date" id="t-date" required></div>
+                            <div class="form-group"><label>Nominal</label><input type="text" id="t-amount" required></div>
+                            <div class="form-group"><label>Nota (Opsional)</label><input type="file" id="t-proof" accept="image/*" disabled title="Tersedia di versi storage aktif"></div>
+                            <div class="form-group" style="grid-column: 1 / -1;"><label>Keterangan Lengkap</label><input type="text" id="t-desc" required></div>
+                        </div>
+                        <div style="text-align:right; margin-top:20px; display:flex; justify-content:flex-end; gap:10px;">
+                            <button type="button" id="btn-cancel-edit" class="btn btn-outline hidden" onclick="cancelEditTrx()">Batal Edit</button>
+                            <button type="submit" id="btn-submit-trx" class="btn btn-primary"><i class="fa-solid fa-check"></i> Rekam Transaksi</button>
+                        </div>
+                    </form>
                 </div>
 
                 <div id="v-analitik" class="panel hidden"><div class="panel-header"><i class="fa-solid fa-chart-line"></i> Grafik Analitik</div><div style="background:var(--bg-main); padding:20px; border-radius:20px; margin-bottom:20px;"><canvas id="chartTrenBulanan" style="max-height:250px;"></canvas></div><div class="form-grid"><div style="background:var(--bg-main); padding:20px; border-radius:20px;"><canvas id="chartArusKas" style="max-height:250px;"></canvas></div><div style="background:var(--bg-main); padding:20px; border-radius:20px;"><canvas id="chartPenyaluran" style="max-height:250px;"></canvas></div></div></div>
@@ -110,7 +120,16 @@
                     <div id="pagination-controls" style="display:flex; justify-content:center; align-items:center; gap:15px; margin-top:20px;" class="no-print"><button class="btn btn-outline" onclick="ubahHalaman(-1)" style="padding:8px 16px;"><i class="fa-solid fa-chevron-left"></i> Prev</button><span id="page-indicator" style="font-weight:800; padding:8px 15px; background:var(--bg-main); border-radius:8px;">Hal 1</span><button class="btn btn-outline" onclick="ubahHalaman(1)" style="padding:8px 16px;">Next <i class="fa-solid fa-chevron-right"></i></button></div>
                 </div>
 
-                <!-- ARSIP TAHUNAN DENGAN DOWNLOAD LENGKAP -->
+                <div id="v-proker" class="panel hidden">
+                    <div class="panel-header"><i class="fa-solid fa-bullseye"></i> Target & Program Kerja</div>
+                    <form id="form-proker" class="admin-only form-grid" style="background:var(--bg-main); padding:20px; border-radius:15px; margin-bottom:20px;">
+                        <div class="form-group"><input type="text" id="pk-nama" placeholder="Nama Program (Cth: Pembangunan Masjid)" required></div>
+                        <div class="form-group"><input type="number" id="pk-target" placeholder="Target Dana (Rp)" required></div>
+                        <button type="submit" class="btn btn-primary" style="height: 48px; margin-top:20px;"><i class="fa-solid fa-plus"></i> Buat Program</button>
+                    </form>
+                    <div id="list-proker" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:20px;"></div>
+                </div>
+
                 <div id="v-arsip" class="panel hidden">
                     <div class="panel-header"><i class="fa-solid fa-box-archive"></i> Riwayat Arsip Tahunan</div>
                     <div style="display:flex; gap:10px; margin-bottom:20px;"><input type="number" id="input-arsip-year" placeholder="Tahun..." style="padding:10px; border-radius:8px; border:1px solid var(--border-color);"><button class="btn btn-primary" onclick="loadArsip()">Cari Arsip</button></div>
@@ -126,12 +145,10 @@
                 <div id="v-konten" class="panel hidden"><div class="panel-header"><i class="fa-solid fa-video"></i> Studio Sosialisasi</div><div id="konten-harian-container"></div></div>
                 <div id="v-poster" class="panel hidden"><div class="panel-header"><i class="fa-solid fa-file-image"></i> Poster</div><div style="display:flex; gap:10px; margin-bottom:20px;"><input type="date" id="poster-start" onchange="buildPoster()" style="padding:10px; border-radius:8px; border:1px solid var(--border-color);"><input type="date" id="poster-end" onchange="buildPoster()" style="padding:10px; border-radius:8px; border:1px solid var(--border-color);"><button class="btn btn-primary" onclick="cetakPosterPDF()">Unduh PDF</button></div><div class="pdf-preview-wrapper"><div id="poster-print-area" style="background:#012a14; color:white; padding:30px; border-radius:20px;"><div style="text-align:center;"><img src="icon-192.png" style="height:70px; background:white; padding:10px; border-radius:15px;"><h2 style="color:var(--nu-gold); margin-top:10px; font-family:'Cinzel';">LAPORAN INFAK & SEDEKAH</h2><h3 id="poster-lembaga">UPZIS</h3><p id="poster-periode-text"></p><div style="font-size:32px; font-weight:800; color:var(--nu-gold); margin:20px 0;" id="poster-in">Rp 0</div></div><div style="display:flex; gap:20px; flex-wrap:wrap;"><div style="flex:1; background:rgba(255,255,255,0.1); padding:15px; border-radius:12px;" id="poster-breakdown"></div><div style="flex:1; background:white; padding:15px; border-radius:12px;"><canvas id="posterChart"></canvas></div></div></div></div></div>
                 
-                <!-- LAPORAN PDF DENGAN LOGO BARU NU -->
-                <div id="v-laporan" class="panel hidden"><div class="panel-header" style="justify-content:space-between; display:flex;"><div><i class="fa-solid fa-file-invoice"></i> Laporan Resmi PDF</div><div><input type="month" id="filter-month" onchange="buildReport()" style="padding:10px; border-radius:8px; border:1px solid var(--border-color);"> <button class="btn btn-primary" onclick="cetakPDF()">Cetak A4</button></div></div><div class="pdf-preview-wrapper"><div id="print-area" style="background:white; padding:30mm; color:black;"><div style="display:flex; justify-content:space-between; border-bottom:3px solid black; padding-bottom:15px; margin-bottom:20px;"><img src="icon-192.png" style="width:80px; height:80px;"><div style="text-align:center;"><h2>LAPORAN KAS UPZIS</h2><h3 id="pdf-nama-lembaga" style="font-weight:bold;">RANTING</h3><p id="lap-periode"></p></div><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Nahdlatul_Ulama_Logo.svg/512px-Nahdlatul_Ulama_Logo.svg.png" style="width:80px; height:80px;"></div><h4 style="margin-top:20px;">I. Penerimaan</h4><table border="1" style="width:100%; border-collapse:collapse;"><thead><tr style="background:#f1f5f9;"><th>Kode</th><th>Sumber</th><th>Nominal</th></tr></thead><tbody id="lap-tbl-masuk"></tbody></table><h4 style="margin-top:20px;">II. Penyaluran</h4><table border="1" style="width:100%; border-collapse:collapse;"><thead><tr style="background:#f1f5f9;"><th>Kode</th><th>Program</th><th>Nominal</th></tr></thead><tbody id="lap-tbl-keluar"></tbody></table><h4 style="margin-top:20px;">III. Saldo</h4><table border="1" style="width:100%; border-collapse:collapse;"><tbody><tr><td>Awal</td><td id="lap-saldo-awal">0</td></tr><tr><td>Masuk</td><td id="lap-tot-masuk">0</td></tr><tr><td>Keluar</td><td id="lap-tot-keluar">0</td></tr><tr style="font-weight:bold; background:#f1f5f9;"><td>AKHIR</td><td id="lap-saldo-akhir">0</td></tr></tbody></table><div style="display:flex; justify-content:space-between; margin-top:50px; text-align:center;"><div>Ketua UPZIS<br><br><br><span id="pdf-ttd-ketua" style="font-weight:bold; text-decoration:underline;">...</span></div><div>Bendahara<br><br><br><span id="pdf-ttd-bendahara" style="font-weight:bold; text-decoration:underline;">...</span></div></div></div></div></div>
+                <div id="v-laporan" class="panel hidden"><div class="panel-header" style="justify-content:space-between; display:flex;"><div><i class="fa-solid fa-file-invoice"></i> Laporan Resmi PDF</div><div><input type="month" id="filter-month" onchange="buildReport()" style="padding:10px; border-radius:8px; border:1px solid var(--border-color);"> <button class="btn btn-primary" onclick="cetakPDF()">Cetak A4</button></div></div><div class="pdf-preview-wrapper"><div id="print-area" style="background:white; padding:30mm; color:black;"><div style="display:flex; justify-content:space-between; border-bottom:3px solid black; padding-bottom:15px; margin-bottom:20px;"><img src="icon-192.png" style="width:80px; height:80px;"><div style="text-align:center;"><h2>LAPORAN KAS UPZIS</h2><h3 id="pdf-nama-lembaga" style="font-weight:bold;">RANTING</h3><p id="lap-periode"></p></div><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Nahdlatul_Ulama_Logo.svg/512px-Nahdlatul_Ulama_Logo.svg.png" style="width:80px; height:80px;" alt="NU"></div><h4 style="margin-top:20px;">I. Penerimaan</h4><table border="1" style="width:100%; border-collapse:collapse;"><thead><tr style="background:#f1f5f9;"><th>Kode</th><th>Sumber / Keterangan</th><th>Nominal</th></tr></thead><tbody id="lap-tbl-masuk"></tbody></table><h4 style="margin-top:20px;">II. Penyaluran</h4><table border="1" style="width:100%; border-collapse:collapse;"><thead><tr style="background:#f1f5f9;"><th>Kode</th><th>Program / Keterangan</th><th>Nominal</th></tr></thead><tbody id="lap-tbl-keluar"></tbody></table><h4 style="margin-top:20px;">III. Saldo</h4><table border="1" style="width:100%; border-collapse:collapse;"><tbody><tr><td>Awal</td><td id="lap-saldo-awal">0</td></tr><tr><td>Masuk</td><td id="lap-tot-masuk">0</td></tr><tr><td>Keluar</td><td id="lap-tot-keluar">0</td></tr><tr style="font-weight:bold; background:#f1f5f9;"><td>AKHIR</td><td id="lap-saldo-akhir">0</td></tr></tbody></table><div style="display:flex; justify-content:space-between; margin-top:50px; text-align:center;"><div>Ketua UPZIS<br><br><br><span id="pdf-ttd-ketua" style="font-weight:bold; text-decoration:underline;">...</span></div><div>Bendahara<br><br><br><span id="pdf-ttd-bendahara" style="font-weight:bold; text-decoration:underline;">...</span></div></div></div></div></div>
                 
                 <div id="v-mustahik" class="panel hidden"><div class="panel-header" style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;"><div><i class="fa-solid fa-users"></i> Warga & Relawan</div><button class="btn btn-primary" onclick="cetakMustahikPDF()"><i class="fa-solid fa-file-pdf"></i> Ekspor PDF</button></div><form id="form-mustahik" class="admin-only" style="margin-bottom:20px; background:var(--bg-main); padding:20px; border-radius:15px;"><div class="form-grid"><div class="form-group"><input type="text" id="m-nama" placeholder="Nama Warga" required></div><div class="form-group"><select id="m-kategori"><option>Mustahik</option><option>Donatur / Relawan</option></select></div><button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Tambah Data</button></div></form><div class="table-responsive" id="mustahik-print-area"><table><thead><tr><th>Nama Lengkap</th><th>Kategori Relasi</th><th class="no-print">Aksi</th></tr></thead><tbody id="table-mustahik"></tbody></table></div></div>
                 
-                <!-- MENU PENGURUS DENGAN UPLOAD FOTO & LOGO -->
                 <div id="v-pengurus" class="panel hidden">
                     <div class="panel-header"><i class="fa-solid fa-building-user"></i> Kepengurusan</div>
                     <div class="form-grid admin-only">
@@ -159,7 +176,6 @@
                 <div id="v-log" class="panel hidden"><div class="panel-header"><i class="fa-solid fa-list-check"></i> Log Sistem</div><div class="table-responsive"><table><thead><tr><th>Waktu Record</th><th>Pengguna</th><th>Tindakan (Action)</th><th>Detail Deskripsi</th></tr></thead><tbody id="table-logs"></tbody></table></div></div>
                 <div id="v-tutup-buku" class="panel hidden admin-only"><div class="panel-header"><i class="fa-solid fa-folder-closed"></i> Manajemen Cloud</div><div style="background:var(--bg-main); padding:25px; border-radius:20px; margin-bottom:25px; border:1px solid var(--border-color);"><h4 style="margin-bottom:10px;"><i class="fa-solid fa-shield-cat" style="color:var(--nu-gold-dark);"></i> Backup Lokal (JSON)</h4><div style="display:flex; gap:10px; flex-wrap:wrap;"><button onclick="downloadJSONBackup()" class="btn btn-primary"><i class="fa-solid fa-download"></i> Unduh File JSON</button> <button onclick="document.getElementById('input-restore-json').click()" class="btn btn-outline"><i class="fa-solid fa-upload"></i> Pulihkan Data JSON</button><input type="file" id="input-restore-json" style="display:none;" onchange="restoreJSONBackup(event)" accept=".json"></div></div><div style="background:#fee2e2; padding:25px; border-radius:20px; border:1px solid var(--danger);"><h4 style="color:var(--danger); margin-bottom:10px;"><i class="fa-solid fa-triangle-exclamation"></i> Zona Bahaya: Tutup Buku</h4><button onclick="eksekusiTutupBuku()" class="btn btn-primary" style="background:var(--danger);"><i class="fa-solid fa-folder-minus"></i> Eksekusi Tutup Buku</button></div></div>
                 
-                <!-- PENGATURAN DENGAN GOOGLE AUTH & SANDI LAMA -->
                 <div id="v-pengaturan" class="panel hidden">
                     <div class="panel-header"><i class="fa-solid fa-shield-halved"></i> Pengaturan Keamanan</div>
                     <div style="margin-bottom:20px; background:var(--bg-main); padding:25px; border-radius:20px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
@@ -177,7 +193,6 @@
                     </div>
                 </div>
 
-                <!-- 5 FITUR BARU LAINNYA -->
                 <div id="v-kalkulator" class="panel hidden"><div class="panel-header"><i class="fa-solid fa-calculator"></i> Kalkulator Zakat & Fidyah Lengkap</div><div class="form-grid"><div style="background:var(--bg-main); padding:20px; border-radius:15px; border:1px solid var(--border-color);"><h4>Zakat Profesi (Penghasilan)</h4><p style="font-size:12px; color:gray; margin-bottom:10px;">Nilai Zakat: 2.5% dari penghasilan kotor.</p><input type="number" id="z-profesi" placeholder="Rp Penghasilan Bulanan" style="width:100%; padding:10px; margin-bottom:10px;" onkeyup="document.getElementById('z-profesi-hasil').innerText = formatRp(this.value * 0.025)"><div style="font-size:20px; font-weight:bold; color:var(--nu-green);" id="z-profesi-hasil">Rp 0</div></div><div style="background:var(--bg-main); padding:20px; border-radius:15px; border:1px solid var(--border-color);"><h4>Zakat Mal (Harta Simpanan)</h4><p style="font-size:12px; color:gray; margin-bottom:10px;">Syarat: Sudah mencapai haul (1 tahun) & nisab (85gr Emas).</p><input type="number" id="z-mal" placeholder="Rp Total Harta Simpanan" style="width:100%; padding:10px; margin-bottom:10px;" onkeyup="document.getElementById('z-mal-hasil').innerText = formatRp(this.value * 0.025)"><div style="font-size:20px; font-weight:bold; color:var(--nu-gold-dark);" id="z-mal-hasil">Rp 0</div></div><div style="background:var(--bg-main); padding:20px; border-radius:15px; border:1px solid var(--border-color);"><h4>Kalkulator Fidyah</h4><p style="font-size:12px; color:gray; margin-bottom:10px;">Hutang puasa x Harga 1 porsi makan standar.</p><div style="display:flex; gap:10px; margin-bottom:10px;"><input type="number" id="f-hari" placeholder="Jml Hari" style="flex:1; padding:10px;" onkeyup="calcFidyah()"><input type="number" id="f-harga" placeholder="Harga/Porsi" style="flex:2; padding:10px;" value="15000" onkeyup="calcFidyah()"></div><div style="font-size:20px; font-weight:bold; color:var(--danger);" id="z-fidyah-hasil">Rp 0</div><script>function calcFidyah(){ document.getElementById('z-fidyah-hasil').innerText = formatRp((document.getElementById('f-hari').value||0) * (document.getElementById('f-harga').value||0)); }</script></div></div></div>
                 <div id="v-inventaris" class="panel hidden"><div class="panel-header"><i class="fa-solid fa-boxes-stacked"></i> Manajemen Inventaris Aset Fisik</div><form id="form-inventaris" class="admin-only" style="margin-bottom:20px; background:var(--bg-main); padding:20px; border-radius:15px;"><div class="form-grid"><div class="form-group"><input type="text" id="i-nama" placeholder="Nama Barang (Misal: Ambulan, Kotak Infak)" required style="width:100%; padding:10px;"></div><div class="form-group"><input type="number" id="i-qty" placeholder="Jumlah" required style="width:100%; padding:10px;"></div><div class="form-group"><select id="i-kondisi" style="width:100%; padding:10px;"><option>Baik</option><option>Rusak Ringan</option><option>Rusak Berat</option></select></div><button type="submit" class="btn btn-primary">Simpan Aset</button></div></form><div class="table-responsive"><table><thead><tr><th>Nama Barang</th><th>Jumlah</th><th>Kondisi</th><th class="admin-only">Aksi</th></tr></thead><tbody id="table-inventaris"></tbody></table></div></div>
                 <div id="v-agenda" class="panel hidden"><div class="panel-header"><i class="fa-solid fa-calendar-days"></i> Buku Agenda & Hasil Musyawarah</div><form id="form-agenda" class="admin-only" style="margin-bottom:20px; background:var(--bg-main); padding:20px; border-radius:15px;"><div class="form-grid"><div class="form-group"><input type="date" id="a-tgl" required style="width:100%; padding:10px;"></div><div class="form-group"><input type="text" id="a-judul" placeholder="Judul Rapat / Kegiatan" required style="width:100%; padding:10px;"></div><div class="form-group" style="grid-column: 1 / -1;"><textarea id="a-hasil" placeholder="Hasil Keputusan / Notulensi..." required style="width:100%; padding:10px;"></textarea></div><button type="submit" class="btn btn-primary" style="grid-column: 1 / -1;">Catat Agenda</button></div></form><div class="table-responsive"><table><thead><tr><th>Tgl</th><th>Agenda Kegiatan</th><th>Notulensi Keputusan</th><th class="admin-only">Aksi</th></tr></thead><tbody id="table-agenda"></tbody></table></div></div>
@@ -189,10 +204,8 @@
         </div>
     </div>
 
-    <!-- MODAL POP-UP (Kalkulator) -->
     <div id="modal-amil" class="hidden" style="position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:99999; display:flex; align-items:center; justify-content:center; padding:20px;"><div style="background:white; padding:30px; border-radius:24px; max-width:400px; width:100%; text-align:center;"><h3 style="color:var(--nu-green-dark); margin-bottom:20px;"><i class="fa-solid fa-calculator"></i> Hak Amil (12.5%)</h3><div style="background:var(--bg-main); padding:15px; border-radius:12px; margin-bottom:15px;"><p style="font-size:11px; font-weight:800; color:var(--text-muted);">Penerimaan Bulan Ini</p><p id="amil-total" style="font-size:24px; font-weight:800;">0</p></div><div style="background:linear-gradient(135deg, var(--nu-green), var(--nu-green-dark)); padding:15px; border-radius:12px; margin-bottom:25px; color:white;"><p style="font-size:11px; font-weight:800; color:var(--nu-gold-light);">Alokasi Pencairan</p><p id="amil-hak" style="font-size:28px; font-weight:800; color:var(--nu-gold);">0</p></div><button onclick="document.getElementById('modal-amil').classList.add('hidden')" class="btn btn-outline" style="width:100%;">Tutup</button></div></div>
     
-    <!-- DESAIN KUITANSI 3D ELEGAN -->
     <div id="modal-kuitansi" class="hidden" style="position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:99999; display:flex; align-items:center; justify-content:center; padding:20px;">
         <div style="width:100%; max-width:650px; max-height:90vh; overflow-y:auto; padding:20px;">
             <div id="kuitansi-print-area" class="kuitansi-box-3d" style="background:linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border:1px solid #cbd5e1; border-radius:16px; box-shadow:0 20px 40px -10px rgba(0,0,0,0.3); padding:40px; position:relative; overflow:hidden;">
@@ -225,7 +238,16 @@
         </div>
     </div>
 
-    <!-- PENGAMBILAN LOGIKA JS -->
-    <script type="module" src="app.js?v=enterprise_v11"></script>
+    <script type="module" src="app.js?v=enterprise_v12"></script>
+    
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js').then(reg => {
+            console.log('SW berhasil diregistrasi di scope: ', reg.scope);
+          }).catch(err => console.error('Gagal registrasi SW:', err));
+        });
+      }
+    </script>
 </body>
 </html>
