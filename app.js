@@ -1012,4 +1012,92 @@ window.cetakStrukBluetooth = async () => {
         showToast("Batal koneksi printer atau perangkat tidak didukung.", "error"); 
     } 
 };
+// =====================================================================
+// --- PERBAIKAN BUG & FUNGSI YANG HILANG ---
+// =====================================================================
+
+// 1. Fungsi untuk mereset filter pada Buku Besar
+window.clearFilters = function() {
+    if(document.getElementById('search-keyword')) document.getElementById('search-keyword').value = '';
+    if(document.getElementById('filter-type')) document.getElementById('filter-type').value = '';
+    if(document.getElementById('filter-start-date')) document.getElementById('filter-start-date').value = '';
+    if(document.getElementById('filter-end-date')) document.getElementById('filter-end-date').value = '';
+    if(document.getElementById('filter-min')) document.getElementById('filter-min').value = '';
+    if(document.getElementById('filter-max')) document.getElementById('filter-max').value = '';
+    
+    currentPage = 1;
+    refreshUI();
+};
+
+// 2. Fungsi untuk mengirim kuitansi via WhatsApp
+window.kirimKuitansiWA = function() {
+    const nominal = document.getElementById('kui-nominal').innerText;
+    const ket = document.getElementById('kui-ket').innerText;
+    const txt = `*KUITANSI BUKTI TRANSAKSI*\n\nTelah diterima/disalurkan uang sejumlah *${nominal}*\nUntuk: ${ket}\n\nTerima kasih.`;
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(txt)}`, '_blank');
+};
+
+// 3. Fungsi untuk mencetak Kuitansi ke format PDF
+window.cetakKuitansiPDF = function() {
+    const el = document.getElementById('kuitansi-print-area');
+    html2pdf().set({ 
+        margin: 5, 
+        filename: `Kuitansi_${Date.now()}.pdf`, 
+        jsPDF: { format: 'a5', orientation: 'landscape' } 
+    }).from(el).save();
+};
+
+// 4. Fungsi untuk Merekam Canvas menjadi Video MP4
+window.downloadCanvasAsVideo = function() {
+    const canvas = document.getElementById('video-canvas');
+    if (!canvas) return showToast('Canvas tidak ditemukan', 'error');
+    
+    showToast("Merekam video (3 detik)...", "info");
+    const stream = canvas.captureStream(30); // 30 FPS
+    const mediaRecorder = new MediaRecorder(stream);
+    const chunks = [];
+    
+    mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+    mediaRecorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'video/mp4' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; 
+        a.download = `Video_Kampanye_${Date.now()}.mp4`; 
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast("Video berhasil diunduh!", "success");
+    };
+    
+    mediaRecorder.start();
+    setTimeout(() => mediaRecorder.stop(), 3000); // Durasi rekaman 3 detik
+};
+
+// 5. Fungsi untuk membatalkan proses Edit Transaksi
+window.cancelEditTrx = function() {
+    document.getElementById('t-edit-id').value = '';
+    document.getElementById('form-trx').reset();
+    document.getElementById('btn-cancel-edit').classList.add('hidden');
+    document.getElementById('btn-submit-trx').innerHTML = '<i class="fa-solid fa-check"></i> Rekam Transaksi';
+};
+
+// 6. Fungsi untuk Mengeksekusi Tutup Buku (Pindah data ke Arsip)
+window.eksekusiTutupBuku = async function() {
+    if (!confirm("PERINGATAN: Aksi ini akan mengarsipkan semua transaksi tahun ini dan mengosongkan jurnal aktif. Lanjutkan?")) return;
+    
+    const year = new Date().getFullYear();
+    showToast("Memproses tutup buku...", "info");
+    
+    try {
+        for (let t of transactions) {
+            // Salin data ke koleksi arsip berdasarkan tahun
+            await window.fs.addDoc(getCol(`arsip_${year}_transactions`), t);
+            // Hapus data dari koleksi transaksi aktif
+            await window.fs.deleteDoc(getFirestoreDoc("transactions", t.idFirebase));
+        }
+        showToast("Tutup buku berhasil! Data diarsipkan.", "success");
+    } catch (e) {
+        showToast("Terjadi kesalahan sistem saat tutup buku.", "error");
+    }
+};
 
