@@ -613,4 +613,100 @@ if ('serviceWorker' in navigator) {
             .catch((err) => console.log('Registrasi ServiceWorker gagal:', err));
     });
 }
+// =====================================================================
+// --- 10. PERBAIKAN BUG LANJUTAN & PENYEMPURNAAN LOGIKA ---
+// =====================================================================
+
+// 1. FIX: Fungsi Reset Filter di Buku Besar
+window.clearFilters = function() {
+    // Kosongkan semua input filter
+    if(document.getElementById('search-keyword')) document.getElementById('search-keyword').value = '';
+    if(document.getElementById('filter-type')) document.getElementById('filter-type').value = '';
+    if(document.getElementById('filter-start-date')) document.getElementById('filter-start-date').value = '';
+    if(document.getElementById('filter-end-date')) document.getElementById('filter-end-date').value = '';
+    if(document.getElementById('filter-min')) document.getElementById('filter-min').value = '';
+    if(document.getElementById('filter-max')) document.getElementById('filter-max').value = '';
+    
+    // Kembalikan ke halaman 1 dan muat ulang tabel
+    currentPage = 1;
+    refreshUI();
+};
+
+// 2. FIX: Menampilkan Detail Lengkap pada Kuitansi
+window.openKuitansi = function(id) {
+    const t = transactions.find(x => x.idFirebase === id);
+    if (!t) return;
+
+    // Ambil nama kategori transaksi
+    const cat = getDynamicCategories();
+    const allCats = [...cat.in, ...cat.out];
+    const catName = allCats.find(c => c.code === t.code)?.name || 'Lainnya';
+
+    // Isi elemen UI kuitansi dengan data lengkap
+    document.getElementById('kui-lembaga').innerText = profileSettings.lembaga || 'UPZIS';
+    document.getElementById('kui-periode').innerText = profileSettings.periode || '';
+    document.getElementById('kui-no').innerText = t.idFirebase.substring(0, 8).toUpperCase(); // Buat ID unik singkat
+    document.getElementById('kui-tipe').innerText = t.type === 'in' ? 'Penerimaan Dana' : 'Penyaluran Dana';
+    document.getElementById('kui-nominal').innerText = formatRp(t.amount);
+    document.getElementById('kui-ket').innerText = `[${t.code}] ${catName} - ${t.desc}`;
+    document.getElementById('kui-sumber').innerText = t.source;
+    document.getElementById('kui-tgl').innerText = formatTanggalIndo(t.date);
+
+    // Cari nama bendahara dari pengaturan profil untuk tanda tangan
+    const bendahara = profileSettings.anggota?.find(a => (a.jabatan || '').toLowerCase().includes('bendahara'));
+    document.getElementById('kui-ttd').innerText = bendahara ? bendahara.nama : 'Admin Bendahara';
+
+    // Tampilkan modal
+    document.getElementById('modal-kuitansi').classList.remove('hidden');
+};
+
+// 3. FIX: Menghubungkan Filter Tanggal pada Pembuatan Poster
+window.buildPoster = function() {
+    const st = document.getElementById('poster-start')?.value || '';
+    const en = document.getElementById('poster-end')?.value || '';
+    let tIn = 0; 
+    
+    transactions.forEach(t => {
+        // Cek apakah tanggal transaksi masuk dalam rentang filter
+        const matchDate = (!st || t.date >= st) && (!en || t.date <= en);
+        
+        // Hanya hitung pemasukan, abaikan mutasi bank/tunai dan saldo awal
+        if (matchDate && t.type === 'in' && t.code !== '120' && t.code !== '220' && t.code !== '101') { 
+            tIn += Number(t.amount || 0); 
+        }
+    });
+
+    // Update UI Poster
+    if(document.getElementById('poster-in')) document.getElementById('poster-in').innerText = formatRp(tIn);
+    if(document.getElementById('poster-lembaga')) document.getElementById('poster-lembaga').innerText = profileSettings.lembaga || 'UPZIS';
+    
+    // Tulis teks periode di poster
+    if(document.getElementById('poster-periode-text')) {
+        document.getElementById('poster-periode-text').innerText = (st && en) 
+            ? `${formatTanggalIndo(st)} s/d ${formatTanggalIndo(en)}` 
+            : 'Periode Keseluruhan';
+    }
+};
+
+// 4. FIX: Perhitungan Otomatis Kalkulator Hak Amil (12.5%)
+window.bukaKalkulatorAmil = function() {
+    const currentM = new Date().toISOString().slice(0, 7); // Dapatkan format "YYYY-MM"
+    let totalPenerimaan = 0;
+    
+    transactions.forEach(t => {
+        // Hanya hitung transaksi bulan ini, pemasukan, dan bukan mutasi/saldo awal
+        if(t.date.slice(0,7) === currentM && t.type === 'in' && t.code !== '120' && t.code !== '220' && t.code !== '101') {
+            totalPenerimaan += Number(t.amount || 0);
+        }
+    });
+
+    const hakAmil = totalPenerimaan * 0.125; // Hitung 12.5% dari total
+
+    // Update UI Modal Amil
+    document.getElementById('amil-total').innerText = formatRp(totalPenerimaan);
+    document.getElementById('amil-hak').innerText = formatRp(hakAmil);
+    
+    // Tampilkan Modal
+    document.getElementById('modal-amil').classList.remove('hidden');
+};
 
