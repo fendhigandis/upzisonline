@@ -709,4 +709,229 @@ window.bukaKalkulatorAmil = function() {
     // Tampilkan Modal
     document.getElementById('modal-amil').classList.remove('hidden');
 };
+// =====================================================================
+// --- 11. PERBAIKAN BUG KRUSIAL (LAPORAN, POSTER, & FITUR EDIT) ---
+// =====================================================================
+
+// 1. FIX: Melengkapi Laporan PDF dengan Baris Tabel & Tanda Tangan
+window.buildReport = function() {
+    let fStr = document.getElementById('filter-month')?.value;
+    if(!fStr) { fStr = new Date().toISOString().slice(0, 7); if(document.getElementById('filter-month')) document.getElementById('filter-month').value = fStr; }
+    if(document.getElementById('lap-periode')) document.getElementById('lap-periode').innerText = `Bulan: ${fStr}`;
+
+    // A. Menyuntikkan Identitas & Tanda Tangan Pengurus
+    if(document.getElementById('pdf-nama-lembaga')) document.getElementById('pdf-nama-lembaga').innerText = profileSettings.lembaga || 'UPZIS RANTING';
+    const ketua = profileSettings.anggota?.find(a => (a.jabatan || '').toLowerCase().includes('ketua'))?.nama || '.......................';
+    const bendahara = profileSettings.anggota?.find(a => (a.jabatan || '').toLowerCase().includes('bendahara'))?.nama || '.......................';
+    if(document.getElementById('pdf-ttd-ketua')) document.getElementById('pdf-ttd-ketua').innerText = ketua;
+    if(document.getElementById('pdf-ttd-bendahara')) document.getElementById('pdf-ttd-bendahara').innerText = bendahara;
+
+    // B. Logika Perhitungan & Pembuatan Baris Tabel
+    let sIn={}, sOut={}, tIn=0, tOut=0, sAw=0, sT=0, sB=0;
+    let htmlIn = '', htmlOut = '';
+    const cats = getDynamicCategories();
+    const allCats = [...cats.in, ...cats.out];
+
+    transactions.forEach(t => {
+        const m = t.date.slice(0,7), amt = Number(t.amount||0);
+        const catName = allCats.find(c => c.code === t.code)?.name || t.code;
+
+        // Hitung Saldo Awal (Bulan-bulan sebelumnya)
+        if(m < fStr) { 
+            if(t.type==='in' && t.code!=='120' && t.code!=='220') sAw += amt; 
+            if(t.type==='out' && t.code!=='120' && t.code!=='220') sAw -= amt; 
+        }
+        // Hitung Saldo Akhir (Kumulatif total bank & tunai)
+        if(m <= fStr){ 
+            if(t.type==='in'){ if(t.code==='120'){sT+=amt;sB-=amt;}else if(t.code==='220'){sB+=amt;sT-=amt;}else{t.source.includes('Bank')?sB+=amt:sT+=amt;} } 
+            if(t.type==='out'){t.source.includes('Bank')?sB-=amt:sT-=amt;} 
+        }
+        // Rekap Transaksi Bulan yang Dipilih (Injeksi ke HTML)
+        if(m === fStr){ 
+            if(t.type==='in' && t.code!=='120' && t.code!=='220'){ 
+                tIn += amt;
+                htmlIn += `<tr><td>${t.code}</td><td>${catName} <br><small>${t.desc}</small></td><td>${formatRp(amt)}</td></tr>`;
+            } 
+            if(t.type==='out' && t.code!=='120' && t.code!=='220'){ 
+                tOut += amt; 
+                htmlOut += `<tr><td>${t.code}</td><td>${catName} <br><small>${t.desc}</small></td><td>${formatRp(amt)}</td></tr>`;
+            } 
+        }
+    });
+
+    // C. Terapkan ke UI
+    if(document.getElementById('lap-saldo-awal')) document.getElementById('lap-saldo-awal').innerText = formatRp(sAw);
+    if(document.getElementById('lap-tot-masuk')) document.getElementById('lap-tot-masuk').innerText = formatRp(tIn); 
+    if(document.getElementById('lap-tot-keluar')) document.getElementById('lap-tot-keluar').innerText = formatRp(tOut); 
+    if(document.getElementById('lap-saldo-akhir')) document.getElementById('lap-saldo-akhir').innerText = formatRp(sT+sB);
+    
+    if(document.getElementById('lap-tbl-masuk')) document.getElementById('lap-tbl-masuk').innerHTML = htmlIn || '<tr><td colspan="3" style="text-align:center;">Nihil</td></tr>';
+    if(document.getElementById('lap-tbl-keluar')) document.getElementById('lap-tbl-keluar').innerHTML = htmlOut || '<tr><td colspan="3" style="text-align:center;">Nihil</td></tr>';
+}
+
+// 2. FIX: Merender Chart dan Rincian pada Poster
+window.buildPoster = function() {
+    const st = document.getElementById('poster-start')?.value || '';
+    const en = document.getElementById('poster-end')?.value || '';
+    let tIn = 0; 
+    let breakdown = {};
+    const cats = getDynamicCategories();
+    
+    // A. Akumulasi dan Kelompokkan Data
+    transactions.forEach(t => {
+        const matchDate = (!st || t.date >= st) && (!en || t.date <= en);
+        if (matchDate && t.type === 'in' && t.code !== '120' && t.code !== '220' && t.code !== '101') { 
+            const amt = Number(t.amount || 0);
+            tIn += amt;
+            const catName = cats.in.find(c => c.code === t.code)?.name || 'Lainnya';
+            breakdown[catName] = (breakdown[catName] || 0) + amt; // Hitung rincian per kategori
+        }
+    });
+
+    if(document.getElementById('poster-in')) document.getElementById('poster-in').innerText = formatRp(tIn);
+    if(document.getElementById('poster-lembaga')) document.getElementById('poster-lembaga').innerText = profileSettings.lembaga || 'UPZIS';
+    if(document.getElementById('poster-periode-text')) {
+        document.getElementById('poster-periode-text').innerText = (st && en) ? `${formatTanggalIndo(st)} s/d ${formatTanggalIndo(en)}` : 'Periode Keseluruhan';
+    }
+
+    // B. Buat Daftar Rincian HTML
+    const bdContainer = document.getElementById('poster-breakdown');
+    if(bdContainer) {
+        let bdHtml = '<h4 style="color:var(--nu-gold); margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.2); padding-bottom:5px;">Rincian Sumber:</h4>';
+        Object.keys(breakdown).forEach(k => {
+            bdHtml += `<div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span style="font-size:13px;">${k}</span> <span style="font-weight:bold; color:var(--nu-gold-light);">${formatRp(breakdown[k])}</span></div>`;
+        });
+        bdContainer.innerHTML = bdHtml || '<div style="font-size:13px;">Belum ada data pemasukan.</div>';
+    }
+
+    // C. Render Chart.js
+    const ctx = document.getElementById('posterChart');
+    if(ctx && typeof Chart !== 'undefined') {
+        if(window.posterChartInstance) window.posterChartInstance.destroy();
+        window.posterChartInstance = new Chart(ctx.getContext('2d'), { 
+            type:'pie', 
+            data:{
+                labels: Object.keys(breakdown), 
+                datasets:[{ data: Object.values(breakdown), backgroundColor: ['#d4af37', '#10b981', '#f59e0b', '#0284c7', '#ec4899', '#8b5cf6'] }]
+            }, 
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: 'black' } } } } 
+        });
+    }
+};
+
+// 3. FIX: Pembaruan refreshUI untuk memunculkan Tombol Edit
+window.refreshUI = function() {
+    applyRBAC(); let grandIn = 0, grandOut = 0, saldoTunai = 0, saldoBank = 0, globalBalance = 0;
+    const tbody = document.getElementById('table-body'); if(tbody) tbody.innerHTML = '';
+    const cats = getDynamicCategories(), allCats = [...cats.in, ...cats.out];
+
+    transactions.forEach(t => {
+        const amt = Number(t.amount || 0);
+        if(t.type === 'in') { if(t.code==='120'){saldoTunai+=amt; saldoBank-=amt;} else if(t.code==='220'){saldoBank+=amt; saldoTunai-=amt;} else {grandIn+=amt; t.source.includes('Bank')?saldoBank+=amt:saldoTunai+=amt;} }
+        if(t.type === 'out') { if(t.code!=='120' && t.code!=='220') grandOut+=amt; t.source.includes('Bank')?saldoBank-=amt:saldoTunai-=amt; }
+    });
+
+    const key = (document.getElementById('search-keyword')?.value||'').toLowerCase();
+    const st = document.getElementById('filter-start-date')?.value||'', en = document.getElementById('filter-end-date')?.value||'';
+    const ft = document.getElementById('filter-type')?.value||'';
+    const minNom = parseFloat(document.getElementById('filter-min')?.value) || 0;
+    const maxNom = parseFloat(document.getElementById('filter-max')?.value) || Infinity;
+
+    let sortedTrx = [...transactions].sort((a,b) => new Date(a.date)-new Date(b.date) || a.timestamp-b.timestamp).map(t => {
+        const amt = Number(t.amount || 0);
+        if(t.type==='in' && t.code!=='120' && t.code!=='220') globalBalance += amt;
+        if(t.type==='out' && t.code!=='120' && t.code!=='220') globalBalance -= amt;
+        return { ...t, currentBalance: globalBalance };
+    }).filter(t => {
+        const catName = allCats.find(c => c.code === t.code)?.name.toLowerCase() || '';
+        const matchK = (t.desc||'').toLowerCase().includes(key) || catName.includes(key);
+        return matchK && (!st || t.date >= st) && (!en || t.date <= en) && (!ft || t.type === ft) && (t.amount >= minNom && t.amount <= maxNom);
+    });
+
+    totalPages = Math.ceil(sortedTrx.length / itemsPerPage) || 1;
+    if(currentPage > totalPages) currentPage = totalPages;
+    const paginated = sortedTrx.slice().reverse().slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+    if(tbody) {
+        paginated.forEach(t => {
+            const catName = allCats.find(c => c.code === t.code)?.name || 'Lainnya';
+            let act = `<button class="btn-action" onclick="window.openKuitansi('${t.idFirebase}')"><i class="fa-solid fa-receipt"></i></button>`;
+            
+            // Logika baru: Injeksi tombol Edit di sini
+            if(currentUserRole === 'bendahara') {
+                act += `<button class="btn-action admin-only" onclick="window.editTrx('${t.idFirebase}')"><i class="fa-solid fa-pen" style="color:var(--nu-gold-dark);"></i></button>`;
+                act += `<button class="btn-action admin-only" onclick="window.hapusTrx('${t.idFirebase}')"><i class="fa-solid fa-trash" style="color:red;"></i></button>`;
+            }
+            
+            tbody.innerHTML += `<tr><td>${formatTanggalIndo(t.date)}</td><td>${t.source}</td><td>[${t.code}] ${catName}<br><small>${t.desc}</small></td><td style="color:green;">${t.type==='in'?formatRp(t.amount):'-'}</td><td style="color:red;">${t.type==='out'?formatRp(t.amount):'-'}</td><td style="font-weight:bold;">${formatRp(t.currentBalance)}</td><td style="display:flex; gap:5px;">${act}</td></tr>`;
+        });
+        document.getElementById('page-indicator').innerText = `Hal ${currentPage} dari ${totalPages}`;
+    }
+    ['sum-tunai','sum-bank','sum-masuk','sum-keluar'].forEach((id,i) => { if(document.getElementById(id)) document.getElementById(id).innerText = formatRp([saldoTunai,saldoBank,grandIn,grandOut][i]); });
+}
+
+// 4. FIX: Memisahkan Event Submit Form (Tambah vs Edit Transaksi)
+const formTrxLama = document.getElementById('form-trx');
+if(formTrxLama) {
+    // Kloning form untuk mematikan event listener lama yang tidak bisa di-edit, lalu buat event baru
+    const newForm = formTrxLama.cloneNode(true);
+    formTrxLama.parentNode.replaceChild(newForm, formTrxLama);
+    
+    newForm.addEventListener('submit', async e => {
+        e.preventDefault(); 
+        if(currentUserRole !== 'bendahara') return;
+        
+        const type=document.getElementById('t-type').value, code=document.getElementById('t-category').value, src=document.getElementById('t-source').value;
+        const date=document.getElementById('t-date').value, desc=document.getElementById('t-desc').value, amt=parseFloat(document.getElementById('t-amount').value.replace(/\./g,''));
+        const editId = document.getElementById('t-edit-id').value;
+        
+        if(!amt || amt <= 0) return showToast("Nominal salah!", "error");
+        document.getElementById('btn-submit-trx').disabled = true;
+        
+        try {
+            if (editId) {
+                // Proses Edit (Update Database)
+                await window.fs.updateDoc(getFirestoreDoc("transactions", editId), { type, source:src, code, date, amount:amt, desc });
+                showToast("Transaksi Diperbarui!", "success");
+                window.cancelEditTrx(); // Bersihkan form
+            } else {
+                // Proses Tambah Baru
+                await window.fs.addDoc(getCol("transactions"), { type, source:src, code, date, amount:amt, desc, timestamp: Date.now() });
+                showToast("Tersimpan!", "success"); 
+                kirimTelegram(type==='in'?'Masuk':'Keluar', amt, desc);
+                document.getElementById('t-amount').value=''; document.getElementById('t-desc').value='';
+            }
+        } catch(err) { 
+            showToast("Gagal diproses", "error"); 
+        } finally { 
+            document.getElementById('btn-submit-trx').disabled = false; 
+        }
+    });
+}
+
+// 5. FIX: Fungsi Pendukung untuk Mengisi Form saat Tombol Edit Diklik
+window.editTrx = function(id) {
+    const t = transactions.find(x => x.idFirebase === id);
+    if(!t) return;
+    
+    document.getElementById('t-edit-id').value = t.idFirebase;
+    document.getElementById('t-type').value = t.type;
+    window.updateCategories(); // Memperbarui pilihan dropdown kategori
+    
+    // Memberi jeda kecil agar dropdown kategori selesai dimuat sebelum memilih nilainya
+    setTimeout(() => {
+        document.getElementById('t-category').value = t.code;
+        document.getElementById('t-source').value = t.source;
+        document.getElementById('t-date').value = t.date;
+        document.getElementById('t-amount').value = parseInt(t.amount).toLocaleString('id-ID');
+        document.getElementById('t-desc').value = t.desc;
+        
+        // Ubah tampilan tombol
+        document.getElementById('btn-submit-trx').innerHTML = '<i class="fa-solid fa-save"></i> Simpan Perubahan';
+        document.getElementById('btn-cancel-edit').classList.remove('hidden');
+        
+        // Geser layar kembali ke atas menuju form
+        document.getElementById('v-dashboard').scrollIntoView({behavior: 'smooth'});
+    }, 50);
+}
 
