@@ -29,10 +29,10 @@
                 <form id="form-login">
                     <div class="form-group" id="group-ranting" style="display: none;"><label>Nama Ranting</label><input type="text" id="l-ranting" placeholder="Contoh: Karangdowo..."></div>
                     <div class="form-group"><label>Email Akses (Username)</label><input type="email" id="l-user" required placeholder="admin@upzis.org"></div>
-                    <div class="form-group" style="margin-bottom: 20px;"><label>Kata Sandi</label><div style="position: relative;"><input type="password" id="l-pass" required placeholder="Sandi..." style="padding-right: 40px;"><button type="button" onclick="togglePasswordVisibility()" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:white; cursor:pointer;"><i class="fa-solid fa-eye" id="eye-icon"></i></button></div></div>
-                    <div class="form-group" style="display:flex; align-items:center; gap:10px; margin-bottom:22px;"><input type="checkbox" id="remember-me" style="width:18px; height:18px; cursor:pointer;"><label for="remember-me" style="color:#e2e8f0; text-transform:none; margin:0; cursor:pointer;">Simpan Kata Sandi</label></div>
+                    <div class="form-group" style="margin-bottom: 20px;"><label>Kata Sandi</label><div style="position: relative;"><input type="password" id="l-pass" required placeholder="Sandi...[...]">
+                    <div class="form-group" style="display:flex; align-items:center; gap:10px; margin-bottom:22px;"><input type="checkbox" id="remember-me" style="width:18px; height:18px; cursor:p[...]">
                     <button type="submit" id="btn-auth-submit" class="btn btn-primary" style="width: 100%;"><i class="fa-solid fa-right-to-bracket"></i> Akses Sistem Terpadu</button>
-                    <div style="margin-top:20px; text-align:center;"><a href="#" onclick="toggleModeAuth(event)" id="link-toggle-auth" style="color:var(--nu-gold); font-weight:800; display:block; margin-bottom:10px; text-decoration:underline;">Daftar di sini</a><a href="#" onclick="recoverPasswordEmail()" style="color:white; font-size:12px; text-decoration:none;">Lupa Sandi? <span style="color:var(--nu-gold); font-weight:800;">Pulihkan</span></a></div>
+                    <div style="margin-top:20px; text-align:center;"><a href="#" onclick="toggleModeAuth(event)" id="link-toggle-auth" style="color:var(--nu-gold); font-weight:800; display:block; [...]
                 </form>
             </div>
         </div>
@@ -40,7 +40,7 @@
 
     <div id="app-screen" class="hidden app-layout">
         <div class="sidebar" id="app-sidebar">
-            <div class="sidebar-header"><img id="nav-logo" src="icon-192.png" alt="Logo"><div><div class="sidebar-brand-title" id="nav-title">UPZIS Ranting</div><div class="sidebar-brand-sub">Periode: <span id="nav-period">-</span></div></div></div>
+            <div class="sidebar-header"><img id="nav-logo" src="icon-192.png" alt="Logo"><div><div class="sidebar-brand-title" id="nav-title">UPZIS Ranting</div><div class="sidebar-brand-sub">Peri[...]
             <div class="sidebar-menu">
                 <div class="menu-section-label">Utama</div>
                 <button class="tab-btn active" onclick="switchTab(event, 'v-dashboard')"><i class="fa-solid fa-chart-pie"></i> Dashboard</button>
@@ -71,7 +71,7 @@
                 <button class="tab-btn admin-only" id="nav-tutup-buku" onclick="switchTab(event, 'v-tutup-buku')"><i class="fa-solid fa-folder-closed"></i> Tutup Buku</button>
                 <button class="tab-btn" onclick="switchTab(event, 'v-pengaturan')"><i class="fa-solid fa-shield-halved"></i> Pengaturan</button>
             </div>
-            <div class="sidebar-footer"><div class="sidebar-user-info"><div class="sidebar-user-avatar"><i class="fa-solid fa-user-shield"></i></div><div><div class="sidebar-username" id="badge-username">Bendahara</div><div class="sidebar-user-role" id="badge-role-text">Admin</div></div></div></div>
+            <div class="sidebar-footer"><div class="sidebar-user-info"><div class="sidebar-user-avatar"><i class="fa-solid fa-user-shield"></i></div><div><div class="sidebar-username" id="badge-us[...]
         </div>
         <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
@@ -79,7 +79,7 @@
             <div class="navbar no-print">
                 <div style="display:flex; align-items:center; gap:15px;">
                     <button class="hamburger-btn" onclick="toggleSidebar()" style="z-index: 9999;"><i class="fa-solid fa-bars"></i></button>
-                    <div><h2 style="font-size:16px; font-weight:800; color:var(--nu-green-dark); font-family:'Cinzel';">Sistem Bendahara Premium</h2><span style="font-size:11px; color:var(--text-muted);">Keuangan Transparan & Akuntabel</span></div>
+                    <div><h2 style="font-size:16px; font-weight:800; color:var(--nu-green-dark); font-family:'Cinzel';">Sistem Bendahara Premium</h2><span style="font-size:11px; color:var(--text-m[...]
                 </div>
                 <div class="nav-right-actions" style="display:flex; gap:12px; align-items:center;">
                     <button class="theme-toggle-btn" onclick="toggleFullScreen()" title="Mode Presentasi"><i class="fa-solid fa-expand" id="fs-icon"></i></button>
@@ -90,14 +90,14 @@
 
             <div class="container">
                 <div id="v-dashboard" class="panel">
-                    <div class="smart-cloud-mini-bar no-print" style="display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:20px; background:var(--bg-main); padding:15px; border-radius:16px; border:1px solid var(--border-color);"><div style="display:flex; align-items:center; gap:15px;"><div class="led-light led-green" id="firebase-led" style="width:12px; height:12px; border-radius:50%; background:#4ade80;"></div><div><div style="font-weight:800;">Real-Time <span id="sync-badge" class="badge badge-in">ONLINE</span></div></div></div><button class="btn btn-outline" onclick="loadAllCloudData()"><i class="fa-solid fa-rotate"></i> Sync Live</button></div>
-                    <div class="summary-grid"><div class="card"><div class="card-icon"><i class="fa-solid fa-wallet"></i></div><h3>Kas Tunai</h3><p id="sum-tunai">Rp 0</p></div><div class="card"><div class="card-icon"><i class="fa-solid fa-building-columns"></i></div><h3>Bank BRI</h3><p id="sum-bank">Rp 0</p></div><div class="card"><div class="card-icon"><i class="fa-solid fa-arrow-trend-up"></i></div><h3>Penerimaan</h3><p id="sum-masuk" style="color:#15803d;">Rp 0</p></div><div class="card"><div class="card-icon"><i class="fa-solid fa-arrow-trend-down"></i></div><h3>Penyaluran</h3><p id="sum-keluar" style="color:#b91c1c;">Rp 0</p></div></div>
+                    <div class="smart-cloud-mini-bar no-print" style="display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:20px; background:var(--bg-main); padding:15px; bord[...]
+                    <div class="summary-grid"><div class="card"><div class="card-icon"><i class="fa-solid fa-wallet"></i></div><h3>Kas Tunai</h3><p id="sum-tunai">Rp 0</p></div><div class="card"><[...]
                     <div class="panel-header" style="margin-top:40px; border-top:1px solid var(--border-color); padding-top:30px;"><i class="fa-solid fa-pen-nib"></i> Entri Jurnal</div>
                     <form id="form-trx">
                         <input type="hidden" id="t-edit-id">
                         <div class="form-grid">
-                            <div class="form-group"><label>Mutasi</label><select id="t-type" onchange="updateCategories()"><option value="in">Pemasukan (Debit)</option><option value="out">Pengeluaran (Kredit)</option></select></div>
-                            <div class="form-group"><label>Sumber</label><select id="t-source" required><option value="Kas Tunai">Kas Tunai</option><option value="Rekening Bank BRI">Bank BRI</option></select></div>
+                            <div class="form-group"><label>Mutasi</label><select id="t-type" onchange="updateCategories()"><option value="in">Pemasukan (Debit)</option><option value="out">Pengelua[...]
+                            <div class="form-group"><label>Sumber</label><select id="t-source" required><option value="Kas Tunai">Kas Tunai</option><option value="Rekening Bank BRI">Bank BRI</opt[...]
                             <div class="form-group"><label>Akun</label><select id="t-category" required></select></div>
                             <div class="form-group"><label>Tanggal</label><input type="date" id="t-date" required></div>
                             <div class="form-group"><label>Nominal</label><input type="text" id="t-amount" required></div>
@@ -111,13 +111,13 @@
                     </form>
                 </div>
 
-                <div id="v-analitik" class="panel hidden"><div class="panel-header"><i class="fa-solid fa-chart-line"></i> Grafik Analitik</div><div style="background:var(--bg-main); padding:20px; border-radius:20px; margin-bottom:20px;"><canvas id="chartTrenBulanan" style="max-height:250px;"></canvas></div><div class="form-grid"><div style="background:var(--bg-main); padding:20px; border-radius:20px;"><canvas id="chartArusKas" style="max-height:250px;"></canvas></div><div style="background:var(--bg-main); padding:20px; border-radius:20px;"><canvas id="chartPenyaluran" style="max-height:250px;"></canvas></div></div></div>
+                <div id="v-analitik" class="panel hidden"><div class="panel-header"><i class="fa-solid fa-chart-line"></i> Grafik Analitik</div><div style="background:var(--bg-main); padding:20px[...]
 
                 <div id="v-histori" class="panel hidden">
-                    <div class="panel-header" style="justify-content:space-between; display:flex; flex-wrap:wrap; gap:10px;"><div><i class="fa-solid fa-book"></i> Buku Besar</div><div style="display:flex; gap:10px; flex-wrap:wrap;"><button class="btn btn-outline" onclick="exportExcelBukuBesar()"><i class="fa-solid fa-file-excel"></i> Excel</button> <button class="btn btn-primary" onclick="cetakBukuBesarPDF()"><i class="fa-solid fa-file-pdf"></i> PDF</button></div></div>
-                    <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; background:var(--bg-main); padding:20px; border-radius:18px;"><input type="text" id="search-keyword" placeholder="🔍 Cari uraian..." onkeyup="refreshUI()" style="flex:2; min-width:150px; padding:10px; border-radius:8px; border:1px solid var(--border-color);"><select id="filter-type" onchange="refreshUI()" style="flex:1; min-width:100px; padding:10px; border-radius:8px; border:1px solid var(--border-color);"><option value="">Semua</option><option value="in">Masuk</option><option value="out">Keluar</option></select><input type="date" id="filter-start-date" onchange="refreshUI()" style="flex:1; min-width:120px; padding:10px; border-radius:8px; border:1px solid var(--border-color);"><input type="date" id="filter-end-date" onchange="refreshUI()" style="flex:1; min-width:120px; padding:10px; border-radius:8px; border:1px solid var(--border-color);"><input type="number" id="filter-min" placeholder="Min Rp" onkeyup="refreshUI()" style="flex:1; min-width:100px; padding:10px; border-radius:8px; border:1px solid var(--border-color);"><input type="number" id="filter-max" placeholder="Max Rp" onkeyup="refreshUI()" style="flex:1; min-width:100px; padding:10px; border-radius:8px; border:1px solid var(--border-color);"><button class="btn btn-outline" onclick="clearFilters()"><i class="fa-solid fa-rotate-left"></i></button></div>
-                    <div class="table-responsive"><table><thead><tr><th>Tanggal</th><th>Sumber</th><th>Akun & Keterangan</th><th>Debit</th><th>Kredit</th><th>Saldo Kumulatif</th><th>Aksi</th></tr></thead><tbody id="table-body"></tbody></table></div>
-                    <div id="pagination-controls" style="display:flex; justify-content:center; align-items:center; gap:15px; margin-top:20px;" class="no-print"><button class="btn btn-outline" onclick="ubahHalaman(-1)" style="padding:8px 16px;"><i class="fa-solid fa-chevron-left"></i> Prev</button><span id="page-indicator" style="font-weight:800; padding:8px 15px; background:var(--bg-main); border-radius:8px;">Hal 1</span><button class="btn btn-outline" onclick="ubahHalaman(1)" style="padding:8px 16px;">Next <i class="fa-solid fa-chevron-right"></i></button></div>
+                    <div class="panel-header" style="justify-content:space-between; display:flex; flex-wrap:wrap; gap:10px;"><div><i class="fa-solid fa-book"></i> Buku Besar</div><div style="disp[...]
+                    <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; background:var(--bg-main); padding:20px; border-radius:18px;"><input type="text" id="search-keyword" pl[...]
+                    <div class="table-responsive"><table><thead><tr><th>Tanggal</th><th>Sumber</th><th>Akun & Keterangan</th><th>Debit</th><th>Kredit</th><th>Saldo Kumulatif</th><th>Aksi</th></tr[...]
+                    <div id="pagination-controls" style="display:flex; justify-content:center; align-items:center; gap:15px; margin-top:20px;" class="no-print"><button class="btn btn-outline" onc[...]
                 </div>
 
                 <div id="v-proker" class="panel hidden">
@@ -132,40 +132,40 @@
 
                 <div id="v-arsip" class="panel hidden">
                     <div class="panel-header"><i class="fa-solid fa-box-archive"></i> Riwayat Arsip Tahunan</div>
-                    <div style="display:flex; gap:10px; margin-bottom:20px;"><input type="number" id="input-arsip-year" placeholder="Tahun..." style="padding:10px; border-radius:8px; border:1px solid var(--border-color);"><button class="btn btn-primary" onclick="loadArsip()">Cari Arsip</button></div>
-                    <div id="arsip-action-bar" class="hidden" style="margin-bottom:20px; display:flex; gap:10px; flex-wrap:wrap; background:#f8fafc; padding:15px; border-radius:12px; border:1px solid #e2e8f0;">
+                    <div style="display:flex; gap:10px; margin-bottom:20px;"><input type="number" id="input-arsip-year" placeholder="Tahun..." style="padding:10px; border-radius:8px; border:1px s[...]
+                    <div id="arsip-action-bar" class="hidden" style="margin-bottom:20px; display:flex; gap:10px; flex-wrap:wrap; background:#f8fafc; padding:15px; border-radius:12px; border:1px s[...]
                         <span style="font-weight:bold; font-size:13px; display:flex; align-items:center; margin-right:10px;">Unduh Arsip:</span>
                         <button class="btn btn-outline" onclick="downloadArsip('csv')"><i class="fa-solid fa-file-csv"></i> CSV</button>
                         <button class="btn btn-outline" onclick="downloadArsip('excel')"><i class="fa-solid fa-file-excel" style="color:green;"></i> Excel</button>
                         <button class="btn btn-outline" onclick="downloadArsip('json')"><i class="fa-solid fa-file-code"></i> JSON</button>
                     </div>
-                    <div class="table-responsive"><table><thead><tr><th>Tgl</th><th>Sumber</th><th>Ket</th><th>Debit</th><th>Kredit</th></tr></thead><tbody id="table-arsip-body"></tbody></table></div>
+                    <div class="table-responsive"><table><thead><tr><th>Tgl</th><th>Sumber</th><th>Ket</th><th>Debit</th><th>Kredit</th></tr></thead><tbody id="table-arsip-body"></tbody></table><[...]
                 </div>
 
                 <div id="v-konten" class="panel hidden"><div class="panel-header"><i class="fa-solid fa-video"></i> Studio Sosialisasi</div><div id="konten-harian-container"></div></div>
-                <div id="v-poster" class="panel hidden"><div class="panel-header"><i class="fa-solid fa-file-image"></i> Poster</div><div style="display:flex; gap:10px; margin-bottom:20px;"><input type="date" id="poster-start" onchange="buildPoster()" style="padding:10px; border-radius:8px; border:1px solid var(--border-color);"><input type="date" id="poster-end" onchange="buildPoster()" style="padding:10px; border-radius:8px; border:1px solid var(--border-color);"><button class="btn btn-primary" onclick="cetakPosterPDF()">Unduh PDF</button></div><div class="pdf-preview-wrapper"><div id="poster-print-area" style="background:#012a14; color:white; padding:30px; border-radius:20px;"><div style="text-align:center;"><img src="icon-192.png" style="height:70px; background:white; padding:10px; border-radius:15px;"><h2 style="color:var(--nu-gold); margin-top:10px; font-family:'Cinzel';">LAPORAN INFAK & SEDEKAH</h2><h3 id="poster-lembaga">UPZIS</h3><p id="poster-periode-text"></p><div style="font-size:32px; font-weight:800; color:var(--nu-gold); margin:20px 0;" id="poster-in">Rp 0</div></div><div style="display:flex; gap:20px; flex-wrap:wrap;"><div style="flex:1; background:rgba(255,255,255,0.1); padding:15px; border-radius:12px;" id="poster-breakdown"></div><div style="flex:1; background:white; padding:15px; border-radius:12px;"><canvas id="posterChart"></canvas></div></div></div></div></div>
+                <div id="v-poster" class="panel hidden"><div class="panel-header"><i class="fa-solid fa-file-image"></i> Poster</div><div style="display:flex; gap:10px; margin-bottom:20px;"><inpu[...]
                 
-                <div id="v-laporan" class="panel hidden"><div class="panel-header" style="justify-content:space-between; display:flex;"><div><i class="fa-solid fa-file-invoice"></i> Laporan Resmi PDF</div><div><input type="month" id="filter-month" onchange="buildReport()" style="padding:10px; border-radius:8px; border:1px solid var(--border-color);"> <button class="btn btn-primary" onclick="cetakPDF()">Cetak A4</button></div></div><div class="pdf-preview-wrapper"><div id="print-area" style="background:white; padding:30mm; color:black;"><div style="display:flex; justify-content:space-between; border-bottom:3px solid black; padding-bottom:15px; margin-bottom:20px;"><img src="icon-192.png" style="width:80px; height:80px;"><div style="text-align:center;"><h2>LAPORAN KAS UPZIS</h2><h3 id="pdf-nama-lembaga" style="font-weight:bold;">RANTING</h3><p id="lap-periode"></p></div><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Nahdlatul_Ulama_Logo.svg/512px-Nahdlatul_Ulama_Logo.svg.png" style="width:80px; height:80px;" alt="NU"></div><h4 style="margin-top:20px;">I. Penerimaan</h4><table border="1" style="width:100%; border-collapse:collapse;"><thead><tr style="background:#f1f5f9;"><th>Kode</th><th>Sumber / Keterangan</th><th>Nominal</th></tr></thead><tbody id="lap-tbl-masuk"></tbody></table><h4 style="margin-top:20px;">II. Penyaluran</h4><table border="1" style="width:100%; border-collapse:collapse;"><thead><tr style="background:#f1f5f9;"><th>Kode</th><th>Program / Keterangan</th><th>Nominal</th></tr></thead><tbody id="lap-tbl-keluar"></tbody></table><h4 style="margin-top:20px;">III. Saldo</h4><table border="1" style="width:100%; border-collapse:collapse;"><tbody><tr><td>Awal</td><td id="lap-saldo-awal">0</td></tr><tr><td>Masuk</td><td id="lap-tot-masuk">0</td></tr><tr><td>Keluar</td><td id="lap-tot-keluar">0</td></tr><tr style="font-weight:bold; background:#f1f5f9;"><td>AKHIR</td><td id="lap-saldo-akhir">0</td></tr></tbody></table><div style="display:flex; justify-content:space-between; margin-top:50px; text-align:center;"><div>Ketua UPZIS<br><br><br><span id="pdf-ttd-ketua" style="font-weight:bold; text-decoration:underline;">...</span></div><div>Bendahara<br><br><br><span id="pdf-ttd-bendahara" style="font-weight:bold; text-decoration:underline;">...</span></div></div></div></div></div>
+                <div id="v-laporan" class="panel hidden"><div class="panel-header" style="justify-content:space-between; display:flex;"><div><i class="fa-solid fa-file-invoice"></i> Laporan Resmi[...]
                 
-                <div id="v-mustahik" class="panel hidden"><div class="panel-header" style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;"><div><i class="fa-solid fa-users"></i> Warga & Relawan</div><button class="btn btn-primary" onclick="cetakMustahikPDF()"><i class="fa-solid fa-file-pdf"></i> Ekspor PDF</button></div><form id="form-mustahik" class="admin-only" style="margin-bottom:20px; background:var(--bg-main); padding:20px; border-radius:15px;"><div class="form-grid"><div class="form-group"><input type="text" id="m-nama" placeholder="Nama Warga" required></div><div class="form-group"><select id="m-kategori"><option>Mustahik</option><option>Donatur / Relawan</option></select></div><button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Tambah Data</button></div></form><div class="table-responsive" id="mustahik-print-area"><table><thead><tr><th>Nama Lengkap</th><th>Kategori Relasi</th><th class="no-print">Aksi</th></tr></thead><tbody id="table-mustahik"></tbody></table></div></div>
+                <div id="v-mustahik" class="panel hidden"><div class="panel-header" style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;"><div><i class="fa-solid fa-users[...]
                 
                 <div id="v-pengurus" class="panel hidden">
                     <div class="panel-header"><i class="fa-solid fa-building-user"></i> Kepengurusan</div>
                     <div class="form-grid admin-only">
                         <form id="form-profil" style="background:var(--bg-main); padding:20px; border-radius:15px;">
                             <h4>Identitas & Logo Lembaga</h4>
-                            <input type="text" id="p-lembaga" placeholder="Nama Lembaga" style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid var(--border-color);">
-                            <input type="text" id="p-periode" placeholder="Masa Khidmat" style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid var(--border-color);">
+                            <input type="text" id="p-lembaga" placeholder="Nama Lembaga" style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid var(--border-colo[...]
+                            <input type="text" id="p-periode" placeholder="Masa Khidmat" style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid var(--border-colo[...]
                             <label style="font-size:11px; font-weight:bold;">Upload Logo Lembaga / LAZISNU (Opsional)</label>
                             <input type="file" id="p-logo" accept="image/*" style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid var(--border-color);">
                             <button type="button" onclick="simpanProfil()" class="btn btn-primary" style="width:100%;">Simpan Identitas</button>
                         </form>
                         <div style="background:var(--bg-main); padding:20px; border-radius:15px;">
                             <h4>Tambah Anggota / Pengurus</h4>
-                            <input type="text" id="input-anggota-nama" placeholder="Nama" style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid var(--border-color);">
-                            <input type="text" id="input-anggota-jabatan" placeholder="Jabatan" style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid var(--border-color);">
+                            <input type="text" id="input-anggota-nama" placeholder="Nama" style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid var(--bord[...]
+                            <input type="text" id="input-anggota-jabatan" placeholder="Jabatan" style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid var(--bord[...]
                             <label style="font-size:11px; font-weight:bold;">Upload Foto Pengurus (Opsional)</label>
-                            <input type="file" id="input-anggota-foto" accept="image/*" style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid var(--border-color);">
+                            <input type="file" id="input-anggota-foto" accept="image/*" style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid var(--border-color[...]
                             <button onclick="tambahAnggota()" class="btn btn-outline" style="width:100%;">Tambah ke Bagan</button>
                             <div id="list-anggota" style="margin-top:15px;"></div>
                         </div>
@@ -173,59 +173,59 @@
                     <div id="org-chart-container" style="margin-top:30px; padding:20px; background:white; border-radius:15px; border:1px solid var(--border-color);"></div>
                 </div>
 
-                <div id="v-log" class="panel hidden"><div class="panel-header"><i class="fa-solid fa-list-check"></i> Log Sistem</div><div class="table-responsive"><table><thead><tr><th>Waktu Record</th><th>Pengguna</th><th>Tindakan (Action)</th><th>Detail Deskripsi</th></tr></thead><tbody id="table-logs"></tbody></table></div></div>
-                <div id="v-tutup-buku" class="panel hidden admin-only"><div class="panel-header"><i class="fa-solid fa-folder-closed"></i> Manajemen Cloud</div><div style="background:var(--bg-main); padding:25px; border-radius:20px; margin-bottom:25px; border:1px solid var(--border-color);"><h4 style="margin-bottom:10px;"><i class="fa-solid fa-shield-cat" style="color:var(--nu-gold-dark);"></i> Backup Lokal (JSON)</h4><div style="display:flex; gap:10px; flex-wrap:wrap;"><button onclick="downloadJSONBackup()" class="btn btn-primary"><i class="fa-solid fa-download"></i> Unduh File JSON</button> <button onclick="document.getElementById('input-restore-json').click()" class="btn btn-outline"><i class="fa-solid fa-upload"></i> Pulihkan Data JSON</button><input type="file" id="input-restore-json" style="display:none;" onchange="restoreJSONBackup(event)" accept=".json"></div></div><div style="background:#fee2e2; padding:25px; border-radius:20px; border:1px solid var(--danger);"><h4 style="color:var(--danger); margin-bottom:10px;"><i class="fa-solid fa-triangle-exclamation"></i> Zona Bahaya: Tutup Buku</h4><button onclick="eksekusiTutupBuku()" class="btn btn-primary" style="background:var(--danger);"><i class="fa-solid fa-folder-minus"></i> Eksekusi Tutup Buku</button></div></div>
+                <div id="v-log" class="panel hidden"><div class="panel-header"><i class="fa-solid fa-list-check"></i> Log Sistem</div><div class="table-responsive"><table><thead><tr><th>Waktu Rec[...]
+                <div id="v-tutup-buku" class="panel hidden admin-only"><div class="panel-header"><i class="fa-solid fa-folder-closed"></i> Manajemen Cloud</div><div style="background:var(--bg-mai[...]
                 
                 <div id="v-pengaturan" class="panel hidden">
                     <div class="panel-header"><i class="fa-solid fa-shield-halved"></i> Pengaturan Keamanan</div>
-                    <div style="margin-bottom:20px; background:var(--bg-main); padding:25px; border-radius:20px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
-                        <div><h4 style="margin-bottom:5px;"><i class="fa-brands fa-google" style="color:#ea4335;"></i> Hubungkan Akun Google</h4><p style="font-size:12px; color:gray;">Amankan akses dan tarik data terdahulu via Google.</p></div>
+                    <div style="margin-bottom:20px; background:var(--bg-main); padding:25px; border-radius:20px; border:1px solid var(--border-color); display:flex; justify-content:space-between;[...]
+                        <div><h4 style="margin-bottom:5px;"><i class="fa-brands fa-google" style="color:#ea4335;"></i> Hubungkan Akun Google</h4><p style="font-size:12px; color:gray;">Amankan aks[...]
                         <button onclick="hubungkanGoogle()" class="btn btn-outline" style="border-color:#ea4335; color:#ea4335;">Hubungkan Sekarang</button>
                     </div>
                     <div class="form-grid">
                         <form id="form-password" style="background:var(--bg-main); padding:25px; border-radius:20px; border:1px solid var(--border-color);">
                             <h4 style="margin-bottom:15px;">Perbarui Sandi</h4>
-                            <input type="password" id="pw-old" placeholder="Ketik Sandi LAMA..." required style="width:100%; padding:12px; border-radius:8px; border:1px solid var(--border-color); margin-bottom:10px;">
-                            <input type="password" id="pw-new" placeholder="Ketik Sandi BARU..." required style="width:100%; padding:12px; border-radius:8px; border:1px solid var(--border-color); margin-bottom:15px;">
+                            <input type="password" id="pw-old" placeholder="Ketik Sandi LAMA..." required style="width:100%; padding:12px; border-radius:8px; border:1px solid var(--border-color);[...]
+                            <input type="password" id="pw-new" placeholder="Ketik Sandi BARU..." required style="width:100%; padding:12px; border-radius:8px; border:1px solid var(--border-color);[...]
                             <button type="submit" class="btn btn-primary" style="width:100%;">Terapkan Sandi Baru</button>
                         </form>
-                        <div style="background:var(--bg-main); padding:25px; border-radius:20px; border:1px solid var(--border-color);" class="admin-only"><h4 style="margin-bottom:15px;"><i class="fa-brands fa-telegram" style="color:#0088cc;"></i> Telegram Bot</h4><input type="text" id="tg-token" placeholder="Token Bot" style="width:100%; padding:12px; border-radius:8px; border:1px solid var(--border-color); margin-bottom:10px;"><input type="text" id="tg-chatid" placeholder="Chat ID Grup" style="width:100%; padding:12px; border-radius:8px; border:1px solid var(--border-color); margin-bottom:15px;"><button onclick="simpanTelegram()" class="btn btn-primary" style="width:100%;"><i class="fa-solid fa-link"></i> Hubungkan Telegram</button></div>
+                        <div style="background:var(--bg-main); padding:25px; border-radius:20px; border:1px solid var(--border-color);" class="admin-only"><h4 style="margin-bottom:15px;"><i class[...]
                     </div>
                 </div>
 
-                <div id="v-kalkulator" class="panel hidden"><div class="panel-header"><i class="fa-solid fa-calculator"></i> Kalkulator Zakat & Fidyah Lengkap</div><div class="form-grid"><div style="background:var(--bg-main); padding:20px; border-radius:15px; border:1px solid var(--border-color);"><h4>Zakat Profesi (Penghasilan)</h4><p style="font-size:12px; color:gray; margin-bottom:10px;">Nilai Zakat: 2.5% dari penghasilan kotor.</p><input type="number" id="z-profesi" placeholder="Rp Penghasilan Bulanan" style="width:100%; padding:10px; margin-bottom:10px;" onkeyup="document.getElementById('z-profesi-hasil').innerText = formatRp(this.value * 0.025)"><div style="font-size:20px; font-weight:bold; color:var(--nu-green);" id="z-profesi-hasil">Rp 0</div></div><div style="background:var(--bg-main); padding:20px; border-radius:15px; border:1px solid var(--border-color);"><h4>Zakat Mal (Harta Simpanan)</h4><p style="font-size:12px; color:gray; margin-bottom:10px;">Syarat: Sudah mencapai haul (1 tahun) & nisab (85gr Emas).</p><input type="number" id="z-mal" placeholder="Rp Total Harta Simpanan" style="width:100%; padding:10px; margin-bottom:10px;" onkeyup="document.getElementById('z-mal-hasil').innerText = formatRp(this.value * 0.025)"><div style="font-size:20px; font-weight:bold; color:var(--nu-gold-dark);" id="z-mal-hasil">Rp 0</div></div><div style="background:var(--bg-main); padding:20px; border-radius:15px; border:1px solid var(--border-color);"><h4>Kalkulator Fidyah</h4><p style="font-size:12px; color:gray; margin-bottom:10px;">Hutang puasa x Harga 1 porsi makan standar.</p><div style="display:flex; gap:10px; margin-bottom:10px;"><input type="number" id="f-hari" placeholder="Jml Hari" style="flex:1; padding:10px;" onkeyup="calcFidyah()"><input type="number" id="f-harga" placeholder="Harga/Porsi" style="flex:2; padding:10px;" value="15000" onkeyup="calcFidyah()"></div><div style="font-size:20px; font-weight:bold; color:var(--danger);" id="z-fidyah-hasil">Rp 0</div><script>function calcFidyah(){ document.getElementById('z-fidyah-hasil').innerText = formatRp((document.getElementById('f-hari').value||0) * (document.getElementById('f-harga').value||0)); }</script></div></div></div>
-                <div id="v-inventaris" class="panel hidden"><div class="panel-header"><i class="fa-solid fa-boxes-stacked"></i> Manajemen Inventaris Aset Fisik</div><form id="form-inventaris" class="admin-only" style="margin-bottom:20px; background:var(--bg-main); padding:20px; border-radius:15px;"><div class="form-grid"><div class="form-group"><input type="text" id="i-nama" placeholder="Nama Barang (Misal: Ambulan, Kotak Infak)" required style="width:100%; padding:10px;"></div><div class="form-group"><input type="number" id="i-qty" placeholder="Jumlah" required style="width:100%; padding:10px;"></div><div class="form-group"><select id="i-kondisi" style="width:100%; padding:10px;"><option>Baik</option><option>Rusak Ringan</option><option>Rusak Berat</option></select></div><button type="submit" class="btn btn-primary">Simpan Aset</button></div></form><div class="table-responsive"><table><thead><tr><th>Nama Barang</th><th>Jumlah</th><th>Kondisi</th><th class="admin-only">Aksi</th></tr></thead><tbody id="table-inventaris"></tbody></table></div></div>
-                <div id="v-agenda" class="panel hidden"><div class="panel-header"><i class="fa-solid fa-calendar-days"></i> Buku Agenda & Hasil Musyawarah</div><form id="form-agenda" class="admin-only" style="margin-bottom:20px; background:var(--bg-main); padding:20px; border-radius:15px;"><div class="form-grid"><div class="form-group"><input type="date" id="a-tgl" required style="width:100%; padding:10px;"></div><div class="form-group"><input type="text" id="a-judul" placeholder="Judul Rapat / Kegiatan" required style="width:100%; padding:10px;"></div><div class="form-group" style="grid-column: 1 / -1;"><textarea id="a-hasil" placeholder="Hasil Keputusan / Notulensi..." required style="width:100%; padding:10px;"></textarea></div><button type="submit" class="btn btn-primary" style="grid-column: 1 / -1;">Catat Agenda</button></div></form><div class="table-responsive"><table><thead><tr><th>Tgl</th><th>Agenda Kegiatan</th><th>Notulensi Keputusan</th><th class="admin-only">Aksi</th></tr></thead><tbody id="table-agenda"></tbody></table></div></div>
-                <div id="v-leaderboard" class="panel hidden"><div class="panel-header"><i class="fa-solid fa-medal"></i> Leaderboard Kinerja Relawan Bulan Ini</div><div style="background:linear-gradient(135deg, var(--nu-green), var(--nu-green-dark)); color:white; padding:30px; border-radius:20px; text-align:center; margin-bottom:20px;"><h3>🏆 Top Kolektor Infak Berprestasi</h3><p style="font-size:12px; margin-top:5px; opacity:0.8;">Data otomatis dihitung dari entri jurnal bulan ini (Kode Akun Relawan 111+)</p><div id="leaderboard-top1" style="font-size:36px; font-weight:bold; color:var(--nu-gold); margin-top:20px;">-</div></div><div class="table-responsive"><table><thead><tr><th>Peringkat</th><th>Nama Relawan / Kolektor</th><th>Total Terkumpul</th></tr></thead><tbody id="table-leaderboard"></tbody></table></div></div>
-                <div id="v-todo" class="panel hidden"><div class="panel-header"><i class="fa-solid fa-clipboard-list"></i> Catatan Harian (To-Do List) Bendahara</div><form id="form-todo" style="margin-bottom:20px; display:flex; gap:10px;"><input type="text" id="td-task" placeholder="Tugas baru (Misal: Setor ke LAZISNU Cabang...)" required style="flex:1; padding:12px; border-radius:8px; border:1px solid var(--border-color);"><button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i></button></form><div id="list-todo" style="display:flex; flex-direction:column; gap:10px;"></div></div>
-                <div id="v-kamus" class="panel hidden"><div class="panel-header"><i class="fa-solid fa-book-open"></i> Kamus Istilah ZIS (Edukasi Internal)</div><div class="table-responsive"><table><thead><tr><th style="width:200px;">Istilah ZIS</th><th>Definisi Baku</th></tr></thead><tbody><tr><td><strong>Muzakki</strong></td><td>Orang yang dikenai kewajiban membayar zakat atas kepemilikan harta yang telah mencapai nisab dan haul.</td></tr><tr><td><strong>Mustahik</strong></td><td>Orang atau golongan yang berhak menerima harta zakat (Asnaf yang 8).</td></tr><tr><td><strong>Nisab</strong></td><td>Batas minimal jumlah harta yang wajib dikeluarkan zakatnya (Misal Emas: 85 gram).</td></tr><tr><td><strong>Haul</strong></td><td>Batas waktu kepemilikan harta selama satu tahun Hijriah untuk wajib zakat mal.</td></tr><tr><td><strong>Fidyah</strong></td><td>Denda berupa makanan pokok kepada fakir miskin karena meninggalkan puasa wajib dengan uzur.</td></tr></tbody></table></div></div>
+                <div id="v-kalkulator" class="panel hidden"><div class="panel-header"><i class="fa-solid fa-calculator"></i> Kalkulator Zakat & Fidyah Lengkap</div><div class="form-grid"><div sty[...]
+                <div id="v-inventaris" class="panel hidden"><div class="panel-header"><i class="fa-solid fa-boxes-stacked"></i> Manajemen Inventaris Aset Fisik</div><form id="form-inventaris" cla[...]
+                <div id="v-agenda" class="panel hidden"><div class="panel-header"><i class="fa-solid fa-calendar-days"></i> Buku Agenda & Hasil Musyawarah</div><form id="form-agenda" class="admin[...]
+                <div id="v-leaderboard" class="panel hidden"><div class="panel-header"><i class="fa-solid fa-medal"></i> Leaderboard Kinerja Relawan Bulan Ini</div><div style="background:linear-g[...]
+                <div id="v-todo" class="panel hidden"><div class="panel-header"><i class="fa-solid fa-clipboard-list"></i> Catatan Harian (To-Do List) Bendahara</div><form id="form-todo" style="m[...]
+                <div id="v-kamus" class="panel hidden"><div class="panel-header"><i class="fa-solid fa-book-open"></i> Kamus Istilah ZIS (Edukasi Internal)</div><div class="table-responsive"><tab[...]
 
             </div>
         </div>
     </div>
 
-    <div id="modal-amil" class="hidden" style="position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:99999; display:flex; align-items:center; justify-content:center; padding:20px;"><div style="background:white; padding:30px; border-radius:24px; max-width:400px; width:100%; text-align:center;"><h3 style="color:var(--nu-green-dark); margin-bottom:20px;"><i class="fa-solid fa-calculator"></i> Hak Amil (12.5%)</h3><div style="background:var(--bg-main); padding:15px; border-radius:12px; margin-bottom:15px;"><p style="font-size:11px; font-weight:800; color:var(--text-muted);">Penerimaan Bulan Ini</p><p id="amil-total" style="font-size:24px; font-weight:800;">0</p></div><div style="background:linear-gradient(135deg, var(--nu-green), var(--nu-green-dark)); padding:15px; border-radius:12px; margin-bottom:25px; color:white;"><p style="font-size:11px; font-weight:800; color:var(--nu-gold-light);">Alokasi Pencairan</p><p id="amil-hak" style="font-size:28px; font-weight:800; color:var(--nu-gold);">0</p></div><button onclick="document.getElementById('modal-amil').classList.add('hidden')" class="btn btn-outline" style="width:100%;">Tutup</button></div></div>
+    <div id="modal-amil" class="hidden" style="position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:99999; display:flex; align-items:center; justify-content:center; padding:20px;"><div st[...]
     
     <div id="modal-kuitansi" class="hidden" style="position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:99999; display:flex; align-items:center; justify-content:center; padding:20px;">
         <div style="width:100%; max-width:650px; max-height:90vh; overflow-y:auto; padding:20px;">
-            <div id="kuitansi-print-area" class="kuitansi-box-3d" style="background:linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border:1px solid #cbd5e1; border-radius:16px; box-shadow:0 20px 40px -10px rgba(0,0,0,0.3); padding:40px; position:relative; overflow:hidden;">
+            <div id="kuitansi-print-area" class="kuitansi-box-3d" style="background:linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border:1px solid #cbd5e1; border-radius:16px; box-shadow:0 2[...]
                 <div style="position:absolute; top:0; left:0; width:100%; height:8px; background:linear-gradient(90deg, var(--nu-green), var(--nu-gold));"></div>
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px dashed #cbd5e1; padding-bottom:20px; margin-bottom:25px;">
                     <div style="display:flex; align-items:center; gap:15px;">
                         <img src="icon-192.png" style="height:75px; filter:drop-shadow(0 4px 6px rgba(0,0,0,0.1));">
-                        <div><h3 id="kui-lembaga" style="margin:0; color:var(--nu-green-dark); font-family:'Cinzel'; font-size:22px; font-weight:800;">UPZIS</h3><p id="kui-periode" style="margin:0; font-size:12px; color:gray;"></p></div>
+                        <div><h3 id="kui-lembaga" style="margin:0; color:var(--nu-green-dark); font-family:'Cinzel'; font-size:22px; font-weight:800;">UPZIS</h3><p id="kui-periode" style="margin:[...]
                     </div>
-                    <div style="text-align:right;"><h2 style="margin:0; color:var(--nu-gold-dark); font-family:'Cinzel'; font-size:26px; font-weight:800; letter-spacing:2px;">KUITANSI</h2><small id="kui-no" style="font-family:monospace; background:#f1f5f9; padding:4px 8px; border-radius:4px; border:1px solid #e2e8f0;"></small></div>
+                    <div style="text-align:right;"><h2 style="margin:0; color:var(--nu-gold-dark); font-family:'Cinzel'; font-size:26px; font-weight:800; letter-spacing:2px;">KUITANSI</h2><small [...]
                 </div>
                 <table style="width:100%; font-size:15px; border-spacing:0 16px;">
                     <tr><td style="width:35%; font-weight:bold; color:#475569;">Telah Terima Dari/Untuk:</td><td id="kui-tipe" style="font-weight:600;"></td></tr>
-                    <tr><td style="font-weight:bold; color:#475569;">Uang Sejumlah:</td><td id="kui-nominal" style="font-size:22px; font-weight:900; color:var(--nu-green); background:#dcfce7; padding:5px 15px; border-radius:8px; display:inline-block; border:1px solid #86efac;"></td></tr>
+                    <tr><td style="font-weight:bold; color:#475569;">Uang Sejumlah:</td><td id="kui-nominal" style="font-size:22px; font-weight:900; color:var(--nu-green); background:#dcfce7; pad[...]
                     <tr><td style="font-weight:bold; color:#475569;">Untuk Pembayaran:</td><td id="kui-ket" style="border-bottom:1px solid #e2e8f0; padding-bottom:5px;"></td></tr>
                     <tr><td style="font-weight:bold; color:#475569;">Sumber Dana / Rekening:</td><td id="kui-sumber" style="font-weight:600;"></td></tr>
                 </table>
                 <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:50px; font-size:13px;">
                     <div style="opacity:0.6; font-style:italic;">*Dokumen ini sah dan dicetak secara elektronik.</div>
-                    <div style="text-align:center;"><p id="kui-tgl"></p><p style="font-weight:bold; margin-top:5px; color:var(--nu-green-dark);">Bendahara</p><br><br><br><p id="kui-ttd" style="font-weight:bold; text-decoration:underline; font-size:14px;"></p></div>
+                    <div style="text-align:center;"><p id="kui-tgl"></p><p style="font-weight:bold; margin-top:5px; color:var(--nu-green-dark);">Bendahara</p><br><br><br><p id="kui-ttd" style="fo[...]
                 </div>
             </div>
             <div style="margin-top:25px; display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;">
@@ -240,14 +240,5 @@
 
     <script type="module" src="app.js?v=enterprise_v12"></script>
     
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./sw.js').then(reg => {
-            console.log('SW berhasil diregistrasi di scope: ', reg.scope);
-          }).catch(err => console.error('Gagal registrasi SW:', err));
-        });
-      }
-    </script>
 </body>
 </html>
